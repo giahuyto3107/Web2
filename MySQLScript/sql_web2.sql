@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS role (
 CREATE TABLE IF NOT EXISTS account (
     account_id INT AUTO_INCREMENT PRIMARY KEY,
     account_name VARCHAR(100) NOT NULL,
-    account_email VARCHAR(100) NOT NULL UNIQUE,
+    email VARCHAR(100) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
     status_id INT,
     last_login TIMESTAMP NULL,
@@ -69,9 +69,8 @@ CREATE TABLE IF NOT EXISTS product (
 
 CREATE TABLE IF NOT EXISTS user (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
-    user_name VARCHAR(100) NOT NULL,
-    user_email VARCHAR(100) NOT NULL UNIQUE,
-    account_id INT,
+    full_name VARCHAR(100) NOT NULL,
+    account_id INT unique,
     profile_picture VARCHAR(255),
     date_of_birth DATE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
