@@ -13,6 +13,14 @@ CREATE TABLE IF NOT EXISTS status (
     status_description VARCHAR(255)
 );
 
+INSERT INTO status (id, status_name, status_description) VALUES
+	(1, 'Active', 'The record is currently active and operational'),
+	(2, 'Inactive', 'The record is currently inactive and not in use'),
+	(3, 'Pending', 'The record is awaiting further processing or approval'),
+	(4, 'Completed', 'The record has been successfully completed'),
+	(5, 'Failed', 'The record has encountered an error or was unsuccessful');
+
+
 CREATE TABLE IF NOT EXISTS role (
     id INT AUTO_INCREMENT PRIMARY KEY,
     role_name VARCHAR(50) NOT NULL UNIQUE,
@@ -119,9 +127,7 @@ CREATE TABLE IF NOT EXISTS order_items (
 
 CREATE TABLE IF NOT EXISTS supplier (
     supplier_id INT AUTO_INCREMENT PRIMARY KEY,
-    supplier_name VARCHAR(100) NOT NULL UNIQUE, 
-    contact_person VARCHAR(100),           
-    contact_email VARCHAR(100),                  
+    supplier_name VARCHAR(100) NOT NULL UNIQUE,                        
     contact_phone VARCHAR(15),                   
     address VARCHAR(255),                     
     status_id INT,                             
@@ -130,12 +136,21 @@ CREATE TABLE IF NOT EXISTS supplier (
         ON UPDATE CASCADE
 );
 
+-- INSERT INTO supplier (supplier_name, contact_person, contact_email, contact_phone, address, status_id) 
+-- VALUES
+-- 	('', 'John Doe', 'john.doe@techsupply.com', '1234567890', '123 Tech Street, New York, USA', 1),
+-- 	('GadgetWorld', 'Alice Smith', 'alice.smith@gadgetworld.com', '9876543210', '456 Gadget Ave, San Francisco, USA', 1),
+-- 	('Digital Solutions', 'Bob Johnson', 'bob.johnson@digitalsolutions.com', '1122334455', '789 Digital Rd, Los Angeles, USA', 1),
+-- 	('Hardware Hub', 'Emma Brown', 'emma.brown@hardwarehub.com', '6677889900', '321 Hardware Lane, Chicago, USA', 1),
+-- 	('ElectroMart', 'Michael Green', 'michael.green@electromart.com', '9988776655', '654 Electro Blvd, Houston, USA', 1);-- 
+
+
 CREATE TABLE IF NOT EXISTS purchase_order (
     purchase_order_id INT AUTO_INCREMENT PRIMARY KEY,
     supplier_id INT,
     user_id INT,
     order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    total_amount DECIMAL(10, 2) NOT NULL,
+    total_amount int NOT NULL,
     status_id INT,
     import_status TINYINT(1) DEFAULT 0,
     FOREIGN KEY (supplier_id) REFERENCES supplier(supplier_id)
@@ -148,6 +163,13 @@ CREATE TABLE IF NOT EXISTS purchase_order (
         ON DELETE SET NULL
         ON UPDATE CASCADE
 );
+
+-- INSERT INTO purchase_order (supplier_id, user_id, order_date, total_amount, status_id, import_status) VALUES
+-- (1, 2, '2025-02-08 10:15:00', 15, 2, 0),  
+-- (2, 3, '2025-02-07 15:30:00', 7, 2, 0),  
+-- (3, 4, '2025-02-06 09:45:00', 13, 2, 0),   
+-- (4, 5, '2025-02-05 18:20:00', 6, 2, 0),  
+-- (5, 6, '2025-02-04 12:10:00', 12, 2, 0);  
 
 CREATE TABLE IF NOT EXISTS purchase_order_items (
     purchase_order_item_id INT AUTO_INCREMENT PRIMARY KEY,
