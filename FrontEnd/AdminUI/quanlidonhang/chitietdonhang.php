@@ -3,8 +3,6 @@ $conn = mysqli_connect("localhost", "root", "", "web2_sql");
 
 if (isset($_GET['order_id'])) {
     $order_id = mysqli_real_escape_string($conn, $_GET['order_id']);
-
-    // Lấy thông tin đơn hàng
     $query = "SELECT orders.order_id
               FROM order_items 
               JOIN orders ON order_items.order_id = orders.order_id 
@@ -136,7 +134,7 @@ mysqli_close($conn);
             background-color: #0056b3;
         }
 
-        /* Responsive cho điện thoại */
+        /* Để cho vui */
         @media screen and (max-width: 768px) {
             body {
                 padding: 10px;
@@ -168,7 +166,6 @@ mysqli_close($conn);
 <body>
 <div class="container">
     <h2>Chi Tiết Đơn Hàng #<?= htmlspecialchars($order['order_id']) ?></h2>
-    <!-- Danh sách sản phẩm -->
     <h3>Danh sách sản phẩm</h3>
     <table>
         <thead>
