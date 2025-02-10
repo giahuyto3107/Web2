@@ -16,6 +16,7 @@
                 <th>Ngày Đặt</th>
                 <th>Phương Thức Thanh Toán</th>
                 <th>Trạng thái</th>
+                <th>Thao tác</th>
             </tr>
         </thead>
         <tbody>
@@ -65,6 +66,10 @@
                                 }
                             ?>
                         </td>
+                        <td>
+                            <a href="chitietdonhang.php?order_id=<?= $row['order_id'] ?>" style="background-color:rgb(104, 162, 224); color: white; padding: 5px 10px; text-decoration: none; border-radius: 5px;">Xem chi tiết</a>
+                        </td>
+
                     </tr>
             <?php
                 }
