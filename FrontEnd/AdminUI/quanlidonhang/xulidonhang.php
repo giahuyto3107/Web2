@@ -7,7 +7,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST['approve'])) {
         $query = "UPDATE orders SET status_id = 4 WHERE order_id = '$order_id'";
     } elseif (isset($_POST['cancel'])) {
-        $query = "UPDATE orders SET status_id = 5 WHERE order_id = '$order_id'";
+        $query = "UPDATE orders SET status_id = 2 WHERE order_id = '$order_id'";
     }
 
     if (mysqli_query($conn, $query)) {

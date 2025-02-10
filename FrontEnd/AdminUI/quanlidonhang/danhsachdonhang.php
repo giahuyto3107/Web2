@@ -116,6 +116,10 @@
             color: green;
         }
 
+        .status-refused {
+            color: red;
+        }
+
         /* Responsive */
         @media screen and (max-width: 768px) {
             body {
@@ -136,6 +140,40 @@
                 padding: 6px 8px;
             }
         }
+
+        #pagination {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 20px;
+        }
+
+        .page-btn {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: #f0f0f0;
+            color: #333;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            user-select: none;
+        }
+
+        .page-btn:hover {
+            background: #007bff;
+            color: white;
+        }
+
+        .page-btn.active {
+            background: #007bff;
+            color: white;
+            box-shadow: 0 0 8px rgba(0, 123, 255, 0.6);
+        }
     </style>
 
 </head>
@@ -154,12 +192,9 @@
                     <th>Thao Tác</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="order-list">
                 <?php
                     $conn = mysqli_connect("localhost", "root", "", "web2_sql");
-                    if (!$conn) {
-                        die("Kết nối database thất bại: " . mysqli_connect_error());
-                    }
                     $query_lietke_dh = "SELECT orders.order_id, user.full_name, orders.order_date, orders.payment_method, status.id 
                                         FROM orders 
                                         JOIN user ON orders.user_id = user.user_id 
@@ -187,7 +222,9 @@
                         <?php 
                             if ($row['id'] == '4') {
                                 echo '<span class="status-approved">Đã duyệt</span>';
-                            } else {
+                            } else if ($row['id'] == '2') {
+                                echo '<span class="status-refused">Đã hủy</span>';
+                            }else {
                                 echo '
                                     <form method="POST" action="xulidonhang.php" style="display:inline;">
                                         <input type="hidden" name="order_id" value="'.$row['order_id'].'">
@@ -211,6 +248,83 @@
                 ?>
             </tbody>
         </table>
+        <div id="pagination" style="text-align: center; margin-top: 20px;">
+            
+        </div>
+
+
     </div>
 </body>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+    let currentPage = 1; 
+    let totalPages = 1; 
+
+    function loadOrders(page) {
+        $.ajax({
+            url: "fetch_orders.php",
+            type: "GET",
+            data: { page: page },
+            dataType: "json",
+            success: function(response) {
+                let orders = response.orders;
+                totalPages = response.total_pages;
+                let html = "";
+
+                if (orders.length > 0) {
+                    $.each(orders, function(index, order) {
+                        html += `<tr>
+                            <td>${(page - 1) * 5 + index + 1}</td>
+                            <td>${order.full_name}</td>
+                            <td>${order.order_date}</td>
+                            <td>${order.payment_method === 'Cash' ? '<i class="fas fa-truck"></i> COD' : '<i class="fas fa-credit-card"></i> Online'}</td>
+                            <td>${order.id == '4' ? '<span class="status-approved">✅ Đã duyệt</span>' : 
+                                (order.id == '2' ? '<span class="status-refused">❌ Đã hủy</span>' : 
+                                `<form method="POST" action="xulidonhang.php" style="display:inline;">
+                                    <input type="hidden" name="order_id" value="${order.order_id}">
+                                    <button type="submit" name="approve" class="btn approve-btn">✔️ Duyệt</button>
+                                </form>
+                                <form method="POST" action="xulidonhang.php" style="display:inline;">
+                                    <input type="hidden" name="order_id" value="${order.order_id}">
+                                    <button type="submit" name="cancel" class="btn cancel-btn">❌ Hủy</button>
+                                </form>`) }
+                            </td>
+                            <td>
+                                <a href="chitietdonhang.php?order_id=${order.order_id}" class="btn detail-btn">Chi tiết</a>
+                            </td>
+                        </tr>`;
+                    });
+                } else {
+                    html = `<tr><td colspan="6">Không có đơn hàng nào</td></tr>`;
+                }
+
+                $("#order-list").html(html);
+                loadPagination(); 
+            }
+        });
+    }
+
+    function loadPagination() {
+        let paginationHtml = "";
+        for (let i = 1; i <= totalPages; i++) {
+            paginationHtml += `<div class="page-btn ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</div>`;
+        }
+        $("#pagination").html(paginationHtml);
+
+        $(".page-btn").click(function() {
+            let page = $(this).data("page");
+            if (page !== currentPage) {
+                currentPage = page;
+                loadOrders(currentPage);
+            }
+        });
+    }
+
+    loadOrders(currentPage);
+});
+
+</script>
+
 </html>
