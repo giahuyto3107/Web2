@@ -8,7 +8,7 @@ $uName = "root";
 $pass = "";
 
 # database name
-$db_name = "sql_web2";
+$db_name = "web2_sql";
 
 #creating database connection
 try {
