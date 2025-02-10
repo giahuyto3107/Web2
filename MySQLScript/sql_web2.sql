@@ -18,7 +18,8 @@ INSERT INTO status (id, status_name, status_description) VALUES
 	(2, 'Inactive', 'The record is currently inactive and not in use'),
 	(3, 'Pending', 'The record is awaiting further processing or approval'),
 	(4, 'Completed', 'The record has been successfully completed'),
-	(5, 'Failed', 'The record has encountered an error or was unsuccessful');
+	(5, 'Failed', 'The record has encountered an error or was unsuccessful'),
+    (6, 'Deleted', 'The record has been deleted');
 
 
 CREATE TABLE IF NOT EXISTS role (
@@ -27,6 +28,13 @@ CREATE TABLE IF NOT EXISTS role (
     role_description VARCHAR(255),
     status_id INT
 );
+
+INSERT INTO `role` (`id`, `role_name`, `role_description`, `status_id`) 
+VALUES
+	(1, 'Admin', 'Administrator with full access', 1),
+	(2, 'Customer', 'Regular customer', 1),
+	(3, 'Supplier', 'Supplier of products', 1),
+	(4, 'Manager', 'Manager with limited admin access', 1);
 
 CREATE TABLE IF NOT EXISTS account (
     account_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -46,6 +54,14 @@ CREATE TABLE IF NOT EXISTS account (
         ON UPDATE CASCADE    
 );
 
+INSERT INTO `account` (`account_id`, `account_name`, `email`, `password_hash`, `status_id`, `last_login`, `role_id`, `created_at`, `updated_at`) 
+VALUES
+	(1, 'test1', 'john.doe@example.com', '123', 1, NULL, 1, '2025-02-05 03:00:08', '2025-02-08 09:32:04'),
+	(2, 'test2', 'jane.smith@example.com', '123', 1, NULL, 2, '2025-02-05 03:00:08', '2025-02-08 09:32:07'),
+	(3, 'test3', 'alice.johnson@example.com', '123', 1, NULL, 3, '2025-02-05 03:00:08', '2025-02-08 09:32:09'),
+	(4, 'test4', 'bob.brown@example.com', '123', 1, NULL, 4, '2025-02-05 03:00:08', '2025-02-08 09:32:12');
+
+
 CREATE TABLE IF NOT EXISTS category (
     category_id INT AUTO_INCREMENT PRIMARY KEY,
     category_name VARCHAR(100) NOT NULL UNIQUE,
@@ -55,6 +71,15 @@ CREATE TABLE IF NOT EXISTS category (
         ON DELETE SET NULL
         ON UPDATE CASCADE
 );
+
+INSERT INTO `category` (`category_id`, `category_name`, `category_description`, `status_id`) 
+VALUES
+	(1, 'Fiction', 'Books that are fictional stories', 1),
+	(2, 'Non-Fiction', 'Books based on real events and facts', 1),
+	(3, 'Science Fiction', 'Books that explore futuristic concepts', 1),
+	(4, 'Mystery', 'Books that involve solving a mystery', 1),
+	(6, 'testing123', '123455', NULL);
+
 
 CREATE TABLE IF NOT EXISTS product (
     product_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -75,6 +100,18 @@ CREATE TABLE IF NOT EXISTS product (
         ON UPDATE CASCADE
 );
 
+INSERT INTO `product` (`product_id`, `product_name`, `product_description`, `price`, `stock_quantity`, `category_id`, `status_id`, `image_url`, `created_at`, `updated_at`) 
+VALUES
+	(1, 'The Great Gatsby', 'A classic novel by F. Scott Fitzgerald', 15.99, 100, 1, 1, 
+		'The Great Gaspi.png', '2025-02-05 03:00:08', '2025-02-05 03:09:12'),
+	(2, '1984', 'A dystopian novel by George Orwell', 12.99, 150, 1, 1, 
+		'1984.png', '2025-02-05 03:00:08', '2025-02-05 03:09:16'),
+	(3, 'Sapiens: A Brief History of Humankind', 
+		'A book by Yuval Noah Harari', 18.99, 200, 2, 1, 'Sapiens.png', '2025-02-05 03:00:08', '2025-02-05 03:09:18'),
+	(4, 'Dune', 'A science fiction novel by Frank Herbert', 14.99, 120, 3, 1, 
+		'Dune.png', '2025-02-05 03:00:08', '2025-02-05 03:09:20'
+	);
+
 CREATE TABLE IF NOT EXISTS user (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
     full_name VARCHAR(100) NOT NULL,
@@ -88,6 +125,13 @@ CREATE TABLE IF NOT EXISTS user (
         ON UPDATE CASCADE
 );
 
+INSERT INTO `user` (`full_name`, `account_id`, `profile_picture`, `date_of_birth`) 
+VALUES
+    ('John Doe', 1, 'p1.png', '1990-01-01'),
+    ('Jane Smith', 2, 'p2.png', '1992-02-02'),
+    ('Alice Johnson', 3, 'p3.png', '1985-03-03'),
+    ('Bob Brown', 4, 'p4.png', '1978-04-04');
+    
 CREATE TABLE IF NOT EXISTS cart_items (
     user_id INT, 
     product_id INT,  
@@ -96,6 +140,13 @@ CREATE TABLE IF NOT EXISTS cart_items (
         ON DELETE CASCADE
         ON UPDATE CASCADE
 );
+INSERT INTO `cart_items` (`user_id`, `product_id`, `quantity`) 
+VALUES
+    (1, 1, 2),
+    (1, 3, 1),
+    (2, 2, 3),
+    (3, 4, 1),
+    (4, 1, 5);
 
 CREATE TABLE IF NOT EXISTS orders (
     order_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -111,6 +162,12 @@ CREATE TABLE IF NOT EXISTS orders (
         ON DELETE SET NULL
         ON UPDATE CASCADE
 );
+INSERT INTO `orders` (`user_id`, `total_amount`, `status_id`, `payment_method`) 
+VALUES
+    (1, 45.97, 4, 'Credit Card'),
+    (2, 38.97, 4, 'PayPal'),
+    (3, 14.99, 4, 'Cash'),
+    (4, 31.98, 4, 'Credit Card');
 
 CREATE TABLE IF NOT EXISTS order_items (
     order_item_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -124,6 +181,13 @@ CREATE TABLE IF NOT EXISTS order_items (
         ON DELETE CASCADE
         ON UPDATE CASCADE
 );
+INSERT INTO `order_items` (`order_id`, `product_id`, `quantity`) 
+VALUES
+    (1, 1, 2),
+    (1, 3, 1),
+    (2, 2, 3),
+    (3, 4, 1),
+    (4, 1, 2);
 
 CREATE TABLE IF NOT EXISTS supplier (
     supplier_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -136,13 +200,10 @@ CREATE TABLE IF NOT EXISTS supplier (
         ON UPDATE CASCADE
 );
 
--- INSERT INTO supplier (supplier_name, contact_person, contact_email, contact_phone, address, status_id) 
--- VALUES
--- 	('', 'John Doe', 'john.doe@techsupply.com', '1234567890', '123 Tech Street, New York, USA', 1),
--- 	('GadgetWorld', 'Alice Smith', 'alice.smith@gadgetworld.com', '9876543210', '456 Gadget Ave, San Francisco, USA', 1),
--- 	('Digital Solutions', 'Bob Johnson', 'bob.johnson@digitalsolutions.com', '1122334455', '789 Digital Rd, Los Angeles, USA', 1),
--- 	('Hardware Hub', 'Emma Brown', 'emma.brown@hardwarehub.com', '6677889900', '321 Hardware Lane, Chicago, USA', 1),
--- 	('ElectroMart', 'Michael Green', 'michael.green@electromart.com', '9988776655', '654 Electro Blvd, Houston, USA', 1);-- 
+INSERT INTO `supplier` (`supplier_id`, `supplier_name`, `contact_phone`, `address`, `status_id`) 
+VALUES
+	(1, 'Book Supplier Inc.', '123-456-7890', '123 Supplier St, Supplier City', 1),
+	(2, 'Global Books', '987-654-3210', '456 Global Ave, Global City', 1);
 
 
 CREATE TABLE IF NOT EXISTS purchase_order (
@@ -163,14 +224,11 @@ CREATE TABLE IF NOT EXISTS purchase_order (
         ON DELETE SET NULL
         ON UPDATE CASCADE
 );
-
--- INSERT INTO purchase_order (supplier_id, user_id, order_date, total_amount, status_id, import_status) VALUES
--- (1, 2, '2025-02-08 10:15:00', 15, 2, 0),  
--- (2, 3, '2025-02-07 15:30:00', 7, 2, 0),  
--- (3, 4, '2025-02-06 09:45:00', 13, 2, 0),   
--- (4, 5, '2025-02-05 18:20:00', 6, 2, 0),  
--- (5, 6, '2025-02-04 12:10:00', 12, 2, 0);  
-
+INSERT INTO `purchase_order` (`supplier_id`, `user_id`, `total_amount`, `status_id`) 
+VALUES
+    (1, 1, 200.00, 1),
+    (2, 2, 150.00, 1);
+    
 CREATE TABLE IF NOT EXISTS purchase_order_items (
     purchase_order_item_id INT AUTO_INCREMENT PRIMARY KEY,
     purchase_order_id INT,
@@ -186,7 +244,12 @@ CREATE TABLE IF NOT EXISTS purchase_order_items (
         ON DELETE CASCADE
         ON UPDATE CASCADE
 );
-
+INSERT INTO `purchase_order_items` (`purchase_order_id`, `product_id`, `quantity`, `price`, `profit`) 
+VALUES
+    (1, 1, 10, 15.00, 5.00),
+    (1, 3, 5, 18.00, 8.00),
+    (2, 2, 8, 12.00, 2.00);
+    
 CREATE TABLE if not exists review (
     review_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT,
@@ -205,6 +268,12 @@ CREATE TABLE if not exists review (
         ON DELETE SET NULL
         ON UPDATE CASCADE
 );
+INSERT INTO `review` (`user_id`, `product_id`, `rating`, `review_text`, `status_id`) 
+VALUES
+    (1, 1, 5, 'Amazing book! A must-read for everyone.', 1),
+    (2, 2, 4, 'Great read, but a bit lengthy.', 1),
+    (3, 3, 5, 'Fascinating insights into human history.', 1),
+    (4, 4, 3, 'Interesting story, but the plot was predictable.', 1);
 
 CREATE TABLE if not exists permission (
     permission_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -213,6 +282,13 @@ CREATE TABLE if not exists permission (
     status_id INT
 );
 
+INSERT INTO `permission` (`permission_id`, `permission_name`, `permission_description`, `status_id`) 
+VALUES
+	(1, 'CREATE_PRODUCT', 'Permission to create a new product', 1),
+	(2, 'EDIT_PRODUCT', 'Permission to edit an existing product', 1),
+	(3, 'DELETE_PRODUCT', 'Permission to delete a product', 1),
+	(4, 'VIEW_PRODUCT', 'Permission to view product details', 1);
+
 CREATE TABLE if not exists role_permission (
     role_id INT,
     permission_id INT,
@@ -220,4 +296,16 @@ CREATE TABLE if not exists role_permission (
     FOREIGN KEY (role_id) REFERENCES role(id) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (permission_id) REFERENCES permission(permission_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
+
+INSERT INTO `role_permission` (`role_id`, `permission_id`) 
+VALUES
+	(1, 1),
+	(1, 2),
+	(1, 3),
+	(1, 4),
+	(2, 4),
+	(3, 4),
+	(4, 1),
+	(4, 2),
+	(4, 4);
 
