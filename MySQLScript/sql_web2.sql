@@ -171,6 +171,13 @@ VALUES
     (4, 31.98, 3, 'Credit Card','anhdaden'),
     (4, 31.98, 3, 'Credit Card','ooo'),
     (3, 31.98, 3, 'Credit Card','kkk'),
+    (1, 31.98, 3, 'Credit Card','onichan'),
+    (1, 31.98, 3, 'Credit Card','onichan'),
+    (1, 31.98, 3, 'Credit Card','onichan'),
+    (1, 31.98, 3, 'Credit Card','onichan'),
+    (1, 31.98, 3, 'Credit Card','onichan'),
+    (1, 31.98, 3, 'Credit Card','onichan'),
+    (1, 31.98, 3, 'Credit Card','onichan'),
     (1, 31.98, 3, 'Credit Card','onichan');
 
 CREATE TABLE IF NOT EXISTS order_items (
