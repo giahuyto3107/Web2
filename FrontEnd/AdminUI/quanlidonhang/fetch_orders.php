@@ -1,5 +1,5 @@
 <?php
-$conn = mysqli_connect("localhost", "root", "", "web2_sql");
+include ('../../../BackEnd/Config/config.php');
 
 $limit = 5;
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
