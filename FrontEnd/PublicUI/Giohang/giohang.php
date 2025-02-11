@@ -45,7 +45,26 @@ mysqli_close($conn);
             font-family: 'Poppins', sans-serif;
         }
         .cart-container { max-width: 900px; margin: auto; padding: 20px; background: #fff; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); }
-        .product-details { padding: 10px; }
+        .product-details {
+            padding: 10px;
+            max-height: 400px;  
+            overflow-y: auto; 
+            padding-right: 10px; 
+        }
+
+        .product-details::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .product-details::-webkit-scrollbar-thumb {
+            background-color: #888;
+            border-radius: 4px;
+        }
+
+        .product-details::-webkit-scrollbar-thumb:hover {
+            background-color: #555;
+        }
+
         .items { box-shadow: 5px 5px 4px -1px rgba(0, 0, 0, 0.08); padding: 10px; border-radius: 5px; }
         .payment-info { background: aliceblue; padding: 15px; border-radius: 6px; color: #000000; }
         .btn-primary { background: blue; border: none; }
