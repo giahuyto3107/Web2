@@ -1,6 +1,6 @@
 <?php
 
-include ('../../../../BackEnd/Config/config.php');
+include ('../../../BackEnd/Config/config.php');
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $order_id = $_POST['order_id']; 
@@ -11,7 +11,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     if (mysqli_query($conn, $query)) {
-        echo "<script>alert('Cập nhật trạng thái thành công!'); window.location.href = '../../../../FrontEnd/AdminUI/quanlidonhang/danhsachdonhang.php';</script>";
+        echo "<script>alert('Cập nhật trạng thái thành công!'); window.location.href = '../../../FrontEnd/AdminUI/quanlidonhang/danhsachdonhang.php';</script>";
     } else {
         echo "Lỗi cập nhật: " . mysqli_error($conn);
     }
