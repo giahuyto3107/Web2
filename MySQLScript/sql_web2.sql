@@ -212,6 +212,7 @@ CREATE TABLE IF NOT EXISTS purchase_order (
     user_id INT,
     order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     total_amount int NOT NULL,
+    total_price int,
     status_id INT,
     import_status TINYINT(1) DEFAULT 0,
     FOREIGN KEY (supplier_id) REFERENCES supplier(supplier_id)
@@ -224,10 +225,10 @@ CREATE TABLE IF NOT EXISTS purchase_order (
         ON DELETE SET NULL
         ON UPDATE CASCADE
 );
-INSERT INTO `purchase_order` (`supplier_id`, `user_id`, `total_amount`, `status_id`) 
+INSERT INTO `purchase_order` (`supplier_id`, `user_id`, `total_amount`, `total_price`, `status_id`) 
 VALUES
-    (1, 1, 200.00, 1),
-    (2, 2, 150.00, 1);
+    (1, 1, 15.00, 254.7, 1),
+    (2, 2, 8.00, 97.92, 1);
     
 CREATE TABLE IF NOT EXISTS purchase_order_items (
     purchase_order_item_id INT AUTO_INCREMENT PRIMARY KEY,
