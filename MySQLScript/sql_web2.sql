@@ -155,6 +155,7 @@ CREATE TABLE IF NOT EXISTS orders (
     total_amount DECIMAL(10, 2) NOT NULL,
     status_id INT,
     payment_method VARCHAR(50) NOT NULL,
+    address VARCHAR(50),
     FOREIGN KEY (user_id) REFERENCES user(user_id)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
@@ -162,12 +163,15 @@ CREATE TABLE IF NOT EXISTS orders (
         ON DELETE SET NULL
         ON UPDATE CASCADE
 );
-INSERT INTO `orders` (`user_id`, `total_amount`, `status_id`, `payment_method`) 
+INSERT INTO `orders` (`user_id`, `total_amount`, `status_id`, `payment_method`, `address`) 
 VALUES
-    (1, 45.97, 4, 'Credit Card'),
-    (2, 38.97, 4, 'PayPal'),
-    (3, 14.99, 4, 'Cash'),
-    (4, 31.98, 4, 'Credit Card');
+    (1, 45.97, 4, 'Credit Card','LacLongQuan'),
+    (2, 38.97, 4, 'PayPal','DHSG'),
+    (3, 14.99, 4, 'Cash','CuChi'),
+    (4, 31.98, 3, 'Credit Card','anhdaden'),
+    (4, 31.98, 3, 'Credit Card','ooo'),
+    (3, 31.98, 3, 'Credit Card','kkk'),
+    (1, 31.98, 3, 'Credit Card','onichan');
 
 CREATE TABLE IF NOT EXISTS order_items (
     order_item_id INT AUTO_INCREMENT PRIMARY KEY,
