@@ -216,7 +216,7 @@ CREATE TABLE IF NOT EXISTS purchase_order (
     user_id INT,
     order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     total_amount int NOT NULL,
-    total_price int,
+    total_price decimal(10, 2),
     status_id INT,
     import_status TINYINT(1) DEFAULT 0,
     FOREIGN KEY (supplier_id) REFERENCES supplier(supplier_id)
