@@ -1,5 +1,5 @@
 <?php
-$conn = mysqli_connect("localhost", "root", "", "web2_sql");
+include ('../../../BackEnd/Config/config.php');
 
 if (isset($_GET['order_id'])) {
     $order_id = mysqli_real_escape_string($conn, $_GET['order_id']);
