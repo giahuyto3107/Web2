@@ -232,7 +232,7 @@ CREATE TABLE IF NOT EXISTS purchase_order (
 INSERT INTO `purchase_order` (`supplier_id`, `user_id`, `total_amount`, `total_price`, `status_id`) 
 VALUES
     (1, 1, 15.00, 254.7, 1),
-    (2, 2, 8.00, 97.92, 1);
+    (2, 2, 8.00, 97.92, 1); 
     
 CREATE TABLE IF NOT EXISTS purchase_order_items (
     purchase_order_item_id INT AUTO_INCREMENT PRIMARY KEY,
