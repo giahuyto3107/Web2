@@ -29,6 +29,9 @@
             padding: 25px;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            min-height: 600px; /* Đặt chiều cao tối thiểu */
+            max-height: 600px; /* Giới hạn chiều cao */
+            
         }
 
         h1 {
@@ -45,6 +48,8 @@
             background: white;
             border-radius: 10px;
             overflow: hidden;
+            min-height: 50px; /* Đặt chiều cao tối thiểu */
+            max-height: 50px;
         }
 
         thead {
@@ -223,9 +228,9 @@
                 <option value="">Tất cả trạng thái</option>
                 <option value="4">Đã duyệt</option>
                 <option value="2">Đã hủy</option>
-                <option value="3">Chờ duyệt</option>
             </select>
 
+            <button id="filter-btn">Tìm kiếm</button>
         </div>
 
         <table>
