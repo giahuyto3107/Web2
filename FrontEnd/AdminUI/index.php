@@ -16,7 +16,6 @@
 <body>
   <?php
   include '../../BackEnd/Config/config.php';
-  include '../../BackEnd/Config/db.conn.php';
   include 'menu.php';
   include 'main.php';
   ?>
