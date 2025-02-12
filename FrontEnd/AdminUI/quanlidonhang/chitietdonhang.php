@@ -1,5 +1,4 @@
 <?php
-include ('../../../BackEnd/Config/config.php');
 
 if (isset($_GET['order_id'])) {
     $order_id = mysqli_real_escape_string($conn, $_GET['order_id']);
@@ -197,7 +196,7 @@ mysqli_close($conn);
     <div class="total">
         Tổng tiền: <?= number_format($total_price, 0, ',', '.') ?> đ
     </div>
-    <a href="danhsachdonhang.php" class="back-btn">Quay lại</a>
+    <a href="index.php?action=quanlidonhang&query=them" class="back-btn">Quay lại</a>
 </div>
 </body>
 

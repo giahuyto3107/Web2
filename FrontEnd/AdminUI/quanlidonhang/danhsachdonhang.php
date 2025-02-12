@@ -275,11 +275,11 @@
                                 echo '<span class="status-refused">Đã hủy</span>';
                             }else {
                                 echo '
-                                    <form method="POST" action="../../../BackEnd/Model/quanlidonhang/xulidonhang.php" style="display:inline;">
+                                    <form method="POST" action="../../BackEnd/Model/quanlidonhang/xulidonhang.php" style="display:inline;">
                                         <input type="hidden" name="order_id" value="'.$row['order_id'].'">
                                         <button type="submit" name="approve" class="btn approve-btn">Duyệt</button>
                                     </form>
-                                    <form method="POST" action="../../../BackEnd/Model/quanlidonhang/xulidonhang.php" style="display:inline;">
+                                    <form method="POST" action="../../BackEnd/Model/quanlidonhang/xulidonhang.php" style="display:inline;">
                                         <input type="hidden" name="order_id" value="'.$row['order_id'].'">
                                         <button type="submit" name="cancel" class="btn cancel-btn">Hủy</button>
                                     </form>
@@ -288,7 +288,7 @@
                         ?>
                     </td>
                     <td>
-                        <a href="chitietdonhang.php?order_id=<?= $row['order_id'] ?>" class="btn detail-btn"><b></b>Chi tiết</a>
+                        <a href="index.php?action=quanlidonhang&query=xemdonhang&order_id=<?= $row['order_id'] ?>" class="btn detail-btn"><b></b>Chi tiết</a>
                     </td>
                 </tr>
                 <?php
@@ -318,7 +318,7 @@
             let date = $("#date-filter").val();
 
             $.ajax({
-                url: "fetch_orders.php",
+                url: "quanlidonhang/fetch_orders.php",
                 type: "GET",
                 data: { 
                     page: page, 
@@ -342,17 +342,17 @@
                                 <td>${order.payment_method === 'Cash' ? '<i class="fas fa-truck"></i> COD' : '<i class="fas fa-credit-card"></i> Online'}</td>
                                 <td>${order.id == '4' ? '<span class="status-approved">✅ Đã duyệt</span>' : 
                                     (order.id == '2' ? '<span class="status-refused">❌ Đã hủy</span>' : 
-                                    `<form method="POST" action="../../../BackEnd/Model/quanlidonhang/xulidonhang.php" style="display:inline;">
+                                    `<form method="POST" action="../../BackEnd/Model/quanlidonhang/xulidonhang.php" style="display:inline;">
                                         <input type="hidden" name="order_id" value="${order.order_id}">
                                         <button type="submit" name="approve" class="btn approve-btn">✔️ Duyệt</button>
                                     </form>
-                                    <form method="POST" action="../../../BackEnd/Model/quanlidonhang/xulidonhang.php" style="display:inline;">
+                                    <form method="POST" action="../../BackEnd/Model/quanlidonhang/xulidonhang.php" style="display:inline;">
                                         <input type="hidden" name="order_id" value="${order.order_id}">
                                         <button type="submit" name="cancel" class="btn cancel-btn">❌ Hủy</button>
                                     </form>`) }
                                 </td>
                                 <td>
-                                    <a href="chitietdonhang.php?order_id=${order.order_id}" class="btn detail-btn">Chi tiết</a>
+                                    <a href=" index.php?action=quanlidonhang&query=xemdonhang=${order.order_id}" class="btn detail-btn">Chi tiết</a>
                                 </td>
                             </tr>`;
                         });

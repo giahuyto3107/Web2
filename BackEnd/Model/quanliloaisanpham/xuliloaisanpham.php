@@ -54,10 +54,10 @@ if (isset($_POST['themloaisp'])) {
 
     // Cập nhật trạng thái của loại sản phẩm
     $sql_update_status = "UPDATE category SET status_id='$status_id' WHERE category_id='$category_id'";
-    mysqli_query($mysqli, $sql_update_status);
+    mysqli_query($conn, $sql_update_status);
 
     // Chuyển hướng về trang quản lý loại sản phẩm
-    header('Location: ../../index.php?action=quanlyloaisp&query=them');
+    header('Location: ../../../Frontend/AdminUI/index.php?action=quanliloaisp&query=them');
     exit;
 }
 ?>
