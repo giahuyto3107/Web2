@@ -38,10 +38,11 @@ if (!$query_pn) {
     die("Query failed: " . $conn->error);
 }
 ?>
-
-<div class="overlay">
+<div class="popup" id="popup">
+    <div class="overlay"></div>
     <div class="popup-content">
-        <h2>Xem Chi Tiết Đơn</h2>
+        <h2 class="popup-title">Xem Chi Tiết Đơn</h2>
+        <button class="close-btn">✖</button>
         <table>
             <?php
                 while ($row = mysqli_fetch_array($query_pn)) {
@@ -64,7 +65,7 @@ if (!$query_pn) {
             ?>
 
             <tr>
-                <td>Danh Sách Sản Phẩm</td>
+                <td style="font-weight: bold; padding-top: 15px;">Danh Sách Sản Phẩm</td>
             </tr>
             
             <?php
@@ -106,7 +107,7 @@ if (!$query_pn) {
             ?> 
 
             <tr>
-                <div style="max-height: 150px; overflow-y: auto; border: 1px solid #ddd; padding: 5px;">    
+                <!-- /<div style="max-height: 150px; overflow-y: auto; border: 1px solid #ddd; padding: 5px;">     -->
                     <td rowspan="4">
                         <img src="../../../BackEnd/Uploads/Product Picture/<?= $row['image'] ?>" alt="image" class="book-image">
                         
@@ -115,7 +116,7 @@ if (!$query_pn) {
                     <tr><td>Lợi nhuận: <?= $row['profit'] . "%"?></td></tr>
                     <tr><td class="amount-title">SL: <?= $row['quantity'] ?></td></tr>
                     <tr><td class="price-title">Gia: <?= $row['price'] . " VND" ?></td></tr>              
-                </div>
+                <!-- </div> -->
             </tr>
         
 
@@ -136,10 +137,37 @@ if (!$query_pn) {
 
 
 <style>
-    /* .overlay {
-        background-color: green;
-        border-radius: 10px;
-    } */
+    .popup{
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5); /* ✅ Creates the dark background effect */
+        opacity: 1;
+        transition: opacity 100ms ease-in-out 200ms; /* Smooth fade effect */
+    }
+
+    .close-btn, .popup-title {
+        display: inline-block;
+        width: 50%;
+    }
+
+    .overlay {
+        display: none; /* Initially hidden */
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5); /* Dark overlay */
+        z-index: 1000; /* Ensures it appears above other content */
+    }
+
+    .popup-active {
+        display: block;
+    }
+
     .popup-content {
         border-radius: 15px;
         padding: 15px;
@@ -174,3 +202,26 @@ if (!$query_pn) {
 </style>
 
 
+<!-- <script>
+    function createPopup(id) {
+        let popupNode = document.querySelector(id);
+        let overlay = document.querySelector(".overlay");
+        let closeBtn = document.querySelector(".close-btn");
+
+        function openPopup() {
+            popupNode.classList.add("active");
+        }
+
+        function closePopup() {
+            popupNode.classList.remove("active"); // ❌ Hide the popup
+        }
+
+        overlay.addEventListener("click", closePopup); // Clicking overlay closes popup
+        closeBtn.addEventListener("click", closePopup); // Clicking close button closes popup
+
+        return openPopup;
+        }
+
+        let popup = createPopup("#popup"); // Create popup instance
+        document.querySelector("#open-popup").addEventListener("click", popup); // Open popup o
+</script> -->

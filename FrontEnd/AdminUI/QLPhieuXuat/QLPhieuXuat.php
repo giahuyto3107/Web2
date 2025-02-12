@@ -45,9 +45,9 @@ if (!$query_pn) {
         <h2>Quản lý phiếu xuất</h2>
     </div>
 
-    <div class="top-right-button">
+    <!-- <div class="top-right-button">
         <button id="open-popup-phieunhap">Thêm Sản Phẩm</button>
-    </div>
+    </div> -->
     
     <div class="form-content">
         <table>
@@ -73,8 +73,13 @@ if (!$query_pn) {
                 <td><?= $row['amount'] ?></td>
                 <td><?= $row['total_price'] ?></td>
                 <td>
-                    <!-- <button class="detail-button" data-id="<?= $row['purchase_order_id'] ?>">Xem chi tiết</button> -->
-                    <button class="detail-button" data-id="<?= $row['purchase_order_id'] ?>">Xem chi tiết</button>
+                    <?php if ($row['status_id'] == 1) {
+                            echo '<p class="active">Đã duyệt</p>';
+                        } else if ($row['status_id'] == 2) {
+                            echo '<a class="inactive" href="../../../BackEnd/Model/quanliphieunhap/xuliphieunhap.php?purchase_order_id=' . $row['purchase_order_id'] . '&status=' . $row['status_id'] . '">Duyệt đơn</a>';
+                        }
+                    ?>        
+                    <button class="detail-button" id ="open-popup" data-id="<?= $row['purchase_order_id'] ?>">Xem chi tiết</button>
                 </td>
                 <script>
                     document.querySelectorAll(".detail-button").forEach(button => {
@@ -97,9 +102,12 @@ if (!$query_pn) {
 
 <style>
     .form {
+        position: absolute;
         background-color: #e4e9f7;
         width: 100%;
         height: 100%;
+        top: 0;
+        left: 0;
     }
 
     .form-title {
@@ -152,9 +160,46 @@ if (!$query_pn) {
         padding: 5px;
     }
 
-    #detail-button {
+    .active, .inactive, .detail-button {
+        display: inline-block;        /* Để có thể áp dụng padding và border */
+        padding: 5px 10px;           /* Khoảng cách bên trong */
+        text-decoration: none;        /* Bỏ gạch chân */
+        color: white;                 /* Màu chữ trắng */
+        border: 1px solid black;      /* Khung bên ngoài màu đen */
+        border-radius: 15px;          /* Bo góc nhẹ */
+        transition: background-color 0.3s; /* Hiệu ứng chuyển màu nền */
         padding: 6px 12px;
-        border-radius: 15px;
+    }
+
+    .inactive, .detail-button {
+        cursor: pointer;
+    }
+
+    .active:hover, .inactive:hover {
+        opacity: 0.8;                /* Hiệu ứng giảm độ trong suốt khi hover */
+    }
+
+    .active {
+        background: #28a745; /* Green for approved */
+        color: white;
+    }
+
+    .active:hover {
+        background: #218838;
+    }
+
+    .inactive {
+        background-color: #008cba;   /* Màu xanh lam cho khôi phục */
+    }
+
+    .detail-button {
+        background: #007bff; /* Gray */
+        color: white;
+        font-weight: bold;
+    }
+
+    .detail-button:hover {
+        background: #0056b3;
     }
     
 </style>
