@@ -59,7 +59,7 @@
           <span class='link_name'>Quản lí phiếu nhập</span>
         </a>
         <ul class='sub-menu blank'>
-            <li><a class='link_name' href='#'>Quản lí phiếu nhập</a></li>
+            <li><a class='link_name' href='index.php?action=quanliphieunhap&query=them'>Quản lí phiếu nhập</a></li>
           </ul>
       </li>
 
