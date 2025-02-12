@@ -76,7 +76,7 @@ if (!$query_pn) {
                     <?php if ($row['status_id'] == 1) {
                             echo '<p class="active">Đã duyệt</p>';
                         } else if ($row['status_id'] == 2) {
-                            echo '<a class="inactive" href="../../BackEnd/Model/quanliphieunhap/xuliphieunhap.php?purchase_order_id=' . $row['purchase_order_id'] . '&status=' . $row['status_id'] . '">Duyệt đơn</a>';
+                            echo '<a class="inactive" href="../../../BackEnd/Model/quanliphieunhap/xuliphieunhap.php?purchase_order_id=' . $row['purchase_order_id'] . '&status=' . $row['status_id'] . '">Duyệt đơn</a>';
                         }
                     ?>        
                     <button class="detail-button" id = "open-popup" data-id="<?= $row['purchase_order_id'] ?>">Xem chi tiết</button>
@@ -85,7 +85,7 @@ if (!$query_pn) {
                     document.querySelectorAll(".detail-button").forEach(button => {
                         button.addEventListener("click", function() {
                             let purchaseId = this.getAttribute("data-id");
-                            window.location.href = "quanliphieunhap/XemChiTietDon.php?id=" + purchaseId;
+                            window.location.href = "XemChiTietDon.php?id=" + purchaseId;
                         });
                     });
                 </script>
