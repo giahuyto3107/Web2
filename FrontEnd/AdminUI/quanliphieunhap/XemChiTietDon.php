@@ -1,18 +1,18 @@
 <?php
 // Kết nối cơ sở dữ liệu
-$servername = "localhost";
-$username = "root"; // Thay bằng username của bạn
-$password = "1234"; // Thay bằng password của bạn
-$dbname = "web2_sql";
-$port = "3305"; 
+// $servername = "localhost";
+// $username = "root"; // Thay bằng username của bạn
+// $password = "1234"; // Thay bằng password của bạn
+// $dbname = "web2_sql";
+// $port = "3305"; 
 
-// Tạo kết nối
-$conn = new mysqli($servername, $username, $password, $dbname, $port);
+// // Tạo kết nối
+// $conn = new mysqli($servername, $username, $password, $dbname, $port);
 
-// Kiểm tra kết nối
-if ($conn->connect_error) {
-    die("Kết nối thất bại: " . $conn->connect_error);
-}
+// // Kiểm tra kết nối
+// if ($conn->connect_error) {
+//     die("Kết nối thất bại: " . $conn->connect_error);
+// }
 $purchase_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
 if ($purchase_id == 0) {
@@ -109,7 +109,8 @@ if (!$query_pn) {
             <tr>
                 <!-- /<div style="max-height: 150px; overflow-y: auto; border: 1px solid #ddd; padding: 5px;">     -->
                     <td rowspan="4">
-                        <img src="../../../BackEnd/Uploads/Product Picture/<?= $row['image'] ?>" alt="image" class="book-image">
+                        <img src="../../BackEnd/Uploads/Product Picture/<?= $row['image'] ?>" alt="image" class="book-image">
+
                         
                         <td><p style="font-weight: bold"><?= $row['product_name'] ?></p></td>
                     </td>
