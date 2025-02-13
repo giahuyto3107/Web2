@@ -39,6 +39,8 @@
         } elseif ($tam == 'quanliphieunhap' && $query == 'them') {
             include "quanliphieunhap/themphieunhap.php";
             include "quanliphieunhap/lietkephieunhap.php";
+        }elseif ($tam == 'quanliphieunhap' && $query == 'xemphieunhap') {
+                include "quanliphieunhap/XemChiTietDon.php";
         } elseif ($tam == 'quanlitaikhoan' && $query == 'them') {
             include "quanlitaikhoan/themtaikhoan.php";
             include "quanlitaikhoan/lietketaikhoan.php";

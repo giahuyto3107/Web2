@@ -1,18 +1,18 @@
 <?php
-// Kết nối cơ sở dữ liệu
-$servername = "localhost";
-$username = "root"; // Thay bằng username của bạn
-$password = "1234"; // Thay bằng password của bạn
-$dbname = "web2_sql";
-$port = "3305"; 
+// // Kết nối cơ sở dữ liệu
+// $servername = "localhost";
+// $username = "root"; // Thay bằng username của bạn
+// $password = "1234"; // Thay bằng password của bạn
+// $dbname = "web2_sql";
+// $port = "3305"; 
 
-// Tạo kết nối
-$conn = new mysqli($servername, $username, $password, $dbname, $port);
+// // Tạo kết nối
+// $conn = new mysqli($servername, $username, $password, $dbname, $port);
 
-// Kiểm tra kết nối
-if ($conn->connect_error) {
-    die("Kết nối thất bại: " . $conn->connect_error);
-}
+// // Kiểm tra kết nối
+// if ($conn->connect_error) {
+//     die("Kết nối thất bại: " . $conn->connect_error);
+// }
 
 $sql_pn = 
         "SELECT po.purchase_order_id, 
@@ -78,17 +78,18 @@ if (!$query_pn) {
                         } else if ($row['status_id'] == 2) {
                             echo '<a class="inactive" href="../../../BackEnd/Model/quanliphieunhap/xuliphieunhap.php?purchase_order_id=' . $row['purchase_order_id'] . '&status=' . $row['status_id'] . '">Duyệt đơn</a>';
                         }
-                    ?>        
-                    <button class="detail-button" id = "open-popup" data-id="<?= $row['purchase_order_id'] ?>">Xem chi tiết</button>
+                    ?> 
+                    <a href="index.php?action=quanliphieunhap&query=xemphieunhap&id=<?= $row['purchase_order_id'] ?>" class="btn detail-btn"><b></b>Chi tiết</a>      
+                    <!-- <button class="detail-button" id = "open-popup" data-id="<?= $row['purchase_order_id'] ?>">Xem chi tiết</button> -->
                 </td>
-                <script>
+                <!-- <script>
                     document.querySelectorAll(".detail-button").forEach(button => {
                         button.addEventListener("click", function() {
                             let purchaseId = this.getAttribute("data-id");
-                            window.location.href = "XemChiTietDon.php?id=" + purchaseId;
+                            window.location.href = "index.php?action=quanliphieunhap&query=xemphieunhap?id=" + purchaseId;
                         });
                     });
-                </script>
+                </script> -->
             </tr>
 
             <?php
