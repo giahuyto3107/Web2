@@ -102,13 +102,19 @@ if (!$query_pn) {
 
 
 <style>
+    body {
+            background-color: #f8f9fa;
+            display: flex;
+            min-height: 100vh;
+            padding: 20px;
+        }
     .form {
-        position: absolute;
-        background-color: #e4e9f7;
-        width: 100%;
-        height: 100%;
-        top: 0;
-        left: 0;
+            width: 100%;
+            background: white;
+            padding: 50px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        
     }
 
     .form-title {
@@ -124,8 +130,11 @@ if (!$query_pn) {
     }
 
     table {
-        border-collapse: collapse;
-        width: 100%;
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
     }
     tr, th {
         border: 1px solid #ccc;
