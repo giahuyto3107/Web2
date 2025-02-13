@@ -78,16 +78,15 @@ if (!$query_pn) {
                         } else if ($row['status_id'] == 2) {
                             echo '<a class="inactive" href="../../../BackEnd/Model/quanliphieunhap/xuliphieunhap.php?purchase_order_id=' . $row['purchase_order_id'] . '&status=' . $row['status_id'] . '">Duyệt đơn</a>';
                         }
-                        ?> 
-                        <a href="index.php?action=quanliphieunhap&query=xemphieunhap&id=<?= $row['purchase_order_id'] ?>" class="btn detail-btn"><b></b>Chi tiết</a>      
-                        <!-- <button class="detail-button" id = "open-popup" data-id="<?= $row['purchase_order_id'] ?>">Xem chi tiết</button> -->
+                    ?> 
+                    <a href="index.php?action=quanliphieunhap&query=xemphieunhap&id=<?= $row['purchase_order_id'] ?>" class="btn detail-btn"><b></b>Chi tiết</a>      
+                    <!-- <button class="detail-button" id = "open-popup" data-id="<?= $row['purchase_order_id'] ?>">Xem chi tiết</button> -->
                 </td>
                 <!-- <script>
                     document.querySelectorAll(".detail-button").forEach(button => {
                         button.addEventListener("click", function() {
                             let purchaseId = this.getAttribute("data-id");
-                            console.log("Navigating to: ", "index.php?action=quanliphieunhap&query=xemphieunhap&id=" + purchaseId);
-                            window.location.href = "quanliphieunhap/XemChiTietDon.php?id=" + purchaseId;
+                            window.location.href = "index.php?action=quanliphieunhap&query=xemphieunhap?id=" + purchaseId;
                         });
                     });
                 </script> -->

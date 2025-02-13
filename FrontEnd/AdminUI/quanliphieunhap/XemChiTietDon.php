@@ -110,7 +110,6 @@ if (!$query_pn) {
                 <!-- /<div style="max-height: 150px; overflow-y: auto; border: 1px solid #ddd; padding: 5px;">     -->
                     <td rowspan="4">
                         <img src="../../BackEnd/Uploads/Product Picture/<?= $row['image'] ?>" alt="image" class="book-image">
-
                         
                         <td><p style="font-weight: bold"><?= $row['product_name'] ?></p></td>
                     </td>
