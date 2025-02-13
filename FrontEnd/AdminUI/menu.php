@@ -69,7 +69,7 @@
           <span class='link_name'>Quản lí tài khoản</span>
         </a>
         <ul class='sub-menu blank'>
-            <li><a class='link_name' href='#'>Quản lí tài khoản</a></li>
+            <li><a class='link_name' href='index.php?action=quanlitaikhoan&query=them'>Quản lí tài khoản</a></li>
           </ul>
       </li>
 
