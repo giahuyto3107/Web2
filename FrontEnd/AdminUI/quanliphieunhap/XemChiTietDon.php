@@ -202,7 +202,7 @@ if (!$query_pn) {
 </style>
 
 
-<!-- <script>
+<script>
     function createPopup(id) {
         let popupNode = document.querySelector(id);
         let overlay = document.querySelector(".overlay");
@@ -224,4 +224,4 @@ if (!$query_pn) {
 
         let popup = createPopup("#popup"); // Create popup instance
         document.querySelector("#open-popup").addEventListener("click", popup); // Open popup o
-</script> -->
+</script>

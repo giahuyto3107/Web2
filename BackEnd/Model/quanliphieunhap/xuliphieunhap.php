@@ -4,5 +4,8 @@ include('../../Config/config.php');
         if($_GET['status'] == 2)
             $sql_approve = "UPDATE purchase_order SET status_id = 1 WHERE purchase_order_id=".$id;
         mysqli_query($conn,$sql_approve);
-        header('Location: ../../../FrontEnd/AdminUI/quanliphieunhap/lietkephieunhap.php');
+        if (headers_sent()) {
+            die("Headers already sent.");
+        }
+        header('Location: ../../../FrontEnd/AdminUI/index.php?action=quanliphieunhap&query=them');
 ?>

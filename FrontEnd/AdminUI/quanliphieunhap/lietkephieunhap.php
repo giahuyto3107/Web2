@@ -76,10 +76,10 @@ if (!$query_pn) {
                     <?php if ($row['status_id'] == 1) {
                             echo '<p class="active">Đã duyệt</p>';
                         } else if ($row['status_id'] == 2) {
-                            echo '<a class="inactive" href="../../../BackEnd/Model/quanliphieunhap/xuliphieunhap.php?purchase_order_id=' . $row['purchase_order_id'] . '&status=' . $row['status_id'] . '">Duyệt đơn</a>';
+                            echo '<a class="inactive" href="../../BackEnd/Model/quanliphieunhap/xuliphieunhap.php?purchase_order_id=' . $row['purchase_order_id'] . '&status=' . $row['status_id'] . '">Duyệt đơn</a>';
                         }
                     ?> 
-                    <a href="index.php?action=quanliphieunhap&query=xemphieunhap&id=<?= $row['purchase_order_id'] ?>" class="btn detail-btn"><b></b>Chi tiết</a>      
+                    <a class ="detail-button" href="index.php?action=quanliphieunhap&query=xemphieunhap&id=<?= $row['purchase_order_id'] ?>" class="btn detail-btn"><b></b>Chi tiết</a>      
                     <!-- <button class="detail-button" id = "open-popup" data-id="<?= $row['purchase_order_id'] ?>">Xem chi tiết</button> -->
                 </td>
                 <!-- <script>
@@ -155,12 +155,6 @@ if (!$query_pn) {
         border: none
     }
 
-    #dis-enable-button {
-        background-color: orange;
-        color: white;
-        padding: 5px;
-    }
-
     .active, .inactive, .detail-button {
         display: inline-block;        /* Để có thể áp dụng padding và border */
         padding: 5px 10px;           /* Khoảng cách bên trong */
@@ -194,6 +188,7 @@ if (!$query_pn) {
     }
 
     .detail-button {
+        /* border: 1px black solid; */
         background: #007bff; /* Gray */
         color: white;
         font-weight: bold;
