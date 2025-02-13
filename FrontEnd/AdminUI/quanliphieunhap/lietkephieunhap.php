@@ -1,19 +1,4 @@
 <?php
-// Kết nối cơ sở dữ liệu
-// $servername = "localhost";
-// $username = "root"; // Thay bằng username của bạn
-// $password = "1234"; // Thay bằng password của bạn
-// $dbname = "web2_sql";
-// $port = "3305"; 
-
-// // Tạo kết nối
-// $conn = new mysqli($servername, $username, $password, $dbname, $port);
-
-// // Kiểm tra kết nối
-// if ($conn->connect_error) {
-//     die("Kết nối thất bại: " . $conn->connect_error);
-// }
-
 $sql_pn = 
         "SELECT po.purchase_order_id, 
             s.supplier_name, 
@@ -42,7 +27,7 @@ if (!$query_pn) {
 
 <div class="form">
     <div class="form-title">
-        <h2>Quản lý phiếu xuất</h2>
+        <h2>Quản lý phiếu nhập</h2>
     </div>
 
     <!-- <div class="top-right-button">
