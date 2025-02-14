@@ -8,17 +8,17 @@ if (isset($_POST['themloaisp'])) {
 
     // Kiểm tra xem loại sản phẩm đã tồn tại hay chưa
     $sql_check = "SELECT * FROM category WHERE category_name='$tenloaisp'";
-    $result_check = mysqli_query($mysqli, $sql_check);
+    $result_check = mysqli_query($conn, $sql_check);
 
     if (mysqli_num_rows($result_check) > 0) {
         // Nếu loại sản phẩm đã tồn tại
-        header('Location: ../../index.php?action=quanliloaisp&query=them&thanhcong=1');
+        header('Location: ../../../Frontend/AdminUI/index.php?action=quanliloaisp&query=them&thanhcong=1');
         exit;
     } else {
         // Nếu chưa tồn tại, thực hiện thêm
         $sql_them = "INSERT INTO category (category_name, category_description, status_id) VALUES ('$tenloaisp', '$motaloaisp', 1)";
-        mysqli_query($mysqli, $sql_them);
-        header('Location: ../../index.php?action=quanliloaisp&query=them&thanhcong=2');
+        mysqli_query($conn, $sql_them);
+        header('Location: ../../../Frontend/AdminUI/index.php?action=quanliloaisp&query=them&thanhcong=2');
         exit;
     }
 } elseif (isset($_POST['sualoaisp'])) {
@@ -29,21 +29,21 @@ if (isset($_POST['themloaisp'])) {
 
     // Kiểm tra xem tên loại sản phẩm mới có trùng với loại sản phẩm khác không
     $sql_check = "SELECT * FROM category WHERE category_name='$tenloaisp' AND category_id != '$category_id'";
-    $result_check = mysqli_query($mysqli, $sql_check);
+    $result_check = mysqli_query($conn, $sql_check);
 
     if (mysqli_num_rows($result_check) > 0) {
         // Nếu loại sản phẩm đã tồn tại
-        header('Location: ../../index.php?action=quanliloaisp&query=them&thanhcong=1');
+        header('Location: ../../../Frontend/AdminUI/index.php?action=quanliloaisp&query=them&thanhcong=1');
         exit;
     } else {
         // Nếu chưa tồn tại, thực hiện sửa
         $sql_update = "UPDATE category SET category_name='$tenloaisp', category_description='$motaloaisp' WHERE category_id='$category_id'";
-        if (mysqli_query($mysqli, $sql_update)) {
+        if (mysqli_query($conn, $sql_update)) {
             // Cập nhật thành công
-            header('Location: ../../index.php?action=quanliloaisp&query=them&thanhcong=0');
+            header('Location: ../../../Frontend/AdminUI/index.php?action=quanliloaisp&query=them&thanhcong=0');
         } else {
             // Lỗi khi cập nhật
-            header('Location: ../../index.php?action=quanlyloaisp&query=them&thanhcong=3');
+            header('Location: ../../../Frontend/AdminUI/index.php?action=quanliloaisp&query=them&thanhcong=3');
         }
         exit;
     }
