@@ -11,8 +11,6 @@ if (isset($_POST['themsanpham'])) {
     $tinhtrang = $_POST['tinhtrang'];
     $hinhanh = $_FILES['hinhanh']['name'];
     $hinhanh_tmp = $_FILES['hinhanh']['tmp_name'];
-
-    // Đổi tên hình ảnh để tránh trùng lặp
     $hinhanh = time() . '_' . $hinhanh;
 
     // Đường dẫn lưu hình ảnh
@@ -38,89 +36,75 @@ if (isset($_POST['themsanpham'])) {
         echo "Lỗi: Không thể tải lên hình ảnh.";
     }
 } elseif (isset($_POST['suasanpham'])) {
-	//sua
-	$tensanpham = $_POST['tensanpham'];
-	$giasp = $_POST['giasp'];
-	$soluong = $_POST['soluong'];
-	$sanxuat = $_POST['sanxuat'];
-	$brand = $_POST['brand'];
-	$danhmuc = $_POST['danhmuc'];
-	$noidung = $_POST['noidung'];
-	$tomtat  = $_POST['tomtat'];
-	$tinhtrang = $_POST['tinhtrang'];
-	$thongso = $_POST['thongso'];
-	$idloaisp = $_POST['danhmuc'];
-	$hinhanh = $_FILES['hinhanh']['name'];
-	$hinhanh_tmp = $_FILES['hinhanh']['tmp_name'];
-	$hinhanh = time() . '_' . $hinhanh;
+	// Lấy ID sản phẩm từ URL
+    $idsanpham = $_GET['idsanpham'];
 
+    // Lấy dữ liệu từ form
+    $tensanpham = $_POST['tensanpham'];
+    $motasp = $_POST['motasp'];
+    $giasp = $_POST['giasp'];
+    $idloaisp = $_POST['loaisp'];
+    $tinhtrang = $_POST['tinhtrang'];
+    $hinhanh = $_FILES['hinhanh']['name'];
+    $hinhanh_tmp = $_FILES['hinhanh']['tmp_name'];
 
-	$files = $_FILES['images'];
-	$files_names = $files['name'];
-	if (!empty($_FILES['hinhanh']['name'])) {
-		move_uploaded_file($hinhanh_tmp, 'uploads/' . $hinhanh);
+    // Nếu có hình ảnh mới được tải lên
+    if (!empty($hinhanh)) {
+        // Đổi tên hình ảnh để tránh trùng lặp
+        $hinhanh = time() . '_' . $hinhanh;
 
-		$sql_update = "UPDATE tbl_sanpham SET tensanpham='" . $tensanpham . "',giasp='" . $giasp . "',soluong='" . $soluong . "',sanxuat='" . $sanxuat . "',hinhanh='" . $hinhanh . "',tomtat='" . $tomtat . "',noidung='" . $noidung . "',thongso='" . $thongso . "',tinhtrang='" . $tinhtrang . "',id_brand='" . $brand . "' ,idloaisp='" . $idloaisp . "' WHERE id_sanpham='$_GET[idsanpham]'";
-		//xoa hinh anh cu
-		$sql = "SELECT * FROM tbl_sanpham WHERE id_sanpham = '$_GET[idsanpham]' LIMIT 1";
-		$query = mysqli_query($mysqli, $sql);
-		while ($row = mysqli_fetch_array($query)) {
-			unlink('uploads/' . $row['hinhanh']);
-		}
-	} else {
-		$sql_update = "UPDATE tbl_sanpham SET tensanpham='" . $tensanpham . "',giasp='" . $giasp . "',soluong='" . $soluong . "',sanxuat='" . $sanxuat . "',tomtat='" . $tomtat . "',noidung='" . $noidung . "',thongso='" . $thongso . "',tinhtrang='" . $tinhtrang . "',id_brand='" . $brand . "',idloaisp='" . $idloaisp . "' WHERE id_sanpham='$_GET[idsanpham]'";
-	}
+        // Đường dẫn lưu hình ảnh
+        $upload_dir = '../../Uploads/Product Picture/';
+        $image_url = $upload_dir . $hinhanh;
 
+        // Di chuyển hình ảnh vào thư mục
+        move_uploaded_file($hinhanh_tmp, $image_url);
+    } else {
+        // Giữ nguyên hình ảnh cũ
+        $sql_anh = "SELECT image_url FROM product WHERE product_id = '$idsanpham'";
+        $query_anh = mysqli_query($conn, $sql_anh);
+        $row_anh = mysqli_fetch_assoc($query_anh);
+        $image_url = $row_anh['image_url'];
+    }
 
+    // Cập nhật thông tin sản phẩm
+    $sql_sua = "UPDATE product SET 
+                product_name = '$tensanpham', 
+                product_description = '$motasp', 
+                price = '$giasp', 
+                category_id = '$idloaisp', 
+                status_id = '$tinhtrang', 
+                image_url = '$image_url' 
+                WHERE product_id = '$idsanpham'";
 
-
-	foreach ($files_names as $key => $value) {
-		if (!empty($files['name'][$key])) {
-			move_uploaded_file($files['tmp_name'][$key], 'upload2/' . $value);
-			$sql_them2 = "INSERT INTO img_product(id_product,img_product) VALUES ('$_GET[idsanpham]','$value')";
-			mysqli_query($mysqli, $sql_them2);
-		}
-	}
-
-
-
-
-
-
-	mysqli_query($mysqli, $sql_update);
-	header('Location:../../index.php?action=quanlysanpham&query=them');
-	
+    if (mysqli_query($conn, $sql_sua)) {
+        // Thành công, chuyển hướng về trang quản lý sản phẩm
+        header('Location: ../../../Frontend/AdminUI/index.php?action=quanlisanpham&query=them');
+        exit;
+    } else {
+        // Lỗi khi cập nhật
+        echo "Lỗi: " . mysqli_error($conn);
+    }
 } else {
     $id = $_GET['idsanpham'];
 
-    // Xóa hình ảnh phụ
-    $sql2 = "SELECT * FROM img_product WHERE id_product = '$id'";
-    $query2 = mysqli_query($mysqli, $sql2);
-    while ($row2 = mysqli_fetch_array($query2)) {
-        if (file_exists('upload2/' . $row2['img_product'])) {
-            unlink('upload2/' . $row2['img_product']);
-        }
-    }
-    $sql_xoa2 = "DELETE FROM img_product WHERE id_product='$id'";
-    mysqli_query($mysqli, $sql_xoa2);
-
     // Xóa bản ghi liên quan trong giỏ hàng
-    $sql_cart_delete = "DELETE FROM tbl_cart_details WHERE id_sanpham='$id'";
-    mysqli_query($mysqli, $sql_cart_delete);
+    $sql_cart_delete = "DELETE FROM cart_item WHERE product_id='$id'";
+    mysqli_query($conn, $sql_cart_delete);
 
     // Xóa sản phẩm chính
-    $sql = "SELECT * FROM tbl_sanpham WHERE id_sanpham = '$id' LIMIT 1";
-    $query = mysqli_query($mysqli, $sql);
+    $sql = "SELECT * FROM product WHERE product_id = '$id' LIMIT 1";
+    $query = mysqli_query($conn, $sql);
     while ($row = mysqli_fetch_array($query)) {
-        if (file_exists('modules/quanlisanpham/uploads/' . $row['hinhanh'])) {
-            unlink('modules/quanlisanpham/uploads/' . $row['hinhanh']);
+        if (file_exists('../../Uploads/Product Picture/' . $row['image_url'])) {
+            unlink('../../Uploads/Product Picture/' . $row['image_url']);
         }
     }
 
     // Xóa sản phẩm
-    $sql_xoa = "DELETE FROM tbl_sanpham WHERE id_sanpham='$id'";
-    mysqli_query($mysqli, $sql_xoa);
+    $sql_xoa = "DELETE FROM product WHERE product_id='$id'";
+    mysqli_query($conn, $sql_xoa);
 
     // Chuyển hướng về trang quản lý
-    header('Location:../../index.php?action=quanlysanpham&query=them');
+    header('Location: ../../../Frontend/AdminUI/index.php?action=quanlisanpham&query=them');
 }

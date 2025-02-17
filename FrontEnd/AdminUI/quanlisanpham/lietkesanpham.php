@@ -40,7 +40,7 @@ $query_sp = mysqli_query($conn, $sql_sp);
                         ?>
                     </td>
                     <td>
-                        <a class="sua" href="?action=quanlysp&query=sua&idsanpham=<?php echo $row['product_id'] ?>">Sửa</a>
+                        <a class="sua" href="?action=quanlisanpham&query=sua&idsanpham=<?php echo $row['product_id'] ?>">Sửa</a>
                         <a class="vohieuhoa" href="#" onclick="confirmDelete(<?= $row['stock_quantity'] ?>, <?= $row['product_id'] ?>)">Xóa</a>
                     </td>
                 </tr>
@@ -57,7 +57,7 @@ $query_sp = mysqli_query($conn, $sql_sp);
         alert('Không thể xóa sản phẩm vì số lượng không bằng 0.');
     } else {
         // Nếu số lượng bằng 0, chuyển hướng đến trang xóa
-        window.location.href = 'modules/quanlisanpham/xuli.php?idsanpham=' + idSanpham;
+        window.location.href = '../../BackEnd/Model/quanlisanpham/xulisanpham.php?idsanpham' + idSanpham;
     }
 }
 </script>
