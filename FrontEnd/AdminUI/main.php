@@ -48,6 +48,11 @@
             include "quanlitaikhoan/suataikhoan.php";
         } elseif ($tam == 'quanlydonhang' && $query == 'them') {
             include "modules/quanlidonhang/lietke.php";
+        } elseif ($tam == 'quanlinhacungcap' && $query == 'them') {
+            include "quanlinhacungcap/themnhacungcap.php";
+            include "quanlinhacungcap/lietkenhacungcap.php";
+        } elseif ($tam == 'quanlinhacungcap' && $query == 'sua') {
+            include "quanlinhacungcap/suanhacungcap.php";
         }
         ?>
     </div>

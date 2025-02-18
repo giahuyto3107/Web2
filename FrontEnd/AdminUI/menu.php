@@ -64,6 +64,16 @@
       </li>
 
       <li>
+        <a href='index.php?action=quanlinhacungcap&query=them'>
+          <i class='bx bx-package'></i>
+          <span class='link_name'>Quản lí nhà cung cấp</span>
+        </a>
+        <ul class='sub-menu blank'>
+            <li><a class='link_name' href='index.php?action=quanlinhacungcap&query=them'>Quản lí nhà cung cấp</a></li>
+          </ul>
+      </li>
+
+      <li>
         <a href='index.php?action=quanlitaikhoan&query=them'>
           <i class='bx bx-user-pin'></i>
           <span class='link_name'>Quản lí tài khoản</span>
