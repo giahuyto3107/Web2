@@ -16,7 +16,7 @@
             include 'quanliloaisp/themloaisp.php';
             include 'quanliloaisp/lietkeloaisp.php';
         } elseif ($tam == 'quanliloaisp' && $query == 'sua') {
-            include 'modules/quanliloaisp/sualoaisp.php';
+            include 'quanliloaisp/sualoaisp.php';
         } elseif ($tam == 'quanlibinhluan' && $query == 'them') {
             include "quanlibinhluan/thembinhluan.php";
             include "quanlibinhluan/lietkebinhluan.php";
