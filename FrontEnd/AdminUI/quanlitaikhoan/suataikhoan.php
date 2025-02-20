@@ -1,0 +1,404 @@
+<?php
+    $account_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+    $role_name = isset($_GET['role_name']) ? $_GET['role_name'] : null;
+
+    if ($account_id == 0) {
+        die("Invalid account_id.");
+    }
+
+    $sql_suaAcc = "SELECT acc.account_id,
+                        acc.account_name,
+                        u.full_name,
+                        u.date_of_birth,
+                        acc.email,
+                        u.profile_picture,
+                        -- Created
+                        -- Last update
+                        -- Last login
+                        r.role_name,
+                        r.id,
+                        st.status_name
+                    from account acc
+                    join role r on r.id = acc.role_id
+                    join status st on st.id = acc.status_id
+                    join user u on u.account_id = acc.account_id
+                    WHERE acc.account_id = ?";
+
+    $stmt = $conn->prepare($sql_suaAcc);
+    $stmt->bind_param("i", $account_id);
+    $stmt->execute();
+    $query_acc = $stmt->get_result();
+
+    if (!$query_acc) {
+        die("Query failed: " . $stmt->error);
+    }
+
+    $sql_fetchRoleName ="SELECT r.role_name, r.id
+                        from role r
+                        where r.role_name != ?";
+
+    $stmt_roleName = $conn->prepare($sql_fetchRoleName);
+    $stmt_roleName->bind_param("s", $role_name);
+    $stmt_roleName->execute();
+    $query_roleName = $stmt_roleName->get_result();
+
+    if (!$query_roleName) {
+        die("Query of fetch role name failed: " . mysqli_error($conn));
+    }
+?>
+
+<div class="form">
+    <div class="form-title">
+        <h2>Sửa tài khoản</h2>
+    </div>
+
+    <?php
+        $nameErr = $accErr = $dobErr = $emailErr = $pro5ImageErr = "";
+        $id = ""; //Store value for later updating
+    ?>
+
+    <form id="form-update" method="POST" enctype="multipart/form-data">
+        <div class="form-content">
+            <?php while ($row = mysqli_fetch_array($query_acc)) { ?>
+            
+            <!-- ID -->
+            <input name="id" type="hidden" value="<?= $row['account_id'] ?>"> 
+
+            <h3>Tên tài khoản</h3>
+            <input id="acc" name="acc" type="text" value="<?= $row['account_name'] ?>">
+            <span id="accErr" class="error">*</span>
+            <br>
+
+            <h3>Họ và tên</h3>
+            <input id="name" name="name" type="text" value="<?= $row['full_name'] ?>">
+            <span id="nameErr" class="error">*</span>
+            <br>
+
+            <h3>Ngày sinh</h3>
+            <input id="dob" name="dob" type="date" value="<?= $row['date_of_birth'] ?>">
+            <span id="dobErr" class="error">*</span>
+            <br>
+
+            <h3>Email</h3>
+            <input id="email" name="email" type="text" value="<?= $row['email'] ?>">
+            <span id="emailErr" class="error">*</span>
+            <br>
+
+            <h3>Ảnh đại diện</h3>
+            <input id="pro5Image" type="file" name="pro5Image" accept="image/*">
+            <span id="pro5ImageErr" class="error">*</span>
+            <br>
+
+            <h3>Chức vụ</h3>
+            <select name="role" id="roleInput">
+                <option value="<?= $row['role_name'] ?>" selected><?= $row['role_name'] ?></option>
+                <?php while($roleRow = mysqli_fetch_array($query_roleName)) { ?>
+                    <option value="<?= $roleRow['role_name'] ?>"> <?= $roleRow['role_name'] ?> </option>
+                <?php 
+                    }
+                    $id = $row['account_id'];
+                 ?>
+            </select>   
+            <br>
+            
+            <!-- Hidden input to store status -->
+            <input type="hidden" name="status" id="statusInput" value="2">
+
+            <h3>Trạng thái</h3>
+            <label class="switch">
+                <input type="checkbox" id="statusCheckbox">
+                <span class="slider round"></span>
+            </label>
+            <br><br><br>
+
+            <button type="button" id="updateBtn" class="suataikhoan">Sửa thông tin</button>
+
+            <?php } ?>
+        </div>
+    </form>
+
+    <script>
+        // Handle status checkbox
+        document.getElementById("statusCheckbox").addEventListener("change", function() {
+            document.getElementById("statusInput").value = this.checked ? 1 : 2;
+        });
+
+        document.getElementById("updateBtn").addEventListener("click", function (event) {
+            event.preventDefault();
+            document.getElementById("statusInput").value = document.getElementById("statusCheckbox").checked ? 1 : 2;
+            let isValid = true;
+
+            let acc = testInput(document.getElementById("acc").value);
+            let name = testInput(document.getElementById("name").value);
+            let dob = testInput(document.getElementById("dob").value);
+            let email = testInput(document.getElementById("email").value);
+            let pro5Image = document.getElementById("pro5Image").files.length;
+
+            let id = <?= json_encode($id) ?>;  //Convert php into js variable
+            let roleName = document.getElementById("roleInput").value;   //Convert php into js variable
+
+            // Reset error messages
+            document.getElementById("accErr").innerText = "*";
+            document.getElementById("nameErr").innerText = "*";
+            document.getElementById("dobErr").innerText = "*";
+            document.getElementById("emailErr").innerText = "*";
+            document.getElementById("pro5ImageErr").innerText = "*";
+
+            // Validation
+            if (acc === "" || !/^[a-zA-Z][a-zA-Z_0-9]{4,12}$/.test(acc)) {
+                document.getElementById("accErr").innerText = "* Tên đăng nhập không hợp lệ.";
+                isValid = false;
+            }
+            if (name === "" || !/^[a-zA-Z-' ]+$/.test(name)) {
+                document.getElementById("nameErr").innerText = "* Họ và tên không hợp lệ.";
+                isValid = false;
+            }
+            if (dob === "" || new Date(dob).getFullYear() > 2024) {
+                document.getElementById("dobErr").innerText = "* Ngày sinh không hợp lệ.";
+                isValid = false;
+            }
+            if (email === "" || !/\S+@\S+\.\S+/.test(email)) {
+                document.getElementById("emailErr").innerText = "* Email không hợp lệ.";
+                isValid = false;
+            }
+            if (pro5Image === 0) {
+                document.getElementById("pro5ImageErr").innerText = "* Vui lòng chọn hình ảnh.";
+                isValid = false;
+            }
+            if (isValid) {
+                let formData = new FormData(document.getElementById("form-update"));
+
+                let roleValue = document.getElementById("roleInput").value;
+                // let statusCheckbox = document.getElementById("statusCheckbox");
+                // let statusValue = statusCheckbox.checked ? "2" : "1"; // Convert checkbox state to "1" or "0"
+                let statusValue = document.getElementById("statusInput").value;
+                // console.log("status: " + status + '\n');
+                // console.log("role: " + role + '\n');
+
+                fetch("../../BackEnd/Model/quanlitaikhoan/xulitaikhoan.php", {
+                    method: "POST",
+                    body: formData
+                })
+                .then(response => response.text())
+                .then(data => {
+                    window.location.href = `index.php?action=quanlitaikhoan&query=sua&id=${id}&role_name=${encodeURIComponent(roleName)}`;
+
+                })
+                .catch(error => console.error("Lỗi:", error));
+            }
+        });
+
+        function testInput(data) {
+            data = data.trim(); // Remove leading and trailing spaces
+            data = data.replace(/['"\\]/g, ""); // Remove quotes and backslashes to prevent injection
+            return data;
+        }
+    </script>
+</div>
+
+<script>
+    function previewImage(event) {
+        const file = event.target.files[0];
+        const preview = document.getElementById('preview-hinhanh');
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+            preview.style.display = 'block'; // Hiện hình ảnh xem trước
+        };
+
+        if (file) {
+            reader.readAsDataURL(file); // Đọc tệp hình ảnh
+        } else {
+            preview.src = ""; // Nếu không có tệp nào được chọn
+            preview.style.display = 'none'; // Ẩn hình ảnh
+        }
+    }
+</script>
+
+<style>
+
+    body {
+            background-color: #f8f9fa;
+            display: flex;
+            width: 100%;
+            
+            /* min-height: 100vh; */
+            padding: 20px;
+        }
+    
+    .form {
+        width: 100%; /* Adjust as needed */
+        max-width: 600px; /* Prevents excessive expansion */
+        margin: 0;
+        background: white;
+    
+        padding: 50px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        text-align: center;
+    }
+
+    .form-title {
+        text-align: center;
+        width: 100%;
+    }
+
+    .form-content {
+        background-color: white;
+        border-radius: 20px;
+        width: auto;
+        max-width: 100%;
+        /* margin: 10px; */
+        /* padding: 20px; */
+        text-align: center;
+    }
+
+    .form-content input {
+        text-align: center;
+    }
+
+    table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+    }
+    tr, th {
+        border: 1px solid #ccc;
+        
+    }
+
+    th {
+        background-color: #f2f2f2;
+    }
+
+    td {
+        background-color: white;
+        text-align: center;
+    }
+
+    .active, .inactive, .edit {
+        display: inline-block;        /* Để có thể áp dụng padding và border */
+        padding: 5px 10px;           /* Khoảng cách bên trong */
+        text-decoration: none;        /* Bỏ gạch chân */
+        color: white;                 /* Màu chữ trắng */
+        border: 1px solid black;      /* Khung bên ngoài màu đen */
+        border-radius: 15px;          /* Bo góc nhẹ */
+        transition: background-color 0.3s; /* Hiệu ứng chuyển màu nền */
+        padding: 6px 12px;
+    }
+
+    .inactive, .active, .edit {
+        cursor: pointer;
+    }
+
+    .active:hover, .inactive:hover {
+        opacity: 0.8;                /* Hiệu ứng giảm độ trong suốt khi hover */
+    }
+
+    .active {
+        background: #28a745; /* Green for approved */
+        color: white;
+    }
+
+    .active:hover {
+        background: #218838;
+    }
+
+    .inactive {
+        background-color: #008cba;   /* Màu xanh lam cho khôi phục */
+    }
+
+    .edit {
+        /* border: 1px black solid; */
+        background: #007bff; /* Gray */
+        color: white;
+        font-weight: bold;
+    }
+
+    .edit:hover {
+        background: #0056b3;
+    }
+
+    .suataikhoan {
+        background-color: #4CAF50;
+        width: 325px;
+        height: 50px;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+    }
+
+    .suataikhoan:hover {
+        background-color: #45a049;
+    }
+
+    .error {
+        color: red;
+    }
+
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 60px;
+        height: 34px;
+    }
+
+    /* Hide default HTML checkbox */
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    /* The slider */
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        -webkit-transition: .4s;
+        transition: .4s;
+    }
+
+    .slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+    }
+
+    input:checked + .slider {
+    background-color: #2196F3;
+    }
+
+    input:focus + .slider {
+    box-shadow: 0 0 1px #2196F3;
+    }
+
+    input:checked + .slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+    }
+
+    /* Rounded sliders */
+    .slider.round {
+    border-radius: 34px;
+    }
+
+    .slider.round:before {
+    border-radius: 50%;
+    }
+</style>
