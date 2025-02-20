@@ -169,11 +169,8 @@
                 let formData = new FormData(document.getElementById("form-update"));
 
                 let roleValue = document.getElementById("roleInput").value;
-                // let statusCheckbox = document.getElementById("statusCheckbox");
-                // let statusValue = statusCheckbox.checked ? "2" : "1"; // Convert checkbox state to "1" or "0"
                 let statusValue = document.getElementById("statusInput").value;
-                // console.log("status: " + status + '\n');
-                // console.log("role: " + role + '\n');
+
 
                 fetch("../../BackEnd/Model/quanlitaikhoan/xulitaikhoan.php", {
                     method: "POST",
