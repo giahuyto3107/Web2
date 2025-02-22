@@ -31,6 +31,11 @@
             include "quanliphanquyen/lietkephanquyen.php";
         } elseif ($tam == 'quanliphanquyen' && $query == 'sua') {
             include "quanliphanquyen/suaphanquyen.php";
+        } elseif ($tam == 'quanlichucvu' && $query == 'them') {
+            include "quanlichucvu/themchucvu.php";
+            include "quanlichucvu/lietkechucvu.php";
+        } elseif ($tam == 'quanlichucvu' && $query == 'sua') {
+            include "quanlichucvu/suachucvu.php";
         } elseif ($tam == 'quanlisanpham' && $query == 'them') {
             include "quanlisanpham/themsanpham.php";
             include "quanlisanpham/lietkesanpham.php";
