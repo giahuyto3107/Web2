@@ -7,7 +7,6 @@
         <?php
         include ('../../BackEnd/Config/config.php');
 
-        // Kiểm tra các tham số action và query từ URL
         $tam = isset($_GET['action']) ? $_GET['action'] : '';
         $query = isset($_GET['query']) ? $_GET['query'] : '';
 
@@ -18,10 +17,13 @@
         } elseif ($tam == 'quanliloaisp' && $query == 'sua') {
             include 'quanliloaisp/sualoaisp.php';
         } elseif ($tam == 'quanlibinhluan' && $query == 'them') {
+
             include "quanlibinhluan/lietkebinhluan.php";
         } elseif ($tam == 'quanlibinhluan' && $query == 'sua') {
+
             include "quanlibinhluan/traloibinhluan.php";
         } elseif ($tam == 'quanlibinhluan' && $query == 'xemchitiet') {
+
             include "quanlibinhluan/chitietbinhluan.php";
         } elseif ($tam == 'quanlidonhang' && $query == 'them') {
             include "quanlidonhang/danhsachdonhang.php";

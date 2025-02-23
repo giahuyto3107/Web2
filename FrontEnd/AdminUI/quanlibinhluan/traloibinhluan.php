@@ -1,9 +1,6 @@
 <?php
-// Lấy review_id từ URL
 if (isset($_GET['review_id'])) {
     $review_id = $_GET['review_id'];
-
-    // Truy vấn để lấy chi tiết bình luận
     $sql = "SELECT r.review_id, u.full_name, p.product_name, r.rating, r.review_text, r.feedback 
             FROM review r
             JOIN user u ON r.user_id = u.user_id
@@ -21,7 +18,6 @@ if (isset($_GET['review_id'])) {
     exit;
 }
 ?>
-
 <body>
     <h2>Cập nhật phản hồi</h2>
     <form method="POST" action="../../BackEnd/Model/quanlibinhluan/xulibinhluan.php">
@@ -36,7 +32,6 @@ if (isset($_GET['review_id'])) {
         <?php else: ?>
             <p><strong>Phản hồi:</strong></p>
         <?php endif; ?>
-
         <input type="hidden" name="review_id" value="<?php echo htmlspecialchars($_GET['review_id']); ?>">
 
         <textarea id="feedback" name="feedback" rows="4" cols="50" style="display: <?php echo $row['feedback'] !== NULL ? 'none' : 'block'; ?>;" required><?php echo $row['feedback'] !== NULL ? htmlspecialchars($row['feedback']) : ''; ?></textarea><br><br>
