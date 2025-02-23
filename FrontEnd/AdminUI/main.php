@@ -18,10 +18,11 @@
         } elseif ($tam == 'quanliloaisp' && $query == 'sua') {
             include 'quanliloaisp/sualoaisp.php';
         } elseif ($tam == 'quanlibinhluan' && $query == 'them') {
-            include "quanlibinhluan/thembinhluan.php";
             include "quanlibinhluan/lietkebinhluan.php";
         } elseif ($tam == 'quanlibinhluan' && $query == 'sua') {
-            include "quanlibinhluan/suabinhluan.php";
+            include "quanlibinhluan/traloibinhluan.php";
+        } elseif ($tam == 'quanlibinhluan' && $query == 'xemchitiet') {
+            include "quanlibinhluan/chitietbinhluan.php";
         } elseif ($tam == 'quanlidonhang' && $query == 'them') {
             include "quanlidonhang/danhsachdonhang.php";
         } elseif ($tam == 'quanlidonhang' && $query == 'xemdonhang') {
