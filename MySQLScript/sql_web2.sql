@@ -56,8 +56,8 @@ CREATE TABLE IF NOT EXISTS account (
 
 INSERT INTO `account` (`account_id`, `account_name`, `email`, `password_hash`, `status_id`, `last_login`, `role_id`, `created_at`, `updated_at`) 
 VALUES
-	(1, 'test1', 'john.doe@example.com', '123', 1, NULL, 1, '2025-02-05 03:00:08', '2025-02-08 09:32:04'),
-	(2, 'test2', 'jane.smith@example.com', '123', 1, NULL, 2, '2025-02-05 03:00:08', '2025-02-08 09:32:07'),
+	(1, 'test1', 'john.doe@example.com', '123', 2, NULL, 2, '2025-02-05 03:00:08', '2025-02-08 09:32:04'),
+	(2, 'test2', 'jane.smith@example.com', '123', 2, NULL, 2, '2025-02-05 03:00:08', '2025-02-08 09:32:07'),
 	(3, 'test3', 'alice.johnson@example.com', '123', 1, NULL, 3, '2025-02-05 03:00:08', '2025-02-08 09:32:09'),
 	(4, 'test4', 'bob.brown@example.com', '123', 1, NULL, 4, '2025-02-05 03:00:08', '2025-02-08 09:32:12');
 

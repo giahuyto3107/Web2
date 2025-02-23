@@ -1,12 +1,19 @@
 <?php
     $sql_acc = "SELECT acc.account_id,
                     acc.account_name,
+                    u.full_name,
+                    u.date_of_birth,
                     acc.email,
+                    u.profile_picture,
+                    -- Created
+                    -- Last update
                     -- Last login
                     r.role_name,
-                    acc.status_id
+                    st.status_name
                 from account acc
                 join role r on r.id = acc.role_id
+                join status st on st.id = acc.status_id
+                join user u on u.account_id = acc.account_id
                 ORDER BY acc.account_id ASC";
 
     $query_acc = mysqli_query($conn, $sql_acc);
@@ -25,9 +32,13 @@
             <tr>
                 <th>Mã tài khoản</th>
                 <th>Tên tài khoản</th>
+                <th>Họ và tên</th>
+                <th>Ngày sinh</th>
                 <th>Email</th>
-                <th>Lần đăng nhập cuối</th>
+                <!-- <th>Lần đăng nhập cuối</th> -->
+                <th>Ảnh đại diện</th>
                 <th>Chức vụ</th>
+                <th>Trạng thái</th>
                 <th>Quản lý</th>
             </tr>
 
@@ -39,9 +50,12 @@
             <tr>
                 <td><?= $row['account_id'] ?></td>
                 <td><?= $row['account_name'] ?></td>
+                <td><?= $row['full_name'] ?></td>
+                <td><?= $row['date_of_birth'] ?></td>
                 <td><?= $row['email'] ?></td>
-                <td><?= '?' ?></td>
+                <td><img src="../..//BackEnd/Uploads/Profile Picture/<?= $row['profile_picture'] ?>" class="profile_picture"></td>
                 <td><?= $row['role_name'] ?></td>
+                <td><?= $row['status_name'] ?></td>
                 <td>
                     <?php 
                         // if ($row['status_id'] == 1) {
@@ -50,7 +64,7 @@
                         //     echo '<a class="inactive" href="../../BackEnd/Model/quanlitaikhoan/xulitaikhoan.php?account_id=' . $row['account_id'] . '&status=' . $row['status_id'] . '">Khôi phục</a>';
                         // }
                     ?> 
-                    <a class ="edit" href="index.php?action=quanlitaikhoan&query=suataikhoan&id=<?= $row['account_id'] ?>">Sửa</a>      
+                    <a class ="edit" href="index.php?action=quanlitaikhoan&query=sua&id=<?= $row['account_id'] ?> &role_name=<?= $row['role_name'] ?>">Sửa</a>      
                 </td>
             </tr>
 
@@ -68,7 +82,7 @@
     body {
             background-color: #f8f9fa;
             display: flex;
-            min-height: 100vh;
+            /* min-height: 100vh; */
             padding: 20px;
         }
     
@@ -81,6 +95,7 @@
     }
 
     .form-title {
+        width: auto;
         text-align: center;
     }
 
@@ -111,6 +126,11 @@
     td {
         background-color: white;
         text-align: center;
+    }
+
+    .profile_picture {
+        width: 200px;
+        height: 200px;
     }
 
     .active, .inactive, .edit {
