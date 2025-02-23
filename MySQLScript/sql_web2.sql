@@ -267,7 +267,7 @@ CREATE TABLE IF NOT EXISTS review (
     review_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT,
     product_id INT,
-    rating INT CHECK (rating BETWEEN 1 AND 5), -- Đánh giá từ 1 đến 5 sao
+    rating INT CHECK (rating BETWEEN 1 AND 5),
     review_text TEXT,
     feedback TEXT,
     review_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -286,6 +286,7 @@ CREATE TABLE IF NOT EXISTS review (
 INSERT INTO `review` (`user_id`, `product_id`, `rating`, `review_text`, `feedback`, `status_id`) 
 VALUES
 (1, 1, 5, 'Sản phẩm rất tốt, tôi hài lòng!', NULL, 1),
+
 (2, 2, 4, 'Chất lượng ổn, nhưng giá hơi cao.', NULL, 1),
 (3, 3, 3, 'Sản phẩm bình thường, không có gì đặc biệt.', NULL, 1),
 (4, 4, 2, 'Không như mong đợi, sản phẩm có vấn đề.', NULL, 2);
