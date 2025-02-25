@@ -26,7 +26,10 @@ CREATE TABLE IF NOT EXISTS role (
     id INT AUTO_INCREMENT PRIMARY KEY,
     role_name VARCHAR(50) NOT NULL UNIQUE,
     role_description VARCHAR(255),
-    status_id INT
+    status_id INT,
+        FOREIGN KEY (status_id) REFERENCES status(id)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE
 );
 
 INSERT INTO `role` (`id`, `role_name`, `role_description`, `status_id`) 
@@ -295,7 +298,10 @@ CREATE TABLE if not exists permission (
     permission_id INT AUTO_INCREMENT PRIMARY KEY,
     permission_name VARCHAR(100) NOT NULL UNIQUE,
     permission_description TEXT,
-    status_id INT
+    status_id INT,
+        FOREIGN KEY (status_id) REFERENCES status(id)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE
 );
 
 INSERT INTO `permission` (`permission_id`, `permission_name`, `permission_description`, `status_id`) 
