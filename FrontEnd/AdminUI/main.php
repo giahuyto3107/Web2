@@ -7,7 +7,6 @@
         <?php
         include ('../../BackEnd/Config/config.php');
 
-        // Kiểm tra các tham số action và query từ URL
         $tam = isset($_GET['action']) ? $_GET['action'] : '';
         $query = isset($_GET['query']) ? $_GET['query'] : '';
 
@@ -18,10 +17,14 @@
         } elseif ($tam == 'quanliloaisp' && $query == 'sua') {
             include 'quanliloaisp/sualoaisp.php';
         } elseif ($tam == 'quanlibinhluan' && $query == 'them') {
-            include "quanlibinhluan/thembinhluan.php";
+
             include "quanlibinhluan/lietkebinhluan.php";
         } elseif ($tam == 'quanlibinhluan' && $query == 'sua') {
-            include "quanlibinhluan/suabinhluan.php";
+
+            include "quanlibinhluan/traloibinhluan.php";
+        } elseif ($tam == 'quanlibinhluan' && $query == 'xemchitiet') {
+
+            include "quanlibinhluan/chitietbinhluan.php";
         } elseif ($tam == 'quanlidonhang' && $query == 'them') {
             include "quanlidonhang/danhsachdonhang.php";
         } elseif ($tam == 'quanlidonhang' && $query == 'xemdonhang') {
@@ -31,6 +34,11 @@
             include "quanliphanquyen/lietkephanquyen.php";
         } elseif ($tam == 'quanliphanquyen' && $query == 'sua') {
             include "quanliphanquyen/suaphanquyen.php";
+        } elseif ($tam == 'quanlichucvu' && $query == 'them') {
+            include "quanlichucvu/themchucvu.php";
+            include "quanlichucvu/lietkechucvu.php";
+        } elseif ($tam == 'quanlichucvu' && $query == 'sua') {
+            include "quanlichucvu/suachucvu.php";
         } elseif ($tam == 'quanlisanpham' && $query == 'them') {
             include "quanlisanpham/themsanpham.php";
             include "quanlisanpham/lietkesanpham.php";

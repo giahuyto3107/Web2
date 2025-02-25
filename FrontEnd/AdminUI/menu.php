@@ -93,6 +93,15 @@
           </ul>
       </li>
 
+      <li>
+        <a href='index.php?action=quanlichucvu&query=them'>
+          <i class='bx bx-user'></i>
+          <span class='link_name'>Quản lí chức vụ</span>
+        </a>
+        <ul class='sub-menu blank'>
+            <li><a class='link_name' href='#'>Quản lí chức vụ</a></li>
+          </ul>
+      </li>
   </li>
 
   <li>

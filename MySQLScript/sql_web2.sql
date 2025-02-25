@@ -263,12 +263,13 @@ VALUES
     (1, 3, 5, 18.00, 8.00),
     (2, 2, 8, 12.00, 2.00);
     
-CREATE TABLE if not exists review (
+CREATE TABLE IF NOT EXISTS review (
     review_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT,
     product_id INT,
-    rating INT CHECK (rating BETWEEN 1 AND 5), -- Đánh giá từ 1 đến 5 sao
+    rating INT CHECK (rating BETWEEN 1 AND 5),
     review_text TEXT,
+    feedback TEXT,
     review_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     status_id INT,
     FOREIGN KEY (user_id) REFERENCES user(user_id)
@@ -277,16 +278,18 @@ CREATE TABLE if not exists review (
     FOREIGN KEY (product_id) REFERENCES product(product_id)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
-	FOREIGN KEY (status_id) REFERENCES status(id)
+    FOREIGN KEY (status_id) REFERENCES status(id)
         ON DELETE SET NULL
         ON UPDATE CASCADE
 );
-INSERT INTO `review` (`user_id`, `product_id`, `rating`, `review_text`, `status_id`) 
+
+INSERT INTO `review` (`user_id`, `product_id`, `rating`, `review_text`, `feedback`, `status_id`) 
 VALUES
-    (1, 1, 5, 'Amazing book! A must-read for everyone.', 1),
-    (2, 2, 4, 'Great read, but a bit lengthy.', 1),
-    (3, 3, 5, 'Fascinating insights into human history.', 1),
-    (4, 4, 3, 'Interesting story, but the plot was predictable.', 1);
+(1, 1, 5, 'Sản phẩm rất tốt, tôi hài lòng!', NULL, 1),
+
+(2, 2, 4, 'Chất lượng ổn, nhưng giá hơi cao.', NULL, 1),
+(3, 3, 3, 'Sản phẩm bình thường, không có gì đặc biệt.', NULL, 1),
+(4, 4, 2, 'Không như mong đợi, sản phẩm có vấn đề.', NULL, 2);
 
 CREATE TABLE if not exists permission (
     permission_id INT AUTO_INCREMENT PRIMARY KEY,
