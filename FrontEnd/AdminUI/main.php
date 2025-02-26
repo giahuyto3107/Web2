@@ -16,47 +16,62 @@
             include 'quanliloaisp/lietkeloaisp.php';
         } elseif ($tam == 'quanliloaisp' && $query == 'sua') {
             include 'quanliloaisp/sualoaisp.php';
-        } elseif ($tam == 'quanlibinhluan' && $query == 'them') {
-
+        } 
+        
+        elseif ($tam == 'quanlibinhluan' && $query == 'them') {
             include "quanlibinhluan/lietkebinhluan.php";
         } elseif ($tam == 'quanlibinhluan' && $query == 'sua') {
-
             include "quanlibinhluan/traloibinhluan.php";
         } elseif ($tam == 'quanlibinhluan' && $query == 'xemchitiet') {
-
             include "quanlibinhluan/chitietbinhluan.php";
-        } elseif ($tam == 'quanlidonhang' && $query == 'them') {
+        }
+        
+        elseif ($tam == 'quanlidonhang' && $query == 'them') {
             include "quanlidonhang/danhsachdonhang.php";
         } elseif ($tam == 'quanlidonhang' && $query == 'xemdonhang') {
             include "quanlidonhang/chitietdonhang.php";
-        } elseif ($tam == 'quanliphanquyen' && $query == 'them') {
+        }
+        
+        elseif ($tam == 'quanliphanquyen' && $query == 'them') {
             include "quanliphanquyen/themphanquyen.php";
             include "quanliphanquyen/lietkephanquyen.php";
         } elseif ($tam == 'quanliphanquyen' && $query == 'sua') {
             include "quanliphanquyen/suaphanquyen.php";
-        } elseif ($tam == 'quanlichucvu' && $query == 'them') {
+        }
+        
+        elseif ($tam == 'quanlichucvu' && $query == 'them') {
             include "quanlichucvu/themchucvu.php";
             include "quanlichucvu/lietkechucvu.php";
         } elseif ($tam == 'quanlichucvu' && $query == 'sua') {
             include "quanlichucvu/suachucvu.php";
-        } elseif ($tam == 'quanlisanpham' && $query == 'them') {
+        } 
+        
+        elseif ($tam == 'quanlisanpham' && $query == 'them') {
             include "quanlisanpham/themsanpham.php";
             include "quanlisanpham/lietkesanpham.php";
         } elseif ($tam == 'quanlisanpham' && $query == 'sua') {
             include "quanlisanpham/suasanpham.php";
-        } elseif ($tam == 'quanliphieunhap' && $query == 'them') {
+        }
+        
+        elseif ($tam == 'quanliphieunhap' && $query == 'them') {
             include "quanliphieunhap/themphieunhap.php";
             include "quanliphieunhap/lietkephieunhap.php";
         }elseif ($tam == 'quanliphieunhap' && $query == 'xemphieunhap') {
             include "quanliphieunhap/XemChiTietDon.php";
-        } elseif ($tam == 'quanlitaikhoan' && $query == 'them') {
+        }
+        
+        elseif ($tam == 'quanlitaikhoan' && $query == 'them') {
             include "quanlitaikhoan/themtaikhoan.php";
             include "quanlitaikhoan/lietketaikhoan.php";
         } elseif ($tam == 'quanlitaikhoan' && $query == 'sua') {
             include "quanlitaikhoan/suataikhoan.php";
-        } elseif ($tam == 'quanlydonhang' && $query == 'them') {
+        }
+        
+        elseif ($tam == 'quanlydonhang' && $query == 'them') {
             include "modules/quanlidonhang/lietke.php";
-        } elseif ($tam == 'quanlinhacungcap' && $query == 'them') {
+        }
+        
+        elseif ($tam == 'quanlinhacungcap' && $query == 'them') {
             include "quanlinhacungcap/themnhacungcap.php";
             include "quanlinhacungcap/lietkenhacungcap.php";
         } elseif ($tam == 'quanlinhacungcap' && $query == 'sua') {
