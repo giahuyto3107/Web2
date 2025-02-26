@@ -111,6 +111,21 @@ VALUES
 	(4, 'Dune', 'A science fiction novel by Frank Herbert', 14.99, 120, 3, 1, 
 		'Dune.png', '2025-02-05 03:00:08', '2025-02-05 03:09:20'
 	);
+    (5, 'Dune', 'A science fiction novel by Frank Herbert', 14.99, 120, 3, 1, 
+		'Dune.png', '2025-02-05 03:00:08', '2025-02-05 03:09:20'
+	);
+    (6, 'Dune', 'A science fiction novel by Frank Herbert', 14.99, 120, 3, 1, 
+		'Dune.png', '2025-02-05 03:00:08', '2025-02-05 03:09:20'
+	);
+    (7, 'Dune', 'A science fiction novel by Frank Herbert', 14.99, 120, 3, 1, 
+		'Dune.png', '2025-02-05 03:00:08', '2025-02-05 03:09:20'
+	);
+    (8, 'Dune', 'A science fiction novel by Frank Herbert', 14.99, 120, 3, 1, 
+		'Dune.png', '2025-02-05 03:00:08', '2025-02-05 03:09:20'
+	);
+    (9, 'Dune', 'A science fiction novel by Frank Herbert', 14.99, 120, 3, 1, 
+		'Dune.png', '2025-02-05 03:00:08', '2025-02-05 03:09:20'
+	);
 
 CREATE TABLE IF NOT EXISTS user (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
