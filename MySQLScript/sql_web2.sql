@@ -26,7 +26,10 @@ CREATE TABLE IF NOT EXISTS role (
     id INT AUTO_INCREMENT PRIMARY KEY,
     role_name VARCHAR(50) NOT NULL UNIQUE,
     role_description VARCHAR(255),
-    status_id INT
+    status_id INT,
+        FOREIGN KEY (status_id) REFERENCES status(id)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE
 );
 
 INSERT INTO `role` (`id`, `role_name`, `role_description`, `status_id`) 
@@ -310,15 +313,20 @@ CREATE TABLE if not exists permission (
     permission_id INT AUTO_INCREMENT PRIMARY KEY,
     permission_name VARCHAR(100) NOT NULL UNIQUE,
     permission_description TEXT,
-    status_id INT
+    status_id INT,
+        FOREIGN KEY (status_id) REFERENCES status(id)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE
 );
 
-INSERT INTO `permission` (`permission_id`, `permission_name`, `permission_description`, `status_id`) 
+INSERT INTO `permission` (`permission_name`, `permission_description`, `status_id`) 
 VALUES
-	(1, 'CREATE_PRODUCT', 'Permission to create a new product', 1),
-	(2, 'EDIT_PRODUCT', 'Permission to edit an existing product', 1),
-	(3, 'DELETE_PRODUCT', 'Permission to delete a product', 1),
-	(4, 'VIEW_PRODUCT', 'Permission to view product details', 1);
+	('Bán hàng', 'Nhân viên có quyền truy cập vào module bán hàng', 1),
+	('Nhập hàng', 'Nhân viên có quyền truy cập vào module nhập hàng', 1),
+	('Chức vụ', 'Nhân viên có quyền truy cập vào module chức vụ', 1),
+	('Phiếu nhập', 'Nhân viên có quyền truy cập vào module phiếu nhập', 1),
+    ('Tài khoản', 'Nhân viên có quyền truy cập vào module tài khoản', 1),
+    ('Thống kê', 'Nhân viên có quyền truy cập vào module thống kê', 1);
 
 CREATE TABLE if not exists role_permission (
     role_id INT,

@@ -1,106 +1,55 @@
 <?php
-    $account_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
-    $role_name = isset($_GET['role_name']) ? $_GET['role_name'] : null;
+    $role_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
-    if ($account_id == 0) {
-        die("Invalid account_id.");
+    if ($role_id == 0) {
+        die("Invalid role_id.");
     }
 
-    $sql_suaAcc = "SELECT acc.account_id,
-                        acc.account_name,
-                        u.full_name,
-                        u.date_of_birth,
-                        acc.email,
-                        u.profile_picture,
-                        -- Created
-                        -- Last update
-                        -- Last login
-                        r.role_name,
-                        r.id,
-                        st.status_name
-                    from account acc
-                    join role r on r.id = acc.role_id
-                    join status st on st.id = acc.status_id
-                    join user u on u.account_id = acc.account_id
-                    WHERE acc.account_id = ?";
+    $sql_suaCV = "  SELECT r.id,
+                    r.role_name,
+                    r.role_description,
+                    st.status_name
+                    from role r
+                    join status st on st.id = r.status_id
+                    WHERE r.id = ?";
 
-    $stmt = $conn->prepare($sql_suaAcc);
-    $stmt->bind_param("i", $account_id);
+    $stmt = $conn->prepare($sql_suaCV);
+    $stmt->bind_param("i", $role_id);
     $stmt->execute();
-    $query_acc = $stmt->get_result();
+    $query_CV = $stmt->get_result();
 
-    if (!$query_acc) {
+    if (!$query_CV) {
         die("Query failed: " . $stmt->error);
-    }
-
-    $sql_fetchRoleName ="SELECT r.role_name, r.id
-                        from role r
-                        where r.role_name != ?";
-
-    $stmt_roleName = $conn->prepare($sql_fetchRoleName);
-    $stmt_roleName->bind_param("s", $role_name);
-    $stmt_roleName->execute();
-    $query_roleName = $stmt_roleName->get_result();
-
-    if (!$query_roleName) {
-        die("Query of fetch role name failed: " . mysqli_error($conn));
     }
 ?>
 
 <div class="form">
     <div class="form-title">
-        <h2>Sửa tài khoản</h2>
+        <h2>Sửa chức vụ</h2>
     </div>
 
     <?php
-        $nameErr = $accErr = $dobErr = $emailErr = $pro5ImageErr = "";
+        $nameErr = $descriptionErr = "";
         $id = ""; //Store value for later updating
     ?>
 
     <form id="form-update" method="POST" enctype="multipart/form-data">
         <div class="form-content">
-            <?php while ($row = mysqli_fetch_array($query_acc)) { ?>
+            <?php while ($row = mysqli_fetch_array($query_CV)) { ?>
             
             <!-- ID -->
-            <input name="id" type="hidden" value="<?= $row['account_id'] ?>"> 
+            <input name="id" type="hidden" value="<?= $row['id'] ?>"> 
 
-            <h3>Tên tài khoản</h3>
-            <input id="acc" name="acc" type="text" value="<?= $row['account_name'] ?>">
-            <span id="accErr" class="error">*</span>
-            <br>
-
-            <h3>Họ và tên</h3>
-            <input id="name" name="name" type="text" value="<?= $row['full_name'] ?>">
+            <h3>Tên chức vụ</h3>
+            <input id="name" name="name" type="text" value="<?= $row['role_name'] ?>">
             <span id="nameErr" class="error">*</span>
             <br>
 
-            <h3>Ngày sinh</h3>
-            <input id="dob" name="dob" type="date" value="<?= $row['date_of_birth'] ?>">
-            <span id="dobErr" class="error">*</span>
+            <h3>Mô tả</h3>
+            <input id="description" name="description" type="text" value="<?= $row['role_description'] ?>">
+            <span id="descriptionErr" class="error">*</span>
             <br>
 
-            <h3>Email</h3>
-            <input id="email" name="email" type="text" value="<?= $row['email'] ?>">
-            <span id="emailErr" class="error">*</span>
-            <br>
-
-            <h3>Ảnh đại diện</h3>
-            <input id="pro5Image" type="file" name="pro5Image" accept="image/*">
-            <span id="pro5ImageErr" class="error">*</span>
-            <br>
-
-            <h3>Chức vụ</h3>
-            <select name="role" id="roleInput">
-                <option value="<?= $row['role_name'] ?>" selected><?= $row['role_name'] ?></option>
-                <?php while($roleRow = mysqli_fetch_array($query_roleName)) { ?>
-                    <option value="<?= $roleRow['role_name'] ?>"> <?= $roleRow['role_name'] ?> </option>
-                <?php 
-                    }
-                    $id = $row['account_id'];
-                 ?>
-            </select>   
-            <br>
-            
             <!-- Hidden input to store status -->
             <input type="hidden" name="status" id="statusInput" value="2">
 
@@ -128,57 +77,35 @@
             document.getElementById("statusInput").value = document.getElementById("statusCheckbox").checked ? 1 : 2;
             let isValid = true;
 
-            let acc = testInput(document.getElementById("acc").value);
             let name = testInput(document.getElementById("name").value);
-            let dob = testInput(document.getElementById("dob").value);
-            let email = testInput(document.getElementById("email").value);
-            let pro5Image = document.getElementById("pro5Image").files.length;
-
-            let id = <?= json_encode($id) ?>;  //Convert php into js variable
-            let roleName = document.getElementById("roleInput").value;   //Convert php into js variable
+            let description = testInput(document.getElementById("description").value);
+            let id = <?= json_encode($role_id) ?>;  //Convert php into js variable
 
             // Reset error messages
-            document.getElementById("accErr").innerText = "*";
             document.getElementById("nameErr").innerText = "*";
-            document.getElementById("dobErr").innerText = "*";
-            document.getElementById("emailErr").innerText = "*";
-            document.getElementById("pro5ImageErr").innerText = "*";
+            document.getElementById("descriptionErr").innerText = "*";
 
             // Validation
-            if (acc === "" || !/^[a-zA-Z][a-zA-Z_0-9]{4,12}$/.test(acc)) {
-                document.getElementById("accErr").innerText = "* Tên đăng nhập không hợp lệ.";
+            if (name === "") {
+                document.getElementById("nameErr").innerText = "* Tên phân quyền không được để trống.";
                 isValid = false;
             }
-            if (name === "" || !/^[a-zA-Z-' ]+$/.test(name)) {
-                document.getElementById("nameErr").innerText = "* Họ và tên không hợp lệ.";
+            if (description === "") {
+                document.getElementById("descriptionErr").innerText = "* Nội dung mô tả không được để trống.";
                 isValid = false;
             }
-            if (dob === "" || new Date(dob).getFullYear() > 2024) {
-                document.getElementById("dobErr").innerText = "* Ngày sinh không hợp lệ.";
-                isValid = false;
-            }
-            if (email === "" || !/\S+@\S+\.\S+/.test(email)) {
-                document.getElementById("emailErr").innerText = "* Email không hợp lệ.";
-                isValid = false;
-            }
-            if (pro5Image === 0) {
-                document.getElementById("pro5ImageErr").innerText = "* Vui lòng chọn hình ảnh.";
-                isValid = false;
-            }
+            
             if (isValid) {
                 let formData = new FormData(document.getElementById("form-update"));
-
-                let roleValue = document.getElementById("roleInput").value;
                 let statusValue = document.getElementById("statusInput").value;
 
-
-                fetch("../../BackEnd/Model/quanlitaikhoan/xulitaikhoan.php", {
+                fetch("../../BackEnd/Model/quanliphanquyen/xuliphanquyen.php", {
                     method: "POST",
                     body: formData
                 })
                 .then(response => response.text())
                 .then(data => {
-                    window.location.href = `index.php?action=quanlitaikhoan&query=sua&id=${id}&role_name=${encodeURIComponent(roleName)}`;
+                    window.location.href = `index.php?action=quanliphanquyen&query=sua&id=${id}`;
 
                 })
                 .catch(error => console.error("Lỗi:", error));
@@ -192,26 +119,6 @@
         }
     </script>
 </div>
-
-<script>
-    function previewImage(event) {
-        const file = event.target.files[0];
-        const preview = document.getElementById('preview-hinhanh');
-        const reader = new FileReader();
-
-        reader.onload = function(e) {
-            preview.src = e.target.result;
-            preview.style.display = 'block'; // Hiện hình ảnh xem trước
-        };
-
-        if (file) {
-            reader.readAsDataURL(file); // Đọc tệp hình ảnh
-        } else {
-            preview.src = ""; // Nếu không có tệp nào được chọn
-            preview.style.display = 'none'; // Ẩn hình ảnh
-        }
-    }
-</script>
 
 <style>
 
@@ -375,6 +282,11 @@
     -webkit-transition: .4s;
     transition: .4s;
     }
+
+    /* Set width for input field */
+    /* input {
+        
+    } */
 
     input:checked + .slider {
     background-color: #2196F3;

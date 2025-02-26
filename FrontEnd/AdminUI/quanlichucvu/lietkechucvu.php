@@ -1,52 +1,45 @@
 <?php
-    $sql_permission = "SELECT p.permission_id,
-                    p.permission_name,
-                    p.permission_description,
+    $sql_role = "SELECT r.id,
+                    r.role_name,
+                    r.role_description,
                     st.status_name
-                from permission p
-                join status st on st.id = p.status_id
-                ORDER BY p.permission_id ASC";
+                from role r
+                join status st on st.id = r.status_id
+                ORDER BY r.id ASC";
 
-    $query_permission = mysqli_query($conn, $sql_permission);
-    if (!$query_permission) {
+    $query_role = mysqli_query($conn, $sql_role);
+    if (!$query_role) {
         die("Query failed: " . mysqli_error($conn));
     }
 ?>
 
 <div class="form">
     <div class="form-title">
-        <h2>Quản lý phân quyền</h2>
+        <h2>Quản lý chức vụ</h2>
     </div>
 
     <div class="form-content">
         <table>
             <tr>
                 <th>STT</th>
-                <th>Tên phân quyền</th>
+                <th>Tên chức vụ</th>
                 <th>Mô tả</th>
                 <th>Trạng thái  </th>
                 <th>Quản lý</th>
             </tr>
 
             <?php
-                while($row = mysqli_fetch_array($query_permission)) {
+                while($row = mysqli_fetch_array($query_role)) {
                     ;
             ?>
 
             <tr>
-                <td><?= $row['permission_id'] ?></td>
-                <td><?= $row['permission_name'] ?></td>
-                <td><?= $row['permission_description'] ?></td>
+                <td><?= $row['id'] ?></td>
+                <td><?= $row['role_name'] ?></td>
+                <td><?= $row['role_description'] ?></td>
                 <td><?= $row['status_name'] ?></td>
                 <td>
-                    <?php 
-                        // if ($row['status_id'] == 1) {
-                        //     echo '<a class="active" href="../../BackEnd/Model/quanlitaikhoan/xulitaikhoan.php?account_id=' . $row['account_id'] . '&status=' . $row['status_id'] . '">Vô hiệu hóa</a>';                        
-                        // } else if ($row['status_id'] == 2) {
-                        //     echo '<a class="inactive" href="../../BackEnd/Model/quanlitaikhoan/xulitaikhoan.php?account_id=' . $row['account_id'] . '&status=' . $row['status_id'] . '">Khôi phục</a>';
-                        // }
-                    ?> 
-                    <a class ="edit" href="index.php?action=quanliphanquyen&query=sua&id=<?= $row['permission_id'] ?>">Sửa</a>      
+                    <a class ="edit" href="index.php?action=quanlichucvu&query=sua&id=<?= $row['id'] ?>">Sửa</a>      
                 </td>
             </tr>
 
