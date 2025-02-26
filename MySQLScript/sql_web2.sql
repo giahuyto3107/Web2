@@ -304,12 +304,14 @@ CREATE TABLE if not exists permission (
         ON UPDATE CASCADE
 );
 
-INSERT INTO `permission` (`permission_id`, `permission_name`, `permission_description`, `status_id`) 
+INSERT INTO `permission` (`permission_name`, `permission_description`, `status_id`) 
 VALUES
-	(1, 'CREATE_PRODUCT', 'Permission to create a new product', 1),
-	(2, 'EDIT_PRODUCT', 'Permission to edit an existing product', 1),
-	(3, 'DELETE_PRODUCT', 'Permission to delete a product', 1),
-	(4, 'VIEW_PRODUCT', 'Permission to view product details', 1);
+	('Bán hàng', 'Nhân viên có quyền truy cập vào module bán hàng', 1),
+	('Nhập hàng', 'Nhân viên có quyền truy cập vào module nhập hàng', 1),
+	('Chức vụ', 'Nhân viên có quyền truy cập vào module chức vụ', 1),
+	('Phiếu nhập', 'Nhân viên có quyền truy cập vào module phiếu nhập', 1),
+    ('Tài khoản', 'Nhân viên có quyền truy cập vào module tài khoản', 1),
+    ('Thống kê', 'Nhân viên có quyền truy cập vào module thống kê', 1);
 
 CREATE TABLE if not exists role_permission (
     role_id INT,

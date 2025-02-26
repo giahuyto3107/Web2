@@ -106,7 +106,7 @@
 
             <h3>Trạng thái</h3>
             <label class="switch">
-                <input type="checkbox" id="statusCheckbox">
+                <input type="checkbox" id="statusCheckbox" <?= ($row['status_name'] == 'Active') ? 'checked' : '' ?>>
                 <span class="slider round"></span>
             </label>
             <br><br><br>
