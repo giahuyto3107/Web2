@@ -44,7 +44,9 @@
             include "quanlichucvu/lietkechucvu.php";
         } elseif ($tam == 'quanlichucvu' && $query == 'sua') {
             include "quanlichucvu/suachucvu.php";
-        } 
+        } elseif ($tam == 'quanlichucvu' && $query == 'menu') {
+            include "quanlichucvu/menuphanquyen.php";
+        }
         
         elseif ($tam == 'quanlisanpham' && $query == 'them') {
             include "quanlisanpham/themsanpham.php";

@@ -60,7 +60,7 @@
             </label>
             <br><br><br>
 
-            <button type="button" id="updateBtn" class="suataikhoan">Sửa thông tin</button>
+            <button type="button" id="updateBtn" name="updateRole" class="suataikhoan">Sửa thông tin</button>
 
             <?php } ?>
         </div>

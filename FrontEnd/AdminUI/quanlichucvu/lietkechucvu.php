@@ -40,6 +40,7 @@
                 <td><?= $row['status_name'] ?></td>
                 <td>
                     <a class ="edit" href="index.php?action=quanlichucvu&query=sua&id=<?= $row['id'] ?>">Sửa</a>      
+                    <a class ="edit" href="index.php?action=quanlichucvu&query=menu&id=<?= $row['id'] ?> &name=<?= $row['role_name'] ?>">Menu</a>      
                 </td>
             </tr>
 
