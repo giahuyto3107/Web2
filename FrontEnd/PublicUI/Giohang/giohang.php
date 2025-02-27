@@ -468,7 +468,7 @@ $(document).ready(function () {
             $("#confirm-name").text(name);
             $("#confirm-phone").text(phone);
             $("#confirm-address").text(diachi);
-            $("#confirm-payment-method").text(paymentMethod === "COD" ? "Ship COD" : "MoMo");
+            $("#confirm-payment-method").text(paymentMethod === "cod" ? "Ship COD" : "MoMo");
             $("#confirm-total-price").text(totalPrice);
 
             let productList = $("#confirm-product-list");
