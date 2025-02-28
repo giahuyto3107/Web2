@@ -169,6 +169,13 @@
                 font-size: 0.9rem;
             }
         }
+
+        .chart-container {
+            width: 80%;
+            max-width: 600px;
+            margin: 20px auto;
+        }
+
     </style>
 </head>
 <body>
@@ -203,7 +210,11 @@
                             </div>
                             <ul class="nav nav-pills nav-stacked">
                                 <li class="nav-item active"><a class="nav-link" href="#"> <i class="fas fa-user"></i> Profile</a></li>
-                                <li class="nav-item"><a class="nav-link" href="index.php?quanly=suauser"> <i class="fas fa-edit"></i> Edit profile</a></li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#" data-toggle="modal" data-target="#editProfileModal">
+                                        <i class="fas fa-edit"></i> Edit profile
+                                    </a>
+                                </li>
                                 <li class="nav-item"><a class="nav-link" href="../../PublicUI/Lichsumuahang/listmuahang.php"> <i class="fas fa-bars"></i> Lịch sử mua hàng</a></li>
                             </ul>
                         </div>
@@ -227,10 +238,74 @@
                                     </div>
                                 </div>
                             </div>
+                            <?php  
+                                $sql_spent_per_month = "SELECT DATE_FORMAT(order_date, '%Y-%m') AS month, SUM(total_amount) AS total FROM orders WHERE user_id = '$account_id' AND status_id=4 GROUP BY month ORDER BY month";
+                                $result_spent = mysqli_query($conn, $sql_spent_per_month);
+
+                                $months = [];
+                                $totals = [];
+
+                                while ($row = mysqli_fetch_assoc($result_spent)) {
+                                    $months[] = $row['month'];
+                                    $totals[] = $row['total'];
+                                }
+
+                                $months_json = json_encode($months);
+                                $totals_json = json_encode($totals);
+                            ?>
+
+                            <div class="chart-container">
+                                <h1 style="text-align: center;">Thống kê chi tiêu</h1>
+                                <canvas id="spendingChart"></canvas>
+                            </div>
+                            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                            <script>
+                                document.addEventListener("DOMContentLoaded", function () {
+                                    let ctx = document.getElementById('spendingChart').getContext('2d');
+                                    let months = <?php echo $months_json; ?>;
+                                    let totals = <?php echo $totals_json; ?>;
+
+                                    new Chart(ctx, {
+                                        type: 'bar', 
+                                        data: {
+                                            labels: months,
+                                            datasets: [{
+                                                label: 'Chi tiêu (VND)',
+                                                data: totals,
+                                                backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                                                borderColor: 'rgba(255, 99, 132, 1)',
+                                                borderWidth: 2
+                                            }]
+                                        },
+                                        options: {
+                                            responsive: true,
+                                            plugins: {
+                                                legend: { display: false },
+                                                tooltip: {
+                                                    callbacks: {
+                                                        label: function(tooltipItem) {
+                                                            return tooltipItem.raw.toLocaleString() + " VND";
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            scales: {
+                                                y: {
+                                                    beginAtZero: true,
+                                                    ticks: {
+                                                        callback: function(value) {
+                                                            return value.toLocaleString() + " VND";
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    });
+                                });
+                            </script>
                         </div>
                     </div>
                 </div>
-
                 <?php  
                     } else { 
                 ?>
@@ -245,8 +320,271 @@
         </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
+    <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editProfileLabel">Chỉnh sửa thông tin</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="editProfileForm">
+                    <div class="form-group">
+                        <label for="fullName">Tên đầy đủ:</label>
+                        <input type="text" class="form-control" id="fullName" name="fullName" value="<?php echo $row_user_data['full_name']; ?>" required>
+                        <span class="error-message text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="email" class="form-control" id="email" name="email" value="<?php echo $row_user_data['email']; ?>" required>
+                        <span class="error-message text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="dob">Ngày sinh:</label>
+                        <input type="date" class="form-control" id="dob" name="dob" value="<?php echo $row_user_data['date_of_birth']; ?>" required>
+                        <span class="error-message text-danger"></span>
+                    </div>
+
+                    <div id="errorContainer" class="mt-2"></div>
+
+                    <button type="submit" id="saveChanges" class="btn btn-primary w-100" disabled>💾 Lưu thay đổi</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+    <style>
+        .modal-backdrop {
+            background-color: rgba(0, 0, 0, 0.6);
+        }
+
+
+        .modal-dialog {
+            max-width: 500px;
+        }
+        .modal-content {
+            border-radius: 15px;
+            border: none;
+            overflow: hidden;
+            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #0e6c70 100%);
+            color: white;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+        }
+        .modal-header h5 {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .modal-header .close {
+            color: white;
+            font-size: 24px;
+            opacity: 0.8;
+            transition: 0.3s;
+        }
+        .modal-header .close:hover {
+            opacity: 1;
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 25px;
+            background-color: #f4f4f4;
+        }
+
+        .modal-body .form-group {
+            margin-bottom: 15px;
+        }
+        .modal-body .form-group label {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+            display: block;
+        }
+        .modal-body .form-control {
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            padding: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background-color: white;
+        }
+
+        .modal-body .form-control:focus {
+            border-color: #0e6c70;
+            box-shadow: 0 0 8px rgba(14, 108, 112, 0.3);
+        }
+
+        .modal-body .row {
+            display: flex;
+            gap: 10px;
+        }
+        .modal-body .col {
+            flex: 1;
+        }
+
+        .modal-footer {
+            padding: 15px;
+            background-color: #e8e8e8;
+            border-top: 2px solid rgba(0, 0, 0, 0.1);
+        }
+        .modal-footer .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #0e6c70 100%);
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 16px;
+            width: 100%;
+            transition: all 0.3s ease-in-out;
+            color: white;
+            font-weight: bold;
+        }
+        .modal-footer .btn-primary:hover {
+            background: linear-gradient(135deg, #0e6c70 0%, var(--primary-color) 100%);
+            transform: scale(1.05);
+        }
+
+        .btn-primary:disabled {
+            background: #ccc !important; 
+            cursor: not-allowed; 
+            opacity: 0.6; 
+        }
+
+        @media (max-width: 576px) {
+            .modal-dialog {
+                max-width: 90%;
+            }
+            .modal-body .row {
+                flex-direction: column;
+            }
+        }
+    </style>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+    <script>
+    $(document).ready(function () {
+        let fullName = $("#fullName");
+        let email = $("#email");
+        let dob = $("#dob");
+        let saveBtn = $("#saveChanges");
+        let errorContainer = $("#errorContainer"); 
+
+        function validateForm() {
+            let isValid = true;
+
+            let fullNameVal = $("#fullName").val().trim();
+            let emailVal = $("#email").val().trim();
+            let dobVal = $("#dob").val().trim(); 
+
+            let nameRegex = /^[a-zA-ZÀ-Ỹà-ỹ\s]{3,50}$/;
+            let emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            let dobRegex = /^\d{4}-\d{2}-\d{2}$/;
+
+            if (!nameRegex.test(fullNameVal)) {
+                $("#fullName").next(".error-message").text("❌ Họ tên không hợp lệ (3-50 chữ).");
+                isValid = false;
+            } else {
+                $("#fullName").next(".error-message").text(""); 
+            }
+
+            if (!emailRegex.test(emailVal)) {
+                $("#email").next(".error-message").text("❌ Email không hợp lệ!");
+                isValid = false;
+            } else {
+                $("#email").next(".error-message").text("");
+            }
+
+            let today = new Date().toISOString().split("T")[0]; 
+            
+            if (!dobRegex.test(dobVal) || dobVal >= today) {
+                $("#dob").next(".error-message").text("❌ Ngày sinh không hợp lệ hoặc lớn hơn hôm nay!");
+                isValid = false;
+            } else {
+                $("#dob").next(".error-message").text("");
+            }
+
+            $("#saveChanges").prop("disabled", !isValid);
+        }
+
+        $("#editProfileForm input").on("input", function () {
+            validateForm();
+        });
+
+        $("#editProfileForm").on("submit", function (e) {
+            e.preventDefault();
+
+            $.ajax({
+                url: "update_profile.php",
+                type: "POST",
+                data: { 
+                    fullName: fullName.val().trim(),
+                    email: email.val().trim(),
+                    dob: dob.val().trim(),
+                },
+                success: function (response) {
+                    console.log("Server response:", response);
+                    let result = JSON.parse(response);
+                    if (result.status === "success") {
+                        Swal.fire({
+                            icon: "success",
+                            title: "Thành công!",
+                            text: "Thông tin của bạn đã được cập nhật.",
+                            confirmButtonText: "OK",
+                        }).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Lỗi!",
+                            text: result.message,
+                            confirmButtonText: "Thử lại",
+                        });
+                    }
+                },
+                error: function () {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Lỗi hệ thống!",
+                        text: "Không thể gửi dữ liệu, vui lòng thử lại sau.",
+                        confirmButtonText: "OK",
+                    });
+                }
+            });
+        });
+
+    });
+</script>
+
 </body>
 </html>
