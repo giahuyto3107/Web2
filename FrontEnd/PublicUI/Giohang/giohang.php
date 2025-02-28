@@ -43,6 +43,7 @@ mysqli_close($conn);
     <title>Giỏ hàng</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
         * {
@@ -101,6 +102,33 @@ mysqli_close($conn);
             opacity: 0.6;
         }
 
+        .text-center {
+            text-align: center;
+            font-size: 24px;
+            color: #ff6347; 
+            margin-top: 50px;
+            font-weight: bold;
+        }
+
+        p {
+            text-align: center;
+            font-size: 18px;
+            color: #555; 
+            margin: 20px auto;
+            max-width: 600px; 
+            line-height: 1.5;
+        }
+
+        .funny-message {
+            font-style: italic;
+            color: #007bff; 
+            margin-top: 10px;
+            border: 1px dashed #007bff; 
+            padding: 15px;
+            border-radius: 10px; 
+            background-color: #f0f8ff;
+        }
+
     </style>
 </head>
 <body>
@@ -143,6 +171,7 @@ mysqli_close($conn);
                     <?php } ?>
                 <?php } else { ?>
                     <p class="text-center">Giỏ hàng trống! 🛒</p>
+                    <p class="funny-message">"Nếu bạn thích thứ gì đó thì cứ mua đi, đắt một chút thì cũng có sao. Vốn dĩ để gặp được người mình thích đã rất khó rồi, giờ đến thứ mình thích chẳng lẽ cũng không thể mua!"</p>
                 <?php } ?>
             </div>
         </div>
@@ -154,6 +183,7 @@ mysqli_close($conn);
                 <div class="mb-3">
                     <label for="phone">📞 Số điện thoại</label>
                     <input type="text" class="form-control" id="phone" placeholder="Nhập số điện thoại" oninput="saveUserInfo()">
+                    <span class="error-message text-danger"></span>
                 </div>
                 <div class="mb-3">
                     <label for="address">📍 Địa chỉ giao hàng</label>
@@ -242,63 +272,64 @@ mysqli_close($conn);
     });
 </script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    $(document).ready(function () {
-        $(".remove-item").click(function (e) {
-            e.preventDefault(); 
-            let productId = $(this).data("product-id"); 
-            let itemRow = $(this).closest(".items"); 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-            if (confirm("Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng?")) {
+<script>
+$(document).ready(function () {
+    $(".remove-item").click(function (e) {
+        e.preventDefault(); 
+        let productId = $(this).data("product-id"); 
+        let itemRow = $(this).closest(".items"); 
+
+        Swal.fire({
+            title: "Bạn có chắc chắn?",
+            text: "Sản phẩm sẽ bị xóa khỏi giỏ hàng!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Xóa ngay giùm tui!",
+            cancelButtonText: "Hủy"
+        }).then((result) => {
+            if (result.isConfirmed) {
                 $.ajax({
                     url: "remove_item.php", 
                     type: "POST",
                     data: { product_id: productId },
-                    dataType: "json", //Ajax muốn nhận là JSON
+                    dataType: "json", 
                     success: function (response) {
                         if (response.success) {
                             itemRow.fadeOut(300, function () { $(this).remove(); });
-                            alert(response.message);
-                        } else {
-                            alert("Lỗi: " + response.message);
-                        }
-                    },
-                    error: function () {
-                        alert("Lỗi khi kết nối đến server.");
-                    }
-                });
-            }
-        });
-    });
-</script>
-<script>
-    $(document).ready(function () {
-        $(".remove-item").click(function (e) {
-            e.preventDefault(); /
-            let productId = $(this).data("product-id"); 
-            let itemRow = $(this).closest(".items"); 
 
-            if (confirm("Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng?")) {
-                $.ajax({
-                    url: "remove_item.php",
-                    type: "POST",
-                    data: { product_id: productId },
-                    dataType: "json",
-                    success: function (response) {
-                        if (response.success) {
-                            itemRow.fadeOut(300, function () { $(this).remove(); });
-                            alert(response.message);
+                            Swal.fire({
+                                title: "Đã xóa!",
+                                text: response.message,
+                                icon: "success",
+                                confirmButtonText: "OK"
+                            });
                         } else {
-                            alert("Lỗi: " + response.message);
+                            Swal.fire({
+                                title: "Lỗi!",
+                                text: response.message,
+                                icon: "error",
+                                confirmButtonText: "OK"
+                            });
                         }
                     },
                     error: function () {
-                        alert("Lỗi khi kết nối đến server.");
+                        Swal.fire({
+                            title: "Lỗi!",
+                            text: "Không thể kết nối đến server. Vui lòng thử lại",
+                            icon: "error",
+                            confirmButtonText: "OK"
+                        });
                     }
                 });
             }
         });
     });
+});
+
 </script>
 
 <script>
@@ -371,6 +402,15 @@ mysqli_close($conn);
             let hasSelectedProduct = $(".product-checkbox:checked").length > 0;
             let phoneRegex = /^\d{10}$/;
 
+            if (!phoneRegex.test(phone)) {
+                $("#phone").next(".error-message").text("❌ Số điện thoại không hợp lệ");
+                $("#phone").css("border-color", "red");
+                isValid = false;
+            } else {
+                $("#phone").next(".error-message").text("");
+                $("#phone").css("border-color", "");
+            }
+
             if (phoneRegex.test(phone) && address !== "" && hasSelectedProduct) {
                 $("#checkout-button").prop("disabled", false);
                 $("#momo-option").prop("disabled", false);
@@ -403,13 +443,28 @@ $(document).ready(function () {
         let phone = $("#phone").val().trim();
         let address = $("#address").val().trim();
         let hasSelectedProduct = $(".product-checkbox:checked").length > 0;
+        let phoneRegex = /^(0[3|5|7|8|9])[0-9]{8}$/;
 
-        if (phone !== "" && address !== "" && hasSelectedProduct) {
+        if (!nameRegex.test(fullNameVal)) {
+                $("#phone").next(".error-message").text("❌ Họ tên không hợp lệ (3-50 chữ).");
+                isValid = false;
+            } else {
+                $("#fullName").next(".error-message").text(""); 
+            }
+
+        if (phoneRegex.test(phone) && address !== "" && hasSelectedProduct) {
             $("#checkout-button").prop("disabled", false);
+            $("#momo-option").prop("disabled", false);
+            $("#QR-option").prop("disabled", false);
+            $("#phone").css("border-color", "");
         } else {
             $("#checkout-button").prop("disabled", true);
+            $("#momo-option").prop("disabled", true);
+            $("#QR-option").prop("disabled", true);
+            $("#phone").css("border-color", "red");
         }
     }
+
 
     $("#phone, #address").on("input", function () {
         checkPaymentInfo();
@@ -420,42 +475,82 @@ $(document).ready(function () {
         checkPaymentInfo();
     });
 
-    $("#confirm-payment-button").click(function () {
-        let products = []; 
-        $(".product-checkbox:checked").each(function () {
-            let productId = $(this).data("product-id");
-            let quantity = $(this).closest(".items").find(".quantity-display").text();
-            products.push({ product_id: productId, quantity: quantity });
-        });
+    $(document).ready(function () {
+        $("#confirm-payment-button").click(function () {
+            let products = []; 
+            $(".product-checkbox:checked").each(function () {
+                let productId = $(this).data("product-id");
+                let quantity = $(this).closest(".items").find(".quantity-display").text();
+                products.push({ product_id: productId, quantity: quantity });
+            });
 
-        $.ajax({
-            url: "process_payment.php",
-            type: "POST",
-            data: { 
-                user_id: <?= $user_id ?>, 
-                total_amount: $("#cart-total").text().replace(/[^0-9]/g, ''), 
-                status_id: 3, 
-                payment_method: $("input[name='payment']:checked").val(), 
-                phone: $("#phone").val(), 
-                address: $("#address").val(), 
-                products: JSON.stringify(products) 
-            },
-            success: function (response) {
-                let data = JSON.parse(response);
-                if (data.success) {
-                    alert("Thanh toán thành công!");
-                    $("#confirmPaymentModal").modal("hide");
-                    location.reload();
-                } else {
-                    alert("Lỗi: " + data.message);
-                }
-            },
-            error: function () {
-                alert("Lỗi khi kết nối đến server.");
+            if (products.length === 0) {
+                Swal.fire({
+                    title: "Lỗi!",
+                    text: "Vui lòng chọn ít nhất một sản phẩm để thanh toán.",
+                    icon: "warning",
+                    confirmButtonText: "OK"
+                });
+                return;
             }
+
+            Swal.fire({
+                title: "Xác nhận thanh toán?",
+                text: "Bạn có chắc chắn muốn thanh toán đơn hàng này?",
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Xác nhận",
+                cancelButtonText: "Hủy"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "process_payment.php",
+                        type: "POST",
+                        data: { 
+                            user_id: <?= $user_id ?>, 
+                            total_amount: $("#cart-total").text().replace(/[^0-9]/g, ''), 
+                            status_id: 3, 
+                            payment_method: $("input[name='payment']:checked").val(), 
+                            phone: $("#phone").val(), 
+                            address: $("#address").val(), 
+                            products: JSON.stringify(products) 
+                        },
+                        success: function (response) {
+                            let data = JSON.parse(response);
+                            if (data.success) {
+                                Swal.fire({
+                                    title: "Thanh toán thành công!",
+                                    text: "Cảm ơn bạn đã mua hàng.",
+                                    icon: "success",
+                                    confirmButtonText: "OK"
+                                }).then(() => {
+                                    $("#confirmPaymentModal").modal("hide");
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: "Lỗi!",
+                                    text: data.message,
+                                    icon: "error",
+                                    confirmButtonText: "OK"
+                                });
+                            }
+                        },
+                        error: function () {
+                            Swal.fire({
+                                title: "Lỗi!",
+                                text: "Không thể kết nối đến server. Vui lòng thử lại.",
+                                icon: "error",
+                                confirmButtonText: "OK"
+                            });
+                        }
+                    });
+                }
+            });
         });
     });
-
 
     $("#checkout-button").click(function () {
         if (!$(this).prop("disabled")) {
