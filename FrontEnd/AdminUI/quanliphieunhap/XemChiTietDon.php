@@ -24,11 +24,15 @@ if (!$query_pn) {
     die("Query failed: " . $conn->error);
 }
 ?>
+
 <div class="popup" id="popup">
     <div class="overlay"></div>
     <div class="popup-content">
-        <h2 class="popup-title">Xem Chi Tiết Đơn</h2>
-        <button class="close-btn">✖</button>
+        <div class="popup-header">
+            <h2 class="popup-title">Xem Chi Tiết Đơn</h2>
+            <button class="close-btn">✖</button>    
+        </div>
+        
         <table>
             <?php
                 while ($row = mysqli_fetch_array($query_pn)) {
@@ -105,8 +109,6 @@ if (!$query_pn) {
                 <!-- </div> -->
             </tr>
         
-
-
             <?php
                 }
             ?>
@@ -123,20 +125,66 @@ if (!$query_pn) {
 
 
 <style>
+    html {
+        width: 100%;
+        height: 100%;
+    }
+
     .popup{
         position: absolute;
         top: 0;
         left: 0;
+        bottom: 0;
         width: 100%;
-        height: 100%;
+        /* height: 1500px; */
+        height: auto;
         background: rgba(0, 0, 0, 0.5); /* ✅ Creates the dark background effect */
         opacity: 1;
         transition: opacity 100ms ease-in-out 200ms; /* Smooth fade effect */
     }
 
-    .close-btn, .popup-title {
-        display: inline-block;
-        width: 50%;
+    .popup-header {
+        display: flex;
+        justify-content: center; /* Center the title */
+        align-items: center;
+        position: relative; /* Needed for absolute positioning of close button */
+        padding: 10px;
+    }
+
+    .popup-title {
+        margin: 0 auto; /* Ensures the title stays centered */
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+    .close-btn {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        background-color: #b0b0b0; /* Light gray */
+        border: 2px solid #808080; /* Dark gray border */
+        color: white;
+        font-size: 20px;
+        font-weight: bold;
+        cursor: pointer;
+        padding: 5px 10px;
+        border-radius: 5px; /* Rounded corners */
+        transition: all 0.3s ease-in-out; /* Smooth transition */
+    }
+
+    /* Hover effect */
+    .close-btn:hover {
+        background-color: #808080; /* Darker gray on hover */
+        border-color: #606060; /* Even darker border */
+        color: white;
+        transform: translateY(-50%) scale(1.1); /* Slightly enlarge */
+    }
+
+    /* Active (clicked) effect */
+    .close-btn:active {
+        background-color: #b30000; /* Even darker red */
+        transform: translateY(-50%) scale(0.95); /* Slight shrink effect */
     }
 
     .overlay {
@@ -159,6 +207,7 @@ if (!$query_pn) {
         padding: 15px;
         margin: 50px;
         background-color: #ffffff;
+        
     }
 
     h2 {
@@ -174,10 +223,6 @@ if (!$query_pn) {
         width: 160px;
         height: 155px;
         margin: 10px 20px;
-    }
-
-    .amount-title {
-
     }
 
     .price-title {
@@ -199,7 +244,10 @@ if (!$query_pn) {
         }
 
         function closePopup() {
-            popupNode.classList.remove("active"); // ❌ Hide the popup
+            popupNode.classList.remove("active"); // Hide the popup
+            setTimeout(() => {
+                window.location.href = "index.php?action=quanliphieunhap&query=them";
+            }, 0); // Small delay to allow animation (optional)
         }
 
         overlay.addEventListener("click", closePopup); // Clicking overlay closes popup
@@ -209,5 +257,5 @@ if (!$query_pn) {
         }
 
         let popup = createPopup("#popup"); // Create popup instance
-        document.querySelector("#open-popup").addEventListener("click", popup); // Open popup o
+        // document.querySelector("#open-popup").addEventListener("click", popup); // Open popup o
 </script>
