@@ -17,9 +17,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         
         if ($result->num_rows == 1) {
             $row = $result->fetch_assoc();
-            if ($password === $row['password_hash']) { // Thay đổi khi có mã hóa
+            // Sử dụng password_verify để kiểm tra mật khẩu
+            if (password_verify($password, $row['password_hash'])) { 
                 $_SESSION['user_id'] = $row['account_id'];
                 $_SESSION['user_name'] = $row['account_name'];
+
+                // Cập nhật last_login
+                $update_sql = "UPDATE account SET last_login = NOW() WHERE account_id = ?";
+                $stmt_update = $conn->prepare($update_sql);
+                $stmt_update->bind_param("i", $row['account_id']);
+                $stmt_update->execute();
+
                 header("Location: home.php");
                 exit();
             } else {
@@ -40,6 +48,7 @@ if (isset($_SESSION['error'])) {
     unset($_SESSION['error']);
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
