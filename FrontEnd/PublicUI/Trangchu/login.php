@@ -9,7 +9,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = trim($_POST['password']);
 
     if (!empty($email) && !empty($password)) {
-        $sql = "SELECT * FROM account WHERE account_email = ? AND status_id = 1";
+        $sql = "SELECT * FROM account WHERE email = ? AND status_id = 1";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("s", $email);
         $stmt->execute();

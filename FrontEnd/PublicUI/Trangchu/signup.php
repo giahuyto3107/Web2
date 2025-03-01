@@ -15,7 +15,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($password !== $confirm_password) {
             $error = "Mật khẩu xác nhận không khớp.";
         } else {
-            $sql_check = "SELECT * FROM account WHERE account_email = ?";
+            $sql_check = "SELECT * FROM account WHERE email = ?";
             $stmt_check = $conn->prepare($sql_check);
             $stmt_check->bind_param("s", $email);
             $stmt_check->execute();
@@ -24,7 +24,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if ($result_check->num_rows > 0) {
                 $error = "Email đã được sử dụng.";
             } else {
-                $sql_insert = "INSERT INTO account (account_name, account_email, password_hash, status_id, role_id, created_at, updated_at) VALUES (?, ?, ?, 1, 2, NOW(), NOW())";
+                $sql_insert = "INSERT INTO account (account_name, email, password_hash, status_id, role_id, created_at, updated_at) VALUES (?, ?, ?, 1, 2, NOW(), NOW())";
                 $stmt_insert = $conn->prepare($sql_insert);
                 $stmt_insert->bind_param("sss", $name, $email, $password);
                 

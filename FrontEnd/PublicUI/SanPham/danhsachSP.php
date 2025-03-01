@@ -174,10 +174,10 @@ include ('../../../BackEnd/Config/config.php');
         <h2 class="text-center mb-4">Danh sách sản phẩm</h2>
 
         <div class="row mb-3">
-            <div class="col-md-4">
+            <div class="col-md-6">
                 <input type="text" id="search_name" class="form-control" placeholder="Bạn cần tìm gì...?">
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <select id="category" class="form-control">
                     <option value="">Chọn loại sản phẩm</option>
                     <option value="1">Fiction</option>
