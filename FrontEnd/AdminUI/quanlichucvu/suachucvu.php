@@ -99,13 +99,13 @@
                 let formData = new FormData(document.getElementById("form-update"));
                 let statusValue = document.getElementById("statusInput").value;
 
-                fetch("../../BackEnd/Model/quanliphanquyen/xuliphanquyen.php", {
+                fetch("../../BackEnd/Model/quanlichucvu/xulichucvu.php", {
                     method: "POST",
                     body: formData
                 })
                 .then(response => response.text())
                 .then(data => {
-                    window.location.href = `index.php?action=quanliphanquyen&query=sua&id=${id}`;
+                    window.location.href = `index.php?action=quanlichucvu&query=sua&id=${id}`;
 
                 })
                 .catch(error => console.error("Lỗi:", error));

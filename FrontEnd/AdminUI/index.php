@@ -19,8 +19,7 @@
   include 'menu.php';
   include 'main.php';
   ?>
+
 </body>
-
-
-
 </html>
+

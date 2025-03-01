@@ -11,6 +11,10 @@
             $query = isset($_GET['query']) ? $_GET['query'] : '';
 
             // Điều hướng các module dựa trên action và query
+            if ($tam == 'home') {
+                include 'home.php';
+            }
+
             if ($tam == 'quanliloaisp' && $query == 'them') {
                 include 'quanliloaisp/themloaisp.php';
                 include 'quanliloaisp/lietkeloaisp.php';
