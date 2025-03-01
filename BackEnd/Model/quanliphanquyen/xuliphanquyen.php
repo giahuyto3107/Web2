@@ -1,7 +1,32 @@
-<?php
-include('../../Config/config.php');
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+<?php
+// Kết nối đến cơ sở dữ liệu
+include('../../Config/config.php');
+// Xử lý khi form được submit
+if (isset($_POST['them_phanquyen'])) {
+    // Lấy dữ liệu từ form
+    $permission_name = $_POST['permission_name'];
+    $permission_description = $_POST['permission_description'];
+    $status_id = $_POST['status_id'];
+
+    // Kiểm tra xem các trường có được điền đầy đủ không
+    if (empty($permission_name) || empty($permission_description) || empty($status_id)) {
+        echo "Vui lòng điền đầy đủ thông tin!";
+    } else {
+        // Thêm quyền mới vào bảng permission
+        $sql_them = "INSERT INTO permission (permission_name, permission_description, status_id) 
+                     VALUES ('$permission_name', '$permission_description', '$status_id')";
+
+        if (mysqli_query($conn, $sql_them)) {
+            // Thành công, chuyển hướng về trang quản lý phân quyền
+            header('Location: ../../../Frontend/AdminUI/index.php?action=quanlyphanquyen&query=them');
+            exit;
+        } else {
+            // Lỗi khi thêm quyền
+            echo "Lỗi: " . mysqli_error($conn);
+        }
+    }
+}elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['updateRolePermission'])) {
         if (isset($_POST['permissions']) && !empty($_POST['permissions'])) {
             $permissions = json_decode($_POST['permissions'], true);
@@ -45,4 +70,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['role_id'])) {
     echo json_encode($permissions);
     exit;
 }
+
 ?>
+
