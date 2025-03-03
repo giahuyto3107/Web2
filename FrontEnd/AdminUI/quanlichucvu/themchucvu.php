@@ -7,7 +7,7 @@
 </head>
 <body>
     <h1>Thêm Chức Vụ</h1>
-    <form method="post" action="">
+    <form method="post" action="../../BackEnd/Model/quanlichucvu/xulichucvu.php">
         <label for="role_name">Tên Chức Vụ:</label>
         <input type="text" name="role_name" required><br>
 
@@ -22,14 +22,14 @@
 
         <h3>Chọn Permission:</h3>
         <?php
-        // Lấy danh sách permission từ bảng permission
+        
         $result = $conn->query("SELECT permission_id, permission_name FROM permission WHERE status_id = 1");
         while ($row = $result->fetch_assoc()) {
             echo '<input type="checkbox" name="permissions[]" value="' . $row['permission_id'] . '"> ' . $row['permission_name'] . '<br>';
         }
         ?>
 
-        <input type="submit" value="Thêm Chức Vụ">
+        <input type="submit" name="themchucvu" value="Thêm Chức Vụ">
     </form>
 </body>
 </html>
