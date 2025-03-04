@@ -33,17 +33,9 @@
             while ($row_sp = mysqli_fetch_array($query_sp)) { ?>
                 <div class="bg-white p-4 shadow rounded-lg">
                     <a href="chitietsanpham.php?id=<?php echo $row_sp['product_id']; ?>">
-                        <img src="<?php 
-                            // Nếu đường dẫn chứa "example.com", thay bằng đường dẫn nội bộ
-                            if (strpos($row_sp['image_url'], 'example.com') !== false) {
-                                echo '/Web2/BackEnd/Uploads/Product Picture/' . strtolower(str_replace(' ', '_', $row_sp['product_name'])) . '.png';
-                            } else {
-                                echo $row_sp['image_url']; // Nếu là URL hợp lệ khác thì giữ nguyên
-                            }
-                        ?>" 
-                        alt="<?php echo $row_sp['product_name']; ?>" 
+                    <img src="<?php echo 'http://localhost/Web2/BackEnd/Uploads/Product%20Picture/' . urlencode($row_sp['image_url']); ?>" 
+                        alt="<?php echo htmlspecialchars($row_sp['product_name']); ?>" 
                         class="w-full h-40 object-cover rounded">
-
                         <h3 class="text-lg font-semibold mt-2"><?php echo $row_sp['product_name']; ?></h3>
                         <p class="text-gray-600 text-sm"><?php echo $row_sp['product_description']; ?></p>
                         <p class="text-red-500 font-bold"><?php echo number_format($row_sp['price'], 0, ',', '.'); ?> VND</p>
