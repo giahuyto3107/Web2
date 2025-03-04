@@ -111,9 +111,9 @@
             </label>
             <br><br><br>
 
-            <button type="button" id="updateBtn" class="suataikhoan">Sửa thông tin</button>
-
             <?php } ?>
+
+            <button type="button" id="updateBtn" class="suataikhoan">Sửa thông tin</button>
         </div>
     </form>
 
@@ -125,6 +125,7 @@
 
         document.getElementById("updateBtn").addEventListener("click", function (event) {
             event.preventDefault();
+            console.log("main");
             document.getElementById("statusInput").value = document.getElementById("statusCheckbox").checked ? 1 : 2;
             let isValid = true;
 
@@ -170,7 +171,6 @@
 
                 let roleValue = document.getElementById("roleInput").value;
                 let statusValue = document.getElementById("statusInput").value;
-
 
                 fetch("../../BackEnd/Model/quanlitaikhoan/xulitaikhoan.php", {
                     method: "POST",

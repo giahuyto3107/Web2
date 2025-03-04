@@ -2,32 +2,26 @@
 <?php
 // Kết nối đến cơ sở dữ liệu
 include('../../Config/config.php');
-// Xử lý khi form được submit
-if (isset($_POST['them_phanquyen'])) {
-    // Lấy dữ liệu từ form
-    $permission_name = $_POST['permission_name'];
-    $permission_description = $_POST['permission_description'];
-    $status_id = $_POST['status_id'];
 
-    // Kiểm tra xem các trường có được điền đầy đủ không
-    if (empty($permission_name) || empty($permission_description) || empty($status_id)) {
-        echo "Vui lòng điền đầy đủ thông tin!";
-    } else {
-        // Thêm quyền mới vào bảng permission
-        $sql_them = "INSERT INTO permission (permission_name, permission_description, status_id) 
-                     VALUES ('$permission_name', '$permission_description', '$status_id')";
-
-        if (mysqli_query($conn, $sql_them)) {
-            // Thành công, chuyển hướng về trang quản lý phân quyền
-            header('Location: ../../../Frontend/AdminUI/index.php?action=quanlyphanquyen&query=them');
-            exit;
-        } else {
-            // Lỗi khi thêm quyền
-            echo "Lỗi: " . mysqli_error($conn);
-        }
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['id']) && $_POST['name'] && isset($_POST['description']) && isset($_POST['status'])) {
+        $id = $_POST['id'];
+        $name = $_POST['name'];
+        $description = $_POST['description'];
+        $status = $_POST['status'];
+        $updateSql = "UPDATE permission p
+                    LEFT JOIN (SELECT permission_name FROM permission WHERE permission_id != '$id') sub
+                    ON p.permission_name = sub.permission_name
+                    SET p.permission_name = '$name', 
+                        p.permission_description = '$description',
+                        p.status_id = '$status'
+                    WHERE p.permission_id = $id AND sub.permission_name IS NULL;";
+        if (!mysqli_query($conn, $updateSql)) {
+            die(json_encode(["error" => "Error updating permissions: " . mysqli_error($conn)]));
+        }            
     }
-}elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['updateRolePermission'])) {
+
+    elseif (isset($_POST['updateRolePermission'])) {
         if (isset($_POST['permissions']) && !empty($_POST['permissions'])) {
             $permissions = json_decode($_POST['permissions'], true);
             $role_id = mysqli_real_escape_string($conn, $_POST['role_id']);
