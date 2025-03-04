@@ -221,7 +221,9 @@ include ('../../../BackEnd/Config/config.php');
                         productsHtml += `
                             <div class="col-lg-3 col-md-4 col-sm-6 col-12">
                                 <div class="card mb-4">
-                                    <img src="${product.image_url}" class="card-img-top" alt="Hình ảnh sản phẩm">
+                                    <a href="product_detail.php?id=${product.product_id}">
+                                        <img src="${product.image_url}" class="card-img-top" alt="Hình ảnh sản phẩm">                                    
+                                    </a>
 
                                     <div class="card-body">
                                         <h5 class="card-title">${product.product_name}</h5>

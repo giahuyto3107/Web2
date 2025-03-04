@@ -29,6 +29,7 @@
             $sql_sp = "SELECT product_id, product_name, product_description, price, image_url FROM product ORDER BY product_id DESC LIMIT 4";
             $query_sp = mysqli_query($conn, $sql_sp);
             
+            
             while ($row_sp = mysqli_fetch_array($query_sp)) { ?>
                 <div class="bg-white p-4 shadow rounded-lg">
                     <a href="chitietsanpham.php?id=<?php echo $row_sp['product_id']; ?>">
