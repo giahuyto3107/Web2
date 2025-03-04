@@ -61,26 +61,30 @@
             </label>
             <br><br><br>
 
-            <button type="button" id="updateBtn" class="suataikhoan">Sửa thông tin</button>
-
             <?php } ?>
+
+            <button type="button" id="updateBtn" class="suaPhanQuyen">Sửa thông tin</button>
         </div>
     </form>
 
-    <script>
+    <script>    
         // Handle status checkbox
         document.getElementById("statusCheckbox").addEventListener("change", function() {
             document.getElementById("statusInput").value = this.checked ? 1 : 2;
         });
 
-        document.getElementById("updateBtn").addEventListener("click", function (event) {
+        function attachUpdateEvent() {
+    let btn = document.getElementById("updateBtn");
+    if (btn) {
+        btn.addEventListener("click", function (event) {
             event.preventDefault();
+
             document.getElementById("statusInput").value = document.getElementById("statusCheckbox").checked ? 1 : 2;
             let isValid = true;
 
             let name = testInput(document.getElementById("name").value);
             let description = testInput(document.getElementById("description").value);
-            let id = <?= json_encode($permission_id) ?>;  //Convert php into js variable
+            let id = <?= json_encode($permission_id) ?>; // Convert PHP variable to JS
 
             // Reset error messages
             document.getElementById("nameErr").innerText = "*";
@@ -95,23 +99,35 @@
                 document.getElementById("descriptionErr").innerText = "* Nội dung mô tả không được để trống.";
                 isValid = false;
             }
-            
+
             if (isValid) {
-                let formData = new FormData(document.getElementById("form-update"));
                 let statusValue = document.getElementById("statusInput").value;
+                let formData = new FormData(document.getElementById("form-update"));
 
                 fetch("../../BackEnd/Model/quanliphanquyen/xuliphanquyen.php", {
                     method: "POST",
                     body: formData
                 })
-                .then(response => response.text())
-                .then(data => {
-                    window.location.href = `index.php?action=quanliphanquyen&query=sua&id=${id}`;
-
+                .then(response => {
+                    console.log("Status Code:", response.status); // Debug status
+                    return response.text();
                 })
-                .catch(error => console.error("Lỗi:", error));
+                .then(data => {
+                    window.location.href = `index.php?action=quanliphanquyen&query=them&id=${id}`;
+                })
+                .catch(error => console.error("Fetch Error:", error));
+
             }
         });
+    } else {
+        console.log("Button not found, retrying...");
+        setTimeout(attachUpdateEvent, 500); // Retry after 500ms
+    }
+}
+
+// Start attaching event when DOM is loaded
+document.addEventListener("DOMContentLoaded", attachUpdateEvent);
+
 
         function testInput(data) {
             data = data.trim(); // Remove leading and trailing spaces
@@ -227,7 +243,7 @@
         background: #0056b3;
     }
 
-    .suataikhoan {
+    .suaPhanQuyen {
         background-color: #4CAF50;
         width: 325px;
         height: 50px;
@@ -237,7 +253,7 @@
         cursor: pointer;
     }
 
-    .suataikhoan:hover {
+    .suaPhanQuyen:hover {
         background-color: #45a049;
     }
 

@@ -85,6 +85,7 @@ document.addEventListener("DOMContentLoaded", function () {
             fetchPermissions(); // Refresh checkboxes after update
         })
         .catch(error => console.error("Error updating permissions:", error));
+        window.location.reload();
     });
 });
 
