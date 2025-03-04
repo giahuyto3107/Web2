@@ -276,6 +276,7 @@ VALUES
 CREATE TABLE IF NOT EXISTS review (
     review_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT,
+    user_admin_id INT,
     product_id INT,
     rating INT CHECK (rating BETWEEN 1 AND 5),
     review_text TEXT,
