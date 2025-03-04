@@ -90,14 +90,10 @@ CREATE TABLE IF NOT EXISTS product (
     product_description TEXT,
     price DECIMAL(10, 2) NOT NULL,
     stock_quantity INT NOT NULL DEFAULT 0,
-    category_id INT,
     status_id INT,
     image_url VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (category_id) REFERENCES category(category_id)
-        ON DELETE SET NULL
-        ON UPDATE CASCADE,
     FOREIGN KEY (status_id) REFERENCES status(id)
         ON DELETE SET NULL
         ON UPDATE CASCADE
@@ -111,6 +107,18 @@ VALUES
     (4, 'Dune', 'A science fiction novel by Frank Herbert', 14.99, 120, 3, 1, 'Dune.png', '2025-02-05 03:00:08', '2025-02-05 03:09:20'),
     (5, 'Dune', 'A science fiction novel by Frank Herbert', 14.99, 120, 3, 1, 'Dune.png', '2025-02-05 03:00:08', '2025-02-05 03:09:20');
     
+CREATE TABLE IF NOT EXISTS product_category (
+    product_id INT NOT NULL,
+    category_id INT NOT NULL,
+    PRIMARY KEY (product_id, category_id),
+    FOREIGN KEY (product_id) REFERENCES product(product_id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+    FOREIGN KEY (category_id) REFERENCES category(category_id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+);    
+
 CREATE TABLE IF NOT EXISTS user (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
     full_name VARCHAR(100) NOT NULL,
@@ -150,6 +158,7 @@ VALUES
 CREATE TABLE IF NOT EXISTS orders (
     order_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT,
+    user_admin_id INT,
     order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     total_amount DECIMAL(10, 2) NOT NULL,
     status_id INT,
@@ -184,6 +193,7 @@ CREATE TABLE IF NOT EXISTS order_items (
     order_item_id INT AUTO_INCREMENT PRIMARY KEY,
     order_id INT,
     product_id INT,
+    price DECIMAL(10, 2) NOT NULL,
     quantity INT NOT NULL DEFAULT 1,
     FOREIGN KEY (order_id) REFERENCES orders(order_id)
         ON DELETE CASCADE
@@ -204,7 +214,8 @@ CREATE TABLE IF NOT EXISTS supplier (
     supplier_id INT AUTO_INCREMENT PRIMARY KEY,
     supplier_name VARCHAR(100) NOT NULL UNIQUE,                        
     contact_phone VARCHAR(15),                   
-    address VARCHAR(255),                     
+    address VARCHAR(255),                
+    publisher VARCHAR(255),
     status_id INT,                             
     FOREIGN KEY (status_id) REFERENCES status(id)
         ON DELETE SET NULL
