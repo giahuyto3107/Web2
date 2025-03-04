@@ -154,6 +154,7 @@ $user_id = 1;
                             <p class="mb-0">Tổng giá trị: <?= htmlspecialchars($row['total_amount']) ?> đ</p>
                         </div>
                         <div class="col-md-6 text-end">
+                            
                             <a href="chitietdonhang.php?order_id=<?= urlencode($row['order_id']) ?>" class="btn btn-outline-primary btn-sm">
                                 <i class="fas fa-eye"></i> Xem chi tiết
                             </a>

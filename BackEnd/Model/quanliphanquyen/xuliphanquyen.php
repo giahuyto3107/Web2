@@ -1,4 +1,6 @@
+
 <?php
+// Kết nối đến cơ sở dữ liệu
 include('../../Config/config.php');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -62,4 +64,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['role_id'])) {
     echo json_encode($permissions);
     exit;
 }
+
 ?>
+

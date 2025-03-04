@@ -1,12 +1,14 @@
 <?php
 include ('../../../BackEnd/Config/config.php');
+
 if (isset($_GET['order_id'])) {
     $order_id = mysqli_real_escape_string($conn, $_GET['order_id']);
+    
+    // Lấy thông tin đơn hàng
     $query = "SELECT orders.order_id, orders.order_date, orders.status_id
               FROM order_items 
               JOIN orders ON order_items.order_id = orders.order_id 
               WHERE orders.order_id = '$order_id'";
-
     $result = mysqli_query($conn, $query);
     $order = mysqli_fetch_assoc($result);
 
@@ -14,7 +16,10 @@ if (isset($_GET['order_id'])) {
         echo "Không tìm thấy đơn hàng!";
         exit;
     }
-    $query_items = "SELECT product.product_name, order_items.quantity, product.price, product.image_url
+
+    // Lấy danh sách sản phẩm trong đơn hàng
+    $query_items = "SELECT product.product_id, product.product_name, order_items.quantity, 
+                           product.price, product.image_url
                     FROM order_items 
                     JOIN product ON order_items.product_id = product.product_id 
                     WHERE order_items.order_id = '$order_id'";
@@ -151,6 +156,9 @@ mysqli_close($conn);
                 <th>Số lượng</th>
                 <th>Giá</th>
                 <th>Thành tiền</th>
+                <?php if ($order_status == 4) : ?> <!-- Nếu đơn hàng đã giao -->
+                    <th>Đánh giá</th>
+                <?php endif; ?>
             </tr>
         </thead>
         <tbody>
@@ -161,12 +169,22 @@ mysqli_close($conn);
                     $total_price += $subtotal;
             ?>
                 <tr>
-                    <td><img class="rounded" src="../../../BackEnd/Uploads/Product Picture/<?= htmlspecialchars($item['image_url']) ?>" width="50"></td>
+                    <td><img src="../../../BackEnd/Uploads/Product Picture/<?= urlencode($item['image_url']) ?>" width="50" class="img-thumbnail">
+                    </td>
                     <td><?= htmlspecialchars($item['product_name']) ?></td>
-                    
                     <td><?= htmlspecialchars($item['quantity']) ?></td>
                     <td><?= number_format($item['price'], 0, ',', '.') ?> đ</td>
                     <td><?= number_format($subtotal, 0, ',', '.') ?> đ</td>
+                    
+                    <?php if ($order_status == 4) : ?>
+                        <td>
+                            <button class="btn btn-primary btn-sm btn-review" data-bs-toggle="modal" data-bs-target="#reviewModal" 
+                                    data-product-id="<?= $item['product_id'] ?>" 
+                                    data-product-name="<?= htmlspecialchars($item['product_name']) ?>">
+                                <i class="fa-solid fa-star"></i> Đánh giá
+                            </button>
+                        </td>
+                    <?php endif; ?>
                 </tr>
             <?php } ?>
         </tbody>
@@ -286,5 +304,181 @@ mysqli_close($conn);
     </div>
     <a href="http://localhost/Web2/FrontEnd/PublicUI/Lichsumuahang/listmuahang.php" class="back-btn">Quay lại</a>
 </div>
+
+<div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reviewModalLabel">Đánh giá sản phẩm</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="submit_review.php" method="POST">
+                    <input type="hidden" name="product_id" id="product_id">
+                    
+                    <div class="mb-3">
+                        <label for="product_name" class="form-label">Sản phẩm:</label>
+                        <input type="text" id="product_name" class="form-control" readonly>
+                    </div>
+
+                    <div class="mb-3 rating-container">
+                        <label class="form-label">Chấm điểm:</label>
+                        <select class="form-select" name="rating" required>
+                            <option value="5">⭐⭐⭐⭐⭐ - Tuyệt vời</option>
+                            <option value="4">⭐⭐⭐⭐ - Tốt</option>
+                            <option value="3">⭐⭐⭐ - Bình thường</option>
+                            <option value="2">⭐⭐ - Tệ</option>
+                            <option value="1">⭐ - Rất tệ</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="review_text" class="form-label">Nhận xét:</label>
+                        <textarea class="form-control" name="review_text" rows="3" required></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-submit">Gửi đánh giá</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Form đánh giá */
+.modal-content {
+    border-radius: 12px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+    background: #fff;
+}
+
+.modal-header {
+    background: #005ab4;
+    color: white;
+    border-radius: 12px 12px 0 0;
+    text-align: center;
+}
+
+.modal-title {
+    font-weight: 600;
+}
+
+.btn-close {
+    border: none;
+    background: none;
+}
+
+/* Form body */
+.modal-body {
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: 0 0 12px 12px;
+}
+
+/* Nhãn */
+.form-label {
+    font-weight: 500;
+    color: #2c3e50;
+}
+
+/* Input & Select */
+.form-control, .form-select {
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    transition: 0.3s;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #27ae60;
+    box-shadow: 0 0 8px rgba(39, 174, 96, 0.3);
+}
+
+/* Textarea */
+textarea.form-control {
+    resize: none;
+    height: 100px;
+}
+
+/* Hiệu ứng đánh giá bằng sao */
+.rating-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.rating-container select {
+    width: 100%;
+}
+
+/* Nút gửi đánh giá */
+.btn-submit {
+    width: 100%;
+    padding: 12px;
+    background: #27ae60;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    transition: 0.3s;
+}
+
+.btn-submit:hover {
+    background: #219150;
+}
+
+</style>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    var reviewModal = document.getElementById('reviewModal');
+    reviewModal.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget;
+        var productId = button.getAttribute('data-product-id');
+        var productName = button.getAttribute('data-product-name');
+        
+        var modal = this;
+        modal.querySelector('#product_id').value = productId;
+        modal.querySelector('#product_name').value = productName;
+    });
+</script>
+<script>
+document.querySelector("#reviewModal form").addEventListener("submit", function(event) {
+    event.preventDefault(); // Ngăn chặn reload trang
+
+    let formData = new FormData(this);
+
+    fetch("submit_review.php", {
+        method: "POST",
+        body: formData
+    })
+    
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === "success") {
+            Swal.fire({
+                title: "Thành công!",
+                text: data.message,
+                icon: "success",
+                confirmButtonText: "OK"
+            }).then(() => {
+                window.location.href = "http://localhost/Web2/FrontEnd/PublicUI/Lichsumuahang/listmuahang.php"; 
+            });
+        } else {
+            Swal.fire({
+                title: "Lỗi!",
+                text: data.message,
+                icon: "error",
+                confirmButtonText: "Thử lại"
+            });
+        }
+    })
+    .catch(error => console.error("Lỗi:", error));
+});
+</script>
+
 </body>
 </html>

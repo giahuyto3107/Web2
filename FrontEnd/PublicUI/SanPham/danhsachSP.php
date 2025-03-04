@@ -174,10 +174,10 @@ include ('../../../BackEnd/Config/config.php');
         <h2 class="text-center mb-4">Danh sách sản phẩm</h2>
 
         <div class="row mb-3">
-            <div class="col-md-4">
+            <div class="col-md-6">
                 <input type="text" id="search_name" class="form-control" placeholder="Bạn cần tìm gì...?">
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <select id="category" class="form-control">
                     <option value="">Chọn loại sản phẩm</option>
                     <option value="1">Fiction</option>
@@ -221,7 +221,9 @@ include ('../../../BackEnd/Config/config.php');
                         productsHtml += `
                             <div class="col-lg-3 col-md-4 col-sm-6 col-12">
                                 <div class="card mb-4">
-                                    <img src="${product.image_url}" class="card-img-top" alt="Hình ảnh sản phẩm">
+                                    <a href="product_detail.php?id=${product.product_id}">
+                                        <img src="${product.image_url}" class="card-img-top" alt="Hình ảnh sản phẩm">                                    
+                                    </a>
 
                                     <div class="card-body">
                                         <h5 class="card-title">${product.product_name}</h5>
