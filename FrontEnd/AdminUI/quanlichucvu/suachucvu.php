@@ -59,8 +59,8 @@
                 <span class="slider round"></span>
             </label>
             <br><br><br>
-
-            <button type="button" id="updateBtn" name="updateRole" class="suataikhoan">Sửa thông tin</button>
+            <input type="hidden" name="updateRole" value="1">
+            <button type="button" id="updateBtn" class="suataikhoan">Sửa thông tin</button>
 
             <?php } ?>
         </div>
