@@ -111,7 +111,7 @@ mysqli_close($conn);
         }
 
         p {
-            text-align: center;
+            
             font-size: 18px;
             color: #555; 
             margin: 20px auto;
