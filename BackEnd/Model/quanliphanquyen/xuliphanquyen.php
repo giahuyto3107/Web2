@@ -48,6 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $permission_name = $_POST['permission_name'];
         $permission_description = $_POST['permission_description'];
         $status_id = $_POST['status_id'];
+        
 
         $sql_check = "SELECT * FROM permission WHERE permission_name = '$permission_name'";
         $result_check = mysqli_query($conn, $sql_check);
