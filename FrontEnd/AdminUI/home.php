@@ -1,7 +1,3 @@
-<?php
-// include '../../BackEnd/Config/config.php';
-?>
-
 <div class="form">
 <div class="form-title">
     <h2>Quản lý trang web</h2>
