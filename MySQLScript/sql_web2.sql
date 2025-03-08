@@ -99,13 +99,13 @@ CREATE TABLE IF NOT EXISTS product (
         ON UPDATE CASCADE
 );
 
-INSERT INTO `product` (`product_id`, `product_name`, `product_description`, `price`, `stock_quantity`, `category_id`, `status_id`, `image_url`, `created_at`, `updated_at`) 
+INSERT INTO `product` (`product_id`, `product_name`, `product_description`, `price`, `stock_quantity`, `status_id`, `image_url`, `created_at`, `updated_at`) 
 VALUES
-    (1, 'The Great Gatsby', 'A classic novel by F. Scott Fitzgerald', 15.99, 100, 1, 1, 'The Great Gatsby.png', '2025-02-05 03:00:08', '2025-02-05 03:09:12'),
-    (2, '1984', 'A dystopian novel by George Orwell', 12.99, 150, 1, 1, '1984.png', '2025-02-05 03:00:08', '2025-02-05 03:09:16'),
-    (3, 'Sapiens: A Brief History of Humankind', 'A book by Yuval Noah Harari', 18.99, 200, 2, 1, 'Sapiens.png', '2025-02-05 03:00:08', '2025-02-05 03:09:18'),
-    (4, 'Dune', 'A science fiction novel by Frank Herbert', 14.99, 120, 3, 1, 'Dune.png', '2025-02-05 03:00:08', '2025-02-05 03:09:20'),
-    (5, 'Dune', 'A science fiction novel by Frank Herbert', 14.99, 120, 3, 1, 'Dune.png', '2025-02-05 03:00:08', '2025-02-05 03:09:20');
+    (1, 'The Great Gatsby', 'A classic novel by F. Scott Fitzgerald', 15.99, 100, 1, 'The Great Gatsby.png', '2025-02-05 03:00:08', '2025-02-05 03:09:12'),
+    (2, '1984', 'A dystopian novel by George Orwell', 12.99, 150, 1, '1984.png', '2025-02-05 03:00:08', '2025-02-05 03:09:16'),
+    (3, 'Sapiens: A Brief History of Humankind', 'A book by Yuval Noah Harari', 18.99, 200, 1, 'Sapiens.png', '2025-02-05 03:00:08', '2025-02-05 03:09:18'),
+    (4, 'Dune', 'A science fiction novel by Frank Herbert', 14.99, 120, 1, 'Dune.png', '2025-02-05 03:00:08', '2025-02-05 03:09:20'),
+    (5, 'Dune', 'A science fiction novel by Frank Herbert', 14.99, 120, 1, 'Dune.png', '2025-02-05 03:00:08', '2025-02-05 03:09:20');
     
 CREATE TABLE IF NOT EXISTS product_category (
     product_id INT NOT NULL,
@@ -194,8 +194,7 @@ CREATE TABLE IF NOT EXISTS order_items (
     order_id INT,
     product_id INT,
     price DECIMAL(10, 2) NOT NULL,
-    quantity INT NOT NULL DEFAULT 1,
-    price DECIMAL(15,2) NOT NULL, 
+    quantity INT NOT NULL DEFAULT 1, 
     FOREIGN KEY (order_id) REFERENCES orders(order_id)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
