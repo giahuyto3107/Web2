@@ -1,4 +1,3 @@
-
 <?php
 // Kết nối đến cơ sở dữ liệu
 include('../../Config/config.php');
@@ -19,9 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!mysqli_query($conn, $updateSql)) {
             die(json_encode(["error" => "Error updating permissions: " . mysqli_error($conn)]));
         }            
-    }
-
-    elseif (isset($_POST['updateRolePermission'])) {
+    } elseif (isset($_POST['updateRolePermission'])) {
         if (isset($_POST['permissions']) && !empty($_POST['permissions'])) {
             $permissions = json_decode($_POST['permissions'], true);
             $role_id = mysqli_real_escape_string($conn, $_POST['role_id']);
@@ -47,8 +44,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo json_encode(["error" => "No permissions selected!"]);
             exit;
         }
+    } elseif (isset($_POST['them_phanquyen'])) {
+        $permission_name = $_POST['permission_name'];
+        $permission_description = $_POST['permission_description'];
+        $status_id = $_POST['status_id'];
+        
+
+        $sql_check = "SELECT * FROM permission WHERE permission_name = '$permission_name'";
+        $result_check = mysqli_query($conn, $sql_check);
+
+        if (mysqli_num_rows($result_check) > 0) {
+            header('Location: ../../../Frontend/AdminUI/index.php?action=quanliphanquyen&query=them&thanhcong=1');
+            exit;
+        } else {
+            $sql_them = "INSERT INTO permission (permission_name, permission_description, status_id) 
+                         VALUES ('$permission_name', '$permission_description', '$status_id')";
+
+            if (mysqli_query($conn, $sql_them)) {
+                header('Location: ../../../Frontend/AdminUI/index.php?action=quanliphanquyen&query=them&thanhcong=2');
+                exit;
+            } else {
+                echo "Lỗi: " . mysqli_error($conn);
+            }
+        }
+    } else {
+        echo "Yêu cầu không hợp lệ.";
     }
-} 
+} else {
+    header("Location: ../../../Frontend/AdminUI/index.php?action=quanliphanquyen&query=them");
+    exit;
+}
 
 // Fetch assigned permissions for a role
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['role_id'])) {
@@ -64,6 +89,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['role_id'])) {
     echo json_encode($permissions);
     exit;
 }
-
 ?>
-

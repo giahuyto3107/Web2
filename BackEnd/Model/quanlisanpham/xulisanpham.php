@@ -1,110 +1,48 @@
 <?php
-include ('../../../BackEnd/Config/config.php');
-// Kiểm tra xem form đã được submit chưa
-if (isset($_POST['themsanpham'])) {
-    // Lấy dữ liệu từ form
-    $tensanpham = $_POST['tensanpham'];
-    $motasp = $_POST['motasp'];
-    $giasp = $_POST['giasp'];
-    $stock_quantity = $_POST['stock_quantity'];
-    $idloaisp = $_POST['loaisp'];
-    $tinhtrang = $_POST['tinhtrang'];
-    $hinhanh = $_FILES['hinhanh']['name'];
-    $hinhanh_tmp = $_FILES['hinhanh']['tmp_name'];
-    $hinhanh = time() . '_' . $hinhanh;
+include('../../Config/config.php'); // Kết nối đến cơ sở dữ liệu
 
-    // Đường dẫn lưu hình ảnh
-    $upload_dir = '../../Uploads/Product Picture/'; // Thư mục lưu hình ảnh
-    $image_url = $upload_dir . $hinhanh;
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Nhận dữ liệu từ POST
+    $role_id = isset($_POST['id']) ? intval($_POST['id']) : 0;
+    $role_name = isset($_POST['name']) ? trim($_POST['name']) : '';
+    $role_description = isset($_POST['description']) ? trim($_POST['description']) : '';
+    $status_id = isset($_POST['status']) ? intval($_POST['status']) : 0;
 
-    // Di chuyển hình ảnh vào thư mục
-    if (move_uploaded_file($hinhanh_tmp, $image_url)) {
-        // Thêm sản phẩm vào cơ sở dữ liệu
-        $sql_them = "INSERT INTO product (product_name, product_description, price, stock_quantity, category_id, status_id, image_url, created_at, updated_at) 
-                     VALUES ('$tensanpham', '$motasp', '$giasp', '$stock_quantity', '$idloaisp', '$tinhtrang', '$image_url', NOW(), NOW())";
+    // Kiểm tra tính hợp lệ của dữ liệu
+    if ($role_id > 0 && !empty($role_name) && !empty($role_description) && ($status_id == 1 || $status_id == 2)) {
+        // Kiểm tra xem tên vai trò đã tồn tại chưa
+        $sql_check = "SELECT * FROM role WHERE role_name = ? AND id != ?";
+        $stmt_check = $conn->prepare($sql_check);
+        $stmt_check->bind_param("si", $role_name, $role_id);
+        $stmt_check->execute();
+        $result_check = $stmt_check->get_result();
 
-        if (mysqli_query($conn, $sql_them)) {
-            // Thành công, chuyển hướng về trang quản lý sản phẩm
-            header('Location: ../../../Frontend/AdminUI/index.php?action=quanlisanpham&query=them');
+        if ($result_check->num_rows > 0) {
+            // Nếu tên vai trò đã tồn tại
+            header('Location: ../../../Frontend/AdminUI/index.php?action=quanlichucvu&query=them&thanhcong=1');
             exit;
         } else {
-            // Lỗi khi thêm sản phẩm
-            echo "Lỗi: " . mysqli_error($conn);
+            // Nếu chưa tồn tại, thực hiện sửa
+            $sql_update = "UPDATE role SET role_name = ?, role_description = ?, status_id = ? WHERE id = ?";
+            $stmt_update = $conn->prepare($sql_update);
+            $stmt_update->bind_param("ssii", $role_name, $role_description, $status_id, $role_id);
+
+            if ($stmt_update->execute()) {
+                // Cập nhật thành công
+                header('Location: ../../../Frontend/AdminUI/index.php?action=quanlichucvu&query=them&thanhcong=0');
+                exit;
+            } else {
+                // Lỗi khi cập nhật
+                echo "Có lỗi xảy ra khi cập nhật: " . $stmt_update->error;
+            }
         }
     } else {
-        // Lỗi khi di chuyển hình ảnh
-        echo "Lỗi: Không thể tải lên hình ảnh.";
-    }
-} elseif (isset($_POST['suasanpham'])) {
-	// Lấy ID sản phẩm từ URL
-    $idsanpham = $_GET['idsanpham'];
-
-    // Lấy dữ liệu từ form
-    $tensanpham = $_POST['tensanpham'];
-    $motasp = $_POST['motasp'];
-    $giasp = $_POST['giasp'];
-    $idloaisp = $_POST['loaisp'];
-    $tinhtrang = $_POST['tinhtrang'];
-    $hinhanh = $_FILES['hinhanh']['name'];
-    $hinhanh_tmp = $_FILES['hinhanh']['tmp_name'];
-
-    // Nếu có hình ảnh mới được tải lên
-    if (!empty($hinhanh)) {
-        // Đổi tên hình ảnh để tránh trùng lặp
-        $hinhanh = time() . '_' . $hinhanh;
-
-        // Đường dẫn lưu hình ảnh
-        $upload_dir = '../../Uploads/Product Picture/';
-        $image_url = $upload_dir . $hinhanh;
-
-        // Di chuyển hình ảnh vào thư mục
-        move_uploaded_file($hinhanh_tmp, $image_url);
-    } else {
-        // Giữ nguyên hình ảnh cũ
-        $sql_anh = "SELECT image_url FROM product WHERE product_id = '$idsanpham'";
-        $query_anh = mysqli_query($conn, $sql_anh);
-        $row_anh = mysqli_fetch_assoc($query_anh);
-        $image_url = $row_anh['image_url'];
-    }
-
-    // Cập nhật thông tin sản phẩm
-    $sql_sua = "UPDATE product SET 
-                product_name = '$tensanpham', 
-                product_description = '$motasp', 
-                price = '$giasp', 
-                category_id = '$idloaisp', 
-                status_id = '$tinhtrang', 
-                image_url = '$image_url' 
-                WHERE product_id = '$idsanpham'";
-
-    if (mysqli_query($conn, $sql_sua)) {
-        // Thành công, chuyển hướng về trang quản lý sản phẩm
-        header('Location: ../../../Frontend/AdminUI/index.php?action=quanlisanpham&query=them');
-        exit;
-    } else {
-        // Lỗi khi cập nhật
-        echo "Lỗi: " . mysqli_error($conn);
+        echo "Dữ liệu không hợp lệ.";
     }
 } else {
-    $id = $_GET['idsanpham'];
-
-    // Xóa bản ghi liên quan trong giỏ hàng
-    $sql_cart_delete = "DELETE FROM cart_item WHERE product_id='$id'";
-    mysqli_query($conn, $sql_cart_delete);
-
-    // Xóa sản phẩm chính
-    $sql = "SELECT * FROM product WHERE product_id = '$id' LIMIT 1";
-    $query = mysqli_query($conn, $sql);
-    while ($row = mysqli_fetch_array($query)) {
-        if (file_exists('../../Uploads/Product Picture/' . $row['image_url'])) {
-            unlink('../../Uploads/Product Picture/' . $row['image_url']);
-        }
-    }
-
-    // Xóa sản phẩm
-    $sql_xoa = "DELETE FROM product WHERE product_id='$id'";
-    mysqli_query($conn, $sql_xoa);
-
-    // Chuyển hướng về trang quản lý
-    header('Location: ../../../Frontend/AdminUI/index.php?action=quanlisanpham&query=them');
+    echo "Yêu cầu không hợp lệ.";
 }
+
+// Đóng kết nối
+$conn->close();
+?>
