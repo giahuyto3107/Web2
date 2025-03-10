@@ -20,24 +20,40 @@ if (empty($products) || empty($total_amount) || empty($address) || empty($phone)
 $conn->begin_transaction();
 
 try {
+    // Chèn đơn hàng vào bảng `orders`
     $sql = "INSERT INTO orders (user_id, order_date, total_amount, status_id, payment_method, phone, address) 
             VALUES (?, NOW(), ?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
     
-    $stmt->bind_param("idssss", $user_id, $total_amount, $status_id, $payment_method, $phone, $address);
+    // Sửa kiểu dữ liệu của bind_param
+    $stmt->bind_param("iissss", $user_id, $total_amount, $status_id, $payment_method, $phone, $address);
     $stmt->execute();
     
     $order_id = $conn->insert_id;
 
-    $sql = "INSERT INTO order_items (order_id, product_id, quantity) VALUES (?, ?, ?)";
+    // Chèn các sản phẩm vào bảng `order_items`
+    $sql = "INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
+    
     foreach ($products as $product) {
         $product_id = $product['product_id'];
         $quantity = $product['quantity'];
-        $stmt->bind_param("iii", $order_id, $product_id, $quantity);
+        
+        // Tìm giá sản phẩm từ session
+        $price = 0; // Giá mặc định nếu không tìm thấy
+        foreach ($_SESSION['selectedProducts'] as $selectedProduct) {
+            if ($selectedProduct['product_id'] == $product_id) {
+                $price = $selectedProduct['price']; // Lấy giá đúng
+                break;
+            }
+        }
+
+        // Thực thi câu lệnh SQL
+        $stmt->bind_param("iiid", $order_id, $product_id, $quantity, $price);
         $stmt->execute();
     }
 
+    // Xóa sản phẩm trong giỏ hàng
     $sql = "DELETE FROM cart_items WHERE user_id = ? AND product_id = ?";
     $stmt = $conn->prepare($sql);
     foreach ($products as $product) {
@@ -46,9 +62,9 @@ try {
         $stmt->execute();
     }
 
+    // Xóa session sau khi đặt hàng thành công
     unset($_SESSION['selectedProducts']);
     unset($_SESSION['selectedTotal']);
-    unset($_SESSION['selected_products']);
     unset($_SESSION['user_phone']);
     unset($_SESSION['user_address']);
 
