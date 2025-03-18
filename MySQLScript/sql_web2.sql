@@ -119,6 +119,17 @@ CREATE TABLE IF NOT EXISTS product_category (
         ON UPDATE CASCADE
 );    
 
+-- Thêm dữ liệu cho bảng product_category
+INSERT INTO `product_category` (`product_id`, `category_id`) 
+VALUES
+    (1, 1), -- 'The Great Gatsby' - 'Fiction'
+    (2, 3), -- '1984' - 'Science Fiction'
+    (3, 2), -- 'Sapiens' - 'Non-Fiction'
+    (4, 3), -- 'Dune' - 'Science Fiction'
+    (5, 3), -- 'Dune' (bản trùng) - 'Science Fiction'
+    (1, 4), -- 'The Great Gatsby' - 'Mystery'
+    (2, 1); -- '1984' - 'Fiction'
+    
 CREATE TABLE IF NOT EXISTS user (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
     full_name VARCHAR(100) NOT NULL,
