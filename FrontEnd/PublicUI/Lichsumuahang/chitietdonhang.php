@@ -17,9 +17,9 @@ if (isset($_GET['order_id'])) {
         exit;
     }
 
-    // Lấy danh sách sản phẩm trong đơn hàng
-    $query_items = "SELECT product.product_id, product.product_name, order_items.quantity, 
-                           product.price, product.image_url
+
+    $query_items = "SELECT product.product_id, product.product_name, order_items.quantity 
+                           , product.image_url, order_items.price
                     FROM order_items 
                     JOIN product ON order_items.product_id = product.product_id 
                     WHERE order_items.order_id = '$order_id'";
@@ -165,16 +165,16 @@ mysqli_close($conn);
             <?php 
                 $total_price = 0;
                 while ($item = mysqli_fetch_assoc($result_items)) { 
-                    $subtotal = $item['quantity'] * $item['price'];
-                    $total_price += $subtotal;
+                    $price = $item['price'] / $item['quantity'];
+                    
             ?>
                 <tr>
                     <td><img src="../../../BackEnd/Uploads/Product Picture/<?= urlencode($item['image_url']) ?>" width="50" class="img-thumbnail">
                     </td>
                     <td><?= htmlspecialchars($item['product_name']) ?></td>
                     <td><?= htmlspecialchars($item['quantity']) ?></td>
+                    <td><?= number_format($price, 0, ',', '.') ?> đ</td>
                     <td><?= number_format($item['price'], 0, ',', '.') ?> đ</td>
-                    <td><?= number_format($subtotal, 0, ',', '.') ?> đ</td>
                     
                     <?php if ($order_status == 4) : ?>
                         <td>
