@@ -119,6 +119,9 @@ CREATE TABLE IF NOT EXISTS product_category (
         ON UPDATE CASCADE
 );    
 
+INSERT INTO product_category (product_id, category_id) 
+VALUES (1, 2), (1,3), (1,4), (2,1), (2,3), (3, 4), (4,1), (5, 6); 
+
 CREATE TABLE IF NOT EXISTS user (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
     full_name VARCHAR(100) NOT NULL,

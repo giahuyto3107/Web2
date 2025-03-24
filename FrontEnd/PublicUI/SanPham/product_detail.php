@@ -1,15 +1,17 @@
 <?php
 include ('../../../BackEnd/Config/config.php');
 
-
 if (!isset($_GET['id']) || empty($_GET['id'])) {
     die("Sản phẩm không tồn tại!");
 }
 
 $product_id = intval($_GET['id']);
 
-
-$sql = "SELECT product_id, product_name, product_description, price, stock_quantity, category_id, status_id, image_url, created_at, updated_at FROM product WHERE product_id = ?";
+// Lấy thông tin sản phẩm
+$sql = "SELECT product_id, product_name, product_description, price, stock_quantity, 
+               status_id, image_url, created_at, updated_at 
+        FROM product 
+        WHERE product_id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $product_id);
 $stmt->execute();
@@ -20,23 +22,33 @@ if (!$product) {
     die("Sản phẩm không tồn tại!");
 }
 
-// Lấy thông tin danh mục sản phẩm
-$sqlCategory = "SELECT category_name, category_description FROM category WHERE category_id = ?";
-$stmt_category = $conn->prepare($sqlCategory);
-$stmt_category->bind_param("i", $product['category_id']);
-$stmt_category->execute();
-$result_category = $stmt_category->get_result();
-$category = $result_category->fetch_assoc();
+// Lấy tất cả danh mục của sản phẩm
+$sqlCategories = "SELECT c.category_id, c.category_name, c.category_description 
+                  FROM category c 
+                  INNER JOIN product_category pc ON c.category_id = pc.category_id 
+                  WHERE pc.product_id = ?";
+$stmt_categories = $conn->prepare($sqlCategories);
+$stmt_categories->bind_param("i", $product_id);
+$stmt_categories->execute();
+$result_categories = $stmt_categories->get_result();
+$categories = [];
+while ($row = $result_categories->fetch_assoc()) {
+    $categories[] = $row;
+}
 
-// Lấy đánh giá sản phẩm và trung bình rating
-$sqlReview = "SELECT user_id, rating, review_text, feedback FROM review WHERE product_id = ? AND status_id = 1";
+// Lấy đánh giá sản phẩm và trung bình rating (không thay đổi)
+$sqlReview = "SELECT user_id, rating, review_text, feedback 
+              FROM review 
+              WHERE product_id = ? AND status_id = 1";
 $stmt_review = $conn->prepare($sqlReview);
 $stmt_review->bind_param("i", $product_id);
 $stmt_review->execute();
 $result_review = $stmt_review->get_result();
 
-// Tính điểm đánh giá trung bình
-$sqlAvgRating = "SELECT AVG(rating) AS avg_rating FROM review WHERE product_id = ?";
+// Tính điểm đánh giá trung bình (không thay đổi)
+$sqlAvgRating = "SELECT AVG(rating) AS avg_rating 
+                 FROM review 
+                 WHERE product_id = ?";
 $stmt_avg_rating = $conn->prepare($sqlAvgRating);
 $stmt_avg_rating->bind_param("i", $product_id);
 $stmt_avg_rating->execute();
@@ -333,8 +345,8 @@ $avg_rating = $result_avg_rating->fetch_assoc()['avg_rating'];
         <!-- Breadcrumb -->
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
-                <li class="breadcrumb-item"><a href="#"><?php echo htmlspecialchars($category['category_name']); ?></a></li>
+                <li class="breadcrumb-item"><a href="http://localhost/Web2/FrontEnd/PublicUI/SanPham/danhsachSP.php">Trang chủ</a></li>
+
                 <li class="breadcrumb-item active" aria-current="page"><?php echo htmlspecialchars($product['product_name']); ?></li>
             </ol>
         </nav>
@@ -371,15 +383,26 @@ $avg_rating = $result_avg_rating->fetch_assoc()['avg_rating'];
                             
                             <div class="card mb-4">
                                 <div class="card-body">
-                                    <h5 class="card-title">Thông tin sản phẩm</h5>
+                                    <h5 class="card-title">Giới thiệu về sách</h5>
                                     <p><?php echo nl2br(htmlspecialchars($product['product_description'])); ?></p>
                                 </div>
                             </div>
                             <div class="card">
                                 <div class="card-body">
-                                    <h5 class="card-title">Thông tin danh mục</h5>
-                                    <p><strong>Danh mục:</strong> <?php echo htmlspecialchars($category['category_name']); ?></p>
-                                    <p><strong>Mô tả:</strong> <?php echo htmlspecialchars($category['category_description']); ?></p>
+                                    <h5 class="card-title">Thông tin sản phẩm</h5>
+                                    <p><strong>Danh mục:</strong> 
+                                        <?php 
+                                        if (!empty($categories)) {
+                                            $category_names = array_map(function($cat) {
+                                                return htmlspecialchars($cat['category_name']);
+                                            }, $categories);
+                                            echo implode(', ', $category_names);
+                                        } else {
+                                            echo "Không có danh mục";
+                                        }
+                                        ?>
+                                    </p>
+                                    
                                     <p><strong>Trạng thái:</strong> <?php echo ($product['status_id'] == 1) ? "Còn hàng" : "Hết hàng"; ?></p>
                                 </div>
                             </div>
@@ -430,25 +453,32 @@ $avg_rating = $result_avg_rating->fetch_assoc()['avg_rating'];
                     <div class="marquee-vertical">
                         <div class="marquee-content">
                             <?php
-                            $sqlSuggested =    "SELECT product_id, product_name, image_url 
-                                                FROM product 
-                                                WHERE category_id = ? 
-                                                ORDER BY RAND() 
-                                                LIMIT 5";
-                            
-                            $stmt_suggested = $conn->prepare($sqlSuggested);
-                            $stmt_suggested->bind_param("i", $product['category_id']);
-                            $stmt_suggested->execute();
-                            $result_suggested = $stmt_suggested->get_result();
-           
-                            
-                            while ($suggested = $result_suggested->fetch_assoc()) {
-                                echo '<div class="product-item">';
-                                echo '<a href="product_detail.php?id=' . htmlspecialchars($suggested['product_id']) . '">';
-                                echo '<img src="../../../BackEnd/Uploads/Product Picture/' . htmlspecialchars($suggested['image_url']) . '" alt="' . htmlspecialchars($suggested['product_name']) . '">';
-                                echo '<span class="product-name">' . htmlspecialchars($suggested['product_name']) . '</span>';
-                                echo '</a>';
-                                echo '</div>';
+                            // Lấy danh sách category_id của sản phẩm hiện tại
+                            $category_ids = array_column($categories, 'category_id');
+                            if (!empty($category_ids)) {
+                                $placeholders = implode(',', array_fill(0, count($category_ids), '?'));
+                                $sqlSuggested = "SELECT p.product_id, p.product_name, p.image_url 
+                                                FROM product p 
+                                                INNER JOIN product_category pc ON p.product_id = pc.product_id 
+                                                WHERE pc.category_id IN ($placeholders) 
+                                                AND p.product_id != ? 
+                                                ORDER BY RAND()"; 
+                                                // LIMIT 5";
+                                $stmt_suggested = $conn->prepare($sqlSuggested);
+                                $params = array_merge($category_ids, [$product_id]);
+                                $types = str_repeat('i', count($category_ids)) . 'i';
+                                $stmt_suggested->bind_param($types, ...$params);
+                                $stmt_suggested->execute();
+                                $result_suggested = $stmt_suggested->get_result();
+
+                                while ($suggested = $result_suggested->fetch_assoc()) {
+                                    echo '<div class="product-item">';
+                                    echo '<a href="product_detail.php?id=' . htmlspecialchars($suggested['product_id']) . '">';
+                                    echo '<img src="../../../BackEnd/Uploads/Product Picture/' . htmlspecialchars($suggested['image_url']) . '" alt="' . htmlspecialchars($suggested['product_name']) . '">';
+                                    echo '<span class="product-name">' . htmlspecialchars($suggested['product_name']) . '</span>';
+                                    echo '</a>';
+                                    echo '</div>';
+                                }
                             }
                             ?>
                         </div>

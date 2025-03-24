@@ -9,27 +9,30 @@ $page = $_GET['page'] ?? 1;
 $limit = 8;
 $offset = ($page - 1) * $limit;
 
-$query = "SELECT * FROM product WHERE 1=1";
+$query = "SELECT p.* FROM product p 
+          LEFT JOIN product_category pc ON p.product_id = pc.product_id 
+          LEFT JOIN category c ON pc.category_id = c.category_id 
+          WHERE 1=1";
 
 if ($search_name) {
-    $query .= " AND product_name LIKE '%$search_name%'";
+    $query .= " AND p.product_name LIKE '%" . $conn->real_escape_string($search_name) . "%'";
 }
 if ($category) {
-    $query .= " AND category_id = $category";
+    $query .= " AND c.category_id = " . intval($category);
 }
 if ($min_price) {
-    $query .= " AND price >= $min_price";
+    $query .= " AND p.price >= " . floatval($min_price);
 }
 if ($max_price) {
-    $query .= " AND price <= $max_price";
+    $query .= " AND p.price <= " . floatval($max_price);
 }
 
-$total_query = str_replace("SELECT *", "SELECT COUNT(*) as total", $query);
+$total_query = str_replace("SELECT p.*", "SELECT COUNT(DISTINCT p.product_id) as total", $query);
 $total_result = $conn->query($total_query);
 $total_row = $total_result->fetch_assoc();
 $total_pages = ceil($total_row['total'] / $limit);
 
-$query .= " LIMIT $limit OFFSET $offset";
+$query .= " GROUP BY p.product_id LIMIT $limit OFFSET $offset";
 $result = $conn->query($query);
 
 $uploads_path = "../../../BackEnd/Uploads/Product Picture/";
@@ -39,8 +42,6 @@ while ($row = $result->fetch_assoc()) {
     $products[] = $row;
 }
 echo json_encode(['products' => $products, 'total_pages' => $total_pages]);
-
-
 
 $conn->close();
 ?>
