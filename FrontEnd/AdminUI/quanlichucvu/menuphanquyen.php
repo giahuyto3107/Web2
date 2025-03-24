@@ -39,12 +39,13 @@
     </div>
 
     <div class="button-container">
-        <button type="button" class ="save" id="savePermissions" name="updateRolePermission">Lưu</button>          
+        <button type="button" class ="save" id="savePermissions" name="updateRolePermission" href="../../BackEnd/quanliphieunhap/xuliphieunhap.php">Lưu</button>          
     </div>
     
 </div>
 
 <script>
+
 document.addEventListener("DOMContentLoaded", function () {
     let roleId = "<?= $role_id ?>"; // Role ID from PHP
 
@@ -143,9 +144,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     .button-container{
         width: 100%;
-    display: flex;
-    justify-content: center; /* Centers the button */
-    margin-top: 20px;
+        display: flex;
+        justify-content: center; /* Centers the button */
+        margin-top: 20px;
     }
 
     .save {
