@@ -240,7 +240,7 @@
             </thead>
             <tbody id="order-list">
                 <?php
-                    $conn = mysqli_connect("localhost", "root", "", "web2_sql");
+                    include ('../../BackEnd/Config/config.php');
                     $query_lietke_dh = "SELECT orders.order_id, user.full_name, orders.order_date, orders.payment_method, status.id, orders.address 
                                         FROM orders 
                                         JOIN user ON orders.user_id = user.user_id 
