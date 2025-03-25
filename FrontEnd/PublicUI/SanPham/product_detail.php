@@ -361,7 +361,7 @@ $avg_rating = $result_avg_rating->fetch_assoc()['avg_rating'];
                         </div>
                         <div class="col-md-7">
                             <h1 class="product-title"><?php echo htmlspecialchars($product['product_name']); ?></h1>
-                            <p class="text-muted mb-1">Mã SP: <?php echo $product['product_id']; ?></p>
+                            <p class="text-muted mb-1">Mã Sản Phẩm: <?php echo $product['product_id']; ?></p>
                             <p class="stock-info">Số lượng: <?php echo $product['stock_quantity']; ?> sản phẩm trong kho</p>
                             
                             <div class="d-flex justify-content-between align-items-center mb-3">

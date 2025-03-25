@@ -203,12 +203,21 @@ include ('../../../BackEnd/Config/config.php');
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    $(document).ready(function () {
+$(document).ready(function () {
     function fetchProducts(page = 1) {
         let search_name = $("#search_name").val();
         let category = $("#category").val();
         let min_price = $("#min_price").val();
         let max_price = $("#max_price").val();
+
+        // Đảm bảo giá trị không âm
+        min_price = min_price < 0 ? 0 : min_price;
+        max_price = max_price < 0 ? 0 : max_price;
+
+        // Nếu min_price lớn hơn max_price, hoán đổi giá trị
+        if (min_price && max_price && parseFloat(min_price) > parseFloat(max_price)) {
+            [min_price, max_price] = [max_price, min_price];
+        }
 
         $.ajax({
             url: "fetch_products.php",
@@ -225,7 +234,6 @@ include ('../../../BackEnd/Config/config.php');
                                     <a href="product_detail.php?id=${product.product_id}">
                                         <img src="${product.image_url}" class="card-img-top" alt="Hình ảnh sản phẩm">                                    
                                     </a>
-
                                     <div class="card-body">
                                         <h5 class="card-title">${product.product_name}</h5>
                                         <p class="card-text">${product.product_description}</p>
@@ -255,6 +263,13 @@ include ('../../../BackEnd/Config/config.php');
         $("#pagination").html(paginationHtml);
     }
 
+    // Ngăn nhập giá trị âm trực tiếp trên input
+    $("#min_price, #max_price").on('input', function() {
+        if (this.value < 0) {
+            this.value = 0;
+        }
+    });
+
     $(document).on("keyup change", "#search_name, #category, #min_price, #max_price", function () {
         fetchProducts();
     });
@@ -267,7 +282,6 @@ include ('../../../BackEnd/Config/config.php');
 
     fetchProducts();
 });
-
 </script>
 </body>
 </html>
