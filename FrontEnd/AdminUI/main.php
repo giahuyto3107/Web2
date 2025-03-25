@@ -17,7 +17,7 @@
             } elseif ($tam == 'quanliloaisp' && $query == 'sua') {
                 include 'quanliloaisp/sualoaisp.php';
             } 
-            
+
             elseif ($tam == 'quanlibinhluan' && $query == 'them') {
                 include "quanlibinhluan/lietkebinhluan.php";
             } elseif ($tam == 'quanlibinhluan' && $query == 'sua') {
@@ -73,6 +73,10 @@
                 include "quanlinhacungcap/lietkenhacungcap.php";
             } elseif ($tam == 'quanlinhacungcap' && $query == 'sua') {
                 include "quanlinhacungcap/suanhacungcap.php";
+            }
+
+            elseif($tam == 'nhaphang' && $query == 'them') {
+                include "nhaphang/menunhaphang.php";
             }
         ?>
     </div>
