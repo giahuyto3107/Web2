@@ -22,8 +22,8 @@
         include "quanlitaikhoan/lietketaikhoan.php";
     } elseif ($action === 'quanliphanquyen') {
         include "quanliphanquyen/lietkephanquyen.php";
-    } elseif ($action === 'quanlichucvu') {
-        include "quanlichucvu/lietkechucvu.php";
+    } elseif ($action === 'quanlinhaphang') {
+        include "nhaphang/menunhaphang.php";
     }
      else {
         echo "<h2>Chào mừng đến với Dashboard!</h2>";

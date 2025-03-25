@@ -225,7 +225,7 @@ document.addEventListener("DOMContentLoaded", attachUpdateEvent);
     }
 
     .active:hover {
-        background: #218838;
+        /* background: #218838; */
     }
 
     .inactive {
