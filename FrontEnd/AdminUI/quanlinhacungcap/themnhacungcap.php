@@ -1,41 +1,44 @@
-<div class="center">
-    <button id="open-popup">Thêm nhà cung cấp</button>
-</div>
-
-<div class="popup" id="popup">
-    <div class="overlay"></div>
-    <div class="popup-content">
-        <h2>Thêm nhà cung cấp</h2>
-        <div class="form">
-            <div class="form-content">
-                <form method="POST" action="../../BackEnd/Model/quanlinhacungcap/xulinhacungcap.php">
-                    <div class="input1">
-                        <p>Tên nhà cung cấp</p>
-                        <input type="text" name="tennhacungcap" required>
-                    </div>
-                    <div class="input1">
-                        <p>Số điện thoại nhà cung cấp</p>
-                        <input type="text" name="sdt" required>
-                    </div>
-                    <div class="input1">
-                        <p>Địa chỉ nhà cung cấp</p>
-                        <input type="text" name="diachi" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="trangthai">Trạng thái</label>
-                        <select id="trangthai" name="trangthai" required>
-                            <option value="1">Hoạt động</option>
-                            <option value="2">Không hoạt động</option>
-                        </select>
-                    </div>
-
-                    <div class="input2">
-                        <input type="submit" name="themncc" value="Thêm Loại sản phẩm">
-                    </div>
-                </form>
-            </div>
-        </div>
-        <button class="close-btn">X</button>
+<dialog data-modal id="add-modal">
+    <div class="modal-header">
+        <h2>Thêm Nhà Cung Cấp</h2>
+        <button class="modal-close" data-id="add-modal">
+            <i class="fa fa-times" style="font-size: 1.5rem; height: 1.5rem"></i>
+        </button>
     </div>
-</div>
+    <div class="modal-content">
+        <form id="modal-add-form" class="modal-form">
+            <div class="modal-input">
+                <span>Tên nhà cung cấp</span>
+                <input type="text" id="modal-add-name" name="supplier_name" required />
+                <p class="modal-error" id="modal-add-name-error"></p>
+            </div>
+            <div class="modal-input">
+                <span>Số điện thoại</span>
+                <input type="text" id="modal-add-contact-phone" name="contact_phone" required />
+                <p class="modal-error" id="modal-add-contact-phone-error"></p>
+            </div>
+            <div class="modal-input">
+                <span>Địa chỉ</span>
+                <input type="text" id="modal-add-address" name="address" required />
+                <p class="modal-error" id="modal-add-address-error"></p>
+            </div>
+            <div class="modal-input">
+                <span>Nhà xuất bản</span>
+                <input type="text" id="modal-add-publisher" name="publisher" required />
+                <p class="modal-error" id="modal-add-publisher-error"></p>
+            </div>
+            <div class="modal-input">
+                <span>Trạng thái</span>
+                <select id="modal-add-status" name="status_id" required>
+                    <option value="1">Active</option>
+                    <option value="2">Inactive</option>
+                </select>
+                <p class="modal-error" id="modal-add-status-error"></p>
+            </div>
+            <div class="modal-buttons">
+                <button class="close" id="add-close-button">Hủy</button>
+                <button type="submit" class="save">Lưu</button>
+            </div>
+        </form>
+    </div>
+</dialog>

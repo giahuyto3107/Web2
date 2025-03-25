@@ -1,0 +1,327 @@
+:root {
+  --clr-primary-300: #222e3c;
+
+  --clr-neutral-0: hsl(0 0% 100%);
+  --clr-neutral-100: #f8f9fa;
+  --clr-neutral-200: #f5f7fb;
+  --clr-neutral-400: #495057;
+  --clr-neutral-500: #333;
+  --clr-neutral-900: #000000;
+
+  --clr-error: #dc3545;
+
+  --clr-body-bg: var(--clr-neutral-200);
+  --clr-body: var(--clr-neutral-400);
+
+  --clr-table-header: var(--clr-neutral-400);
+
+  --fs-200: 0.75rem;
+  --fs-300: 0.875rem;
+  --fs-400: 1rem;
+  --fs-500: 1.5rem;
+  --fs-600: 2rem;
+  --fs-700: 2.5rem;
+  --fs-800: 3rem;
+
+  --ff-primary: "Inter", sans-serif;
+
+  --fw-light: 300;
+  --fw-regular: 400;
+  --fw-bold: 600;
+
+  --fs-body: var(--fs-300);
+  --ff-body: var(--ff-primary);
+
+  --fs-primary-heading: var(--fs-500);
+
+  --size-100: 0.5rem;
+  --size-200: 0.75rem;
+  --size-300: 1rem;
+  --size-400: 1.5rem;
+  --size-500: 2rem;
+  --size-600: 3rem;
+  --size-700: 4rem;
+  --size-800: 5rem;
+  --size-900: 6rem;
+
+  --p-header: var(--size-400);
+}
+
+/* Box sizing rules */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Remove default margin */
+* {
+  margin: 0;
+  padding: 0;
+  font: inherit;
+}
+
+/* Remove list styles on ul, ol elements with a list role, which suggests default styling will be removed */
+ul[role="list"],
+ol[role="list"] {
+  list-style: none;
+}
+
+/* Set core root defaults */
+html:focus-within {
+  scroll-behavior: smooth;
+}
+
+html,
+body {
+  height: 100%;
+  overflow-x: hidden;
+}
+
+/* Set core body defaults */
+body {
+  text-rendering: optimizeSpeed;
+  line-height: 1.5;
+}
+
+/* A elements that don't have a class get default styles */
+a:not([class]) {
+  text-decoration-skip-ink: auto;
+}
+
+/* Make images easier to work with */
+img,
+picture,
+svg {
+  max-width: 100%;
+  display: block;
+}
+
+/* General Stylings */
+
+body {
+  font-size: var(--fs-body);
+  font-family: var(--ff-body);
+  background-color: var(--clr-body-bg);
+  color: var(--clr-body);
+}
+
+.card {
+  background-color: var(--clr-neutral-0);
+  box-shadow: 0 0 0.875rem 0 rgba(33, 37, 41, 0.05);
+  padding: var(--size-400);
+}
+
+.form-control input {
+  width: 100%;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  border: 1px solid #ccc;
+  border-radius: 0.35rem;
+  background-color: hsl(0 0% 100%);
+  color: #333;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-control {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-control label span {
+  color: var(--clr-error);
+}
+
+.form-control input:focus {
+  background-color: #fff;
+  border-color: #9dbeee;
+  box-shadow: 0 0 0 0.25rem rgba(59, 125, 221, 0.25);
+  color: #495057;
+  outline: 0;
+}
+
+.form-button {
+  width: 100%;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.3rem;
+  color: var(--clr-neutral-0);
+  background-color: #2d3e52;
+  cursor: pointer;
+  transition: background-color 0.15s ease-in-out;
+}
+
+.form-button:hover {
+  background-color: rgb(54, 89, 130);
+}
+
+.response-message {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  width: 100%;
+  top: -0.5rem;
+  right: 1.5rem;
+  max-width: 18rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  border-bottom-right-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+.response-text {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.success-message {
+  background-color: #d4edda;
+  color: #155724;
+  border-color: #c3e6cb;
+}
+
+.error-message {
+  color: #721c24;
+  background-color: #f8d7da;
+  border-color: #f5c6cb;
+}
+
+.progress-container {
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  border-bottom-right-radius: 100vmax;
+  border-bottom-left-radius: 100vmax;
+  background-color: #d5d5d5;
+}
+
+.progress-bar {
+  width: 0%;
+  height: 5px;
+  text-align: center;
+  line-height: 30px;
+  color: white;
+  border-bottom-right-radius: 100vmax;
+  border-bottom-left-radius: 100vmax;
+}
+
+.success-bar {
+  background-color: #4caf50;
+}
+
+.error-bar {
+  background-color: #a1323d;
+}
+
+@media (max-width: 32em) {
+  .response-message {
+    max-width: 15rem;
+    left: 0;
+    right: 0;
+    margin: auto;
+  }
+}
+
+/* Utility Classes */
+.visually-hidden {
+  position: absolute;
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+.container {
+  --max-width: 75rem;
+  --padding: 1rem;
+
+  width: min(var(--max-width), 100% - (var(--padding) * 2));
+  margin-inline: auto;
+}
+
+.heading {
+  color: var(--clr-neutral-900);
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.mb-3 {
+  margin-bottom: 1rem;
+}
+.mb-4 {
+  margin-bottom: 1.5rem;
+}
+
+.mt-3 {
+  margin-top: 1rem;
+}
+.mt-4 {
+  margin-top: 1.5rem;
+}
+
+
+/* Định dạng chung cho phần danh mục */
+.category-checkboxes {
+  margin-bottom: 15px;
+}
+
+/* Tiêu đề "Categories" */
+.category-checkboxes span {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+/* Khung chứa checkbox */
+#modal-add-category-checkboxes {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 10px;
+  max-height: 150px; /* Giới hạn chiều cao, cuộn nếu vượt quá */
+  overflow-y: auto; /* Thêm thanh cuộn dọc khi cần */
+  background-color: #fff;
+}
+
+/* Định dạng mỗi checkbox và label */
+#modal-add-category-checkboxes label {
+  display: flex;
+  align-items: center;
+  margin: 5px 0;
+  font-size: 14px;
+  color: #555;
+}
+
+/* Checkbox */
+#modal-add-category-checkboxes input[type="checkbox"] {
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+/* Hover effect cho label */
+#modal-add-category-checkboxes label:hover {
+  background-color: #f5f5f5;
+  border-radius: 2px;
+}
+
+/* Thông báo lỗi */
+#modal-add-category-error {
+  color: red;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
