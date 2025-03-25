@@ -421,7 +421,7 @@ $(document).ready(function () {
                 $("#momo-option").prop("disabled", true);
                 $("#QR-option").prop("disabled", true);
                 $("#phone").css("border-color", "red"); 
-                $("#phone").focus();
+                // $("#phone").focus();
             }
         }
         $("#phone, #address").on("input", function () {

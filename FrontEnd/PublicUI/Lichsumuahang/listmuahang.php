@@ -1,6 +1,7 @@
 <?php
 session_start();
-$user_id = $_SESSION['account_id'];
+// $user_id = $_SESSION['account_id'];
+$user_id =1;
 ?>
 
 <html lang="en">

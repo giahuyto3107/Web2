@@ -31,9 +31,12 @@ try {
     
     $order_id = $conn->insert_id;
 
-    // Chèn các sản phẩm vào bảng `order_items`
-    $sql = "INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)";
-    $stmt = $conn->prepare($sql);
+    // Chuẩn bị câu lệnh để chèn order_items và cập nhật số lượng sản phẩm
+    $sql_order_items = "INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)";
+    $stmt_order_items = $conn->prepare($sql_order_items);
+
+    $sql_update_quantity = "UPDATE product SET stock_quantity = stock_quantity - ? WHERE product_id = ?";
+    $stmt_update_quantity = $conn->prepare($sql_update_quantity);
     
     foreach ($products as $product) {
         $product_id = $product['product_id'];
@@ -48,11 +51,20 @@ try {
             }
         }
 
-        // Thực thi câu lệnh SQL
-        $stmt->bind_param("iiid", $order_id, $product_id, $quantity, $price);
-        $stmt->execute();
-    }
+        // Thêm vào order_items
+        $stmt_order_items->bind_param("iiid", $order_id, $product_id, $quantity, $price);
+        $stmt_order_items->execute();
 
+        // Giảm số lượng sản phẩm trong kho
+        $stmt_update_quantity->bind_param("ii", $quantity, $product_id);
+        $stmt_update_quantity->execute();
+
+        // Kiểm tra nếu số lượng âm (tùy chọn)
+        if ($conn->affected_rows == 0) {
+            throw new Exception("Không thể cập nhật số lượng sản phẩm cho product_id: $product_id");
+        }
+    }
+    
     // Xóa sản phẩm trong giỏ hàng
     $sql = "DELETE FROM cart_items WHERE user_id = ? AND product_id = ?";
     $stmt = $conn->prepare($sql);

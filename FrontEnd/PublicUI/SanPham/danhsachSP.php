@@ -179,10 +179,11 @@ include ('../../../BackEnd/Config/config.php');
             </div>
             <div class="col-md-2">
                 <select id="category" class="form-control">
-                    <option value="">Chọn loại sản phẩm</option>
+                    <option value="">Tất cả</option>
                     <option value="1">Fiction</option>
                     <option value="2">Non-Fiction</option>
                     <option value="3">Science Fiction</option>
+                    <option value="4">Mystery</option>
                 </select>
             </div>
             <div class="col-md-2">

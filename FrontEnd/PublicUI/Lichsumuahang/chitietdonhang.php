@@ -5,7 +5,7 @@ if (isset($_GET['order_id'])) {
     $order_id = mysqli_real_escape_string($conn, $_GET['order_id']);
     
     // Lấy thông tin đơn hàng
-    $query = "SELECT orders.order_id, orders.order_date, orders.status_id
+    $query = "SELECT orders.order_id, orders.order_date, orders.status_id, orders.total_amount
               FROM order_items 
               JOIN orders ON order_items.order_id = orders.order_id 
               WHERE orders.order_id = '$order_id'";
@@ -116,6 +116,7 @@ mysqli_close($conn);
             border-radius: 8px;
         }
         .back-btn {
+            width: 100%;
             display: inline-block;
             margin-top: 20px;
             padding: 12px 20px;
@@ -192,9 +193,6 @@ mysqli_close($conn);
     <div class="container-fluid">
     <div class="row">
         <div class="col-md-12">
-        <div class="container-fluid">
-    <div class="row">
-        <div class="col-md-12">
             <div class="container-fluid p-2 align-items-center">
                 <div class="d-flex justify-content-around">
                     <?php
@@ -202,27 +200,34 @@ mysqli_close($conn);
                     $status_map = [
                         3 => 'Pending',
                         4 => 'Order Confirmed',
-                        6 => 'Out for Delivery', 
+                        // 6 => 'Out for Delivery', 
                         5 => 'Delivered'
                     ];
-
 
                     $status_colors = [
                         3 => 'bg-success',
                         4 => 'bg-success',
-                        6 => 'bg-success',
+                        // 6 => 'bg-success',
                         5 => 'bg-success'
                     ];
 
                     $icons = [
                         3 => "fa-spinner",
                         4 => "fa-clipboard-check",
-                        6 => "fa-truck-arrow-right",
+                        // 6 => "fa-truck-arrow-right",
                         5 => "fa-house-chimney"
                     ];
 
+                    // Lấy trạng thái đơn hàng từ nguồn thực tế
+                    // Ví dụ: từ cơ sở dữ liệu hoặc tham số
+                    // Giả sử $order_status được truyền từ controller hoặc truy vấn SQL
+                    $order_status = isset($order['status_id']) ? $order['status_id'] : 3; // Mặc định là 3 nếu không có dữ liệu
+
                     // Lặp qua từng trạng thái
+                    $keys = array_keys($status_map);
+                    $last_key = end($keys); // Lấy trạng thái cuối cùng
                     foreach ($status_map as $key => $value) {
+                        // Nút xanh nếu trạng thái <= order_status
                         $is_completed = $key <= $order_status;
                         $btn_color = $is_completed ? $status_colors[$key] : 'bg-secondary';
                         $icon = $icons[$key];
@@ -234,9 +239,15 @@ mysqli_close($conn);
                             <i class="fa-solid <?= $icon ?>"></i>
                         </button>
 
-                        <!-- Thanh nối, chỉ hiển thị nếu không phải là trạng thái cuối cùng -->
-                        <?php if ($key != array_key_last($status_map)): ?>
-                            <span class="<?= $is_completed ? $btn_color : 'bg-secondary' ?> w-50 p-1 mx-n1 rounded mt-auto mb-auto"></span>
+                        <!-- Thanh nối, chỉ hiển thị nếu không phải trạng thái cuối -->
+                        <?php if ($key != $last_key): ?>
+                            <?php
+                            // Thanh nối xanh nếu trạng thái hiện tại đã hoàn thành (key < order_status)
+                            $next_key = $keys[array_search($key, $keys) + 1];
+                            $line_completed = $key < $order_status;
+                            $line_color = $line_completed ? $status_colors[$key] : 'bg-secondary';
+                            ?>
+                            <span class="<?= $line_color ?> w-50 p-1 mx-n1 rounded mt-auto mb-auto"></span>
                         <?php endif; ?>
                     <?php } ?>
                 </div>
@@ -273,7 +284,7 @@ mysqli_close($conn);
                       Confirmed
                       </p>
                 </div>
-                <div class="row d-inline-flex 
+                <!-- <div class="row d-inline-flex 
                             align-items-center">
                     <i class="text-info fa-solid 
                               fa-truck-arrow-right
@@ -286,7 +297,7 @@ mysqli_close($conn);
                       <br>
                       Delivery
                       </p>
-                </div>
+                </div> -->
                 <div class="row d-inline-flex 
                             align-items-center">
                     <i class="text-success fa-solid
@@ -299,9 +310,9 @@ mysqli_close($conn);
                       </p>
                 </div>
             </div>
-    <div class="total">
+    <!-- <div class="total">
         Tổng tiền: <?= number_format($total_price, 0, ',', '.') ?> đ
-    </div>
+    </div> -->
     <a href="http://localhost/Web2/FrontEnd/PublicUI/Lichsumuahang/listmuahang.php" class="back-btn">Quay lại</a>
 </div>
 

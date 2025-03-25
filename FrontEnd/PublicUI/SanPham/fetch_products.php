@@ -13,7 +13,6 @@ $query = "SELECT p.* FROM product p
           LEFT JOIN product_category pc ON p.product_id = pc.product_id 
           LEFT JOIN category c ON pc.category_id = c.category_id 
           WHERE 1=1";
-
 if ($search_name) {
     $query .= " AND p.product_name LIKE '%" . $conn->real_escape_string($search_name) . "%'";
 }
