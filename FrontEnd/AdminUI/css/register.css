@@ -1,0 +1,173 @@
+main {
+  position: relative;
+}
+
+.primary-header {
+  background-color: var(--clr-primary-300);
+  color: var(--clr-neutral-100);
+  transition: all 0.3s ease;
+}
+
+.primary-header .container {
+  padding-block: var(--p-header);
+}
+
+.header-nav-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.primary-heading {
+  font-size: var(--fs-primary-heading);
+  font-weight: var(--fw-bold);
+}
+
+.primary-navigation {
+  margin-inline: var(--size-400);
+}
+
+.nav-list {
+  display: flex;
+  font-weight: var(--fw-bold);
+}
+
+.nav-list a {
+  color: var(--clr-neutral-100);
+  text-decoration: none;
+  padding: 1.9rem 1.5rem;
+  padding-bottom: 1.8rem;
+  transition: all 0.15s ease;
+}
+
+.nav-list a:hover {
+  background-color: var(--clr-neutral-0);
+  color: var(--clr-primary-300);
+  text-decoration: underline;
+}
+
+.register {
+  max-width: 30rem;
+  margin: auto;
+  margin-top: var(--size-600);
+}
+
+.register-text {
+  margin-bottom: var(--size-300);
+}
+
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-300);
+  padding: var(--size-300);
+}
+
+.remember-control {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.remember-control label {
+  font-size: 0.875rem;
+}
+
+.checkbox {
+  width: fit-content !important;
+}
+
+.checkbox,
+.checkbox-label {
+  cursor: pointer;
+}
+
+.no-account {
+  margin-top: 1.5rem;
+}
+
+.no-account a {
+  color: rgb(59, 125, 221);
+  text-decoration: none;
+}
+
+.no-account a:hover {
+  text-decoration: underline;
+}
+
+.error {
+  font-size: 0.75rem;
+  color: var(--clr-error);
+  margin-left: 0.5rem;
+}
+
+.response-message {
+  top: -1.5rem;
+}
+
+.primary-header {
+  height: 5rem;
+}
+
+.header-nav-wrapper {
+  position: relative;
+}
+
+.mobile-nav-wrapper {
+  opacity: 0;
+}
+
+.mobile-nav li {
+  list-style-type: none;
+  padding: 1rem 1.5rem;
+  text-align: right;
+  transition: all 0.2s ease;
+}
+
+.mobile-nav a {
+  color: var(--clr-neutral-0);
+  text-decoration: none;
+  font-weight: var(--fw-bold);
+}
+
+.mobile-nav li:hover {
+  background-color: var(--clr-neutral-0);
+  color: var(--clr-primary-300);
+}
+
+.mobile-nav-toggle {
+  display: none;
+  font-size: 1.5rem;
+  line-height: 0;
+}
+
+@media (max-width: 40em) {
+  .primary-heading {
+    font-size: 1.2rem;
+  }
+
+  .primary-navigation {
+    display: none;
+  }
+
+  .mobile-nav-wrapper[data-visible] {
+    opacity: 1;
+  }
+
+  .primary-header[data-visible] {
+    height: 11.45rem;
+  }
+
+  .mobile-nav-toggle {
+    display: block;
+    position: fixed;
+    right: 1rem;
+    cursor: pointer;
+    background: transparent;
+    border: 0;
+    padding: 0.5rem;
+  }
+
+  .mobile-nav-toggle .icon-close {
+    display: none;
+  }
+}

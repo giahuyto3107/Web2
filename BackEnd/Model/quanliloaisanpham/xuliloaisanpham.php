@@ -1,63 +1,119 @@
 <?php
-include ('../../../BackEnd/Config/config.php');
+include('../../../BackEnd/Config/config.php');
+header('Content-Type: application/json');
 
-if (isset($_POST['themloaisp'])) {
-    // Lấy dữ liệu từ form
-    $tenloaisp = $_POST['tenloaisp'];
-    $motaloaisp = $_POST['motaloaisp']; // Thêm dòng này để lấy mô tả từ form
+// Lấy dữ liệu từ POST
+$category_id = $_POST['category_id'] ?? null;
+$category_name = trim($_POST['category_name'] ?? '');
+$category_description = trim($_POST['category_description'] ?? '');
+$status_id = (int)($_POST['status_id'] ?? 1);
 
-    // Kiểm tra xem loại sản phẩm đã tồn tại hay chưa
-    $sql_check = "SELECT * FROM category WHERE category_name='$tenloaisp'";
-    $result_check = mysqli_query($conn, $sql_check);
+// Xử lý dựa trên dữ liệu nhận được
+if ($category_id) {
+    // Kiểm tra xem category_id có tồn tại không
+    $check_id_sql = "SELECT category_name FROM category WHERE category_id = ?";
+    $stmt = $conn->prepare($check_id_sql);
+    $stmt->bind_param("i", $category_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-    if (mysqli_num_rows($result_check) > 0) {
-        // Nếu loại sản phẩm đã tồn tại
-        header('Location: ../../../Frontend/AdminUI/index.php?action=quanliloaisp&query=them&thanhcong=1');
-        exit;
-    } else {
-        // Nếu chưa tồn tại, thực hiện thêm
-        $sql_them = "INSERT INTO category (category_name, category_description, status_id) VALUES ('$tenloaisp', '$motaloaisp', 1)";
-        mysqli_query($conn, $sql_them);
-        header('Location: ../../../Frontend/AdminUI/index.php?action=quanliloaisp&query=them&thanhcong=2');
+    if ($result->num_rows === 0) {
+        echo json_encode(['status' => 'error', 'message' => 'Thể loại không tồn tại!']);
         exit;
     }
-} elseif (isset($_POST['sualoaisp'])) {
-    // Lấy dữ liệu từ form
-    $category_id = $_POST['category_id']; // ID của loại sản phẩm cần sửa
-    $tenloaisp = $_POST['tenloaisp'];
-    $motaloaisp = $_POST['motaloaisp']; // Lấy mô tả từ form
 
-    // Kiểm tra xem tên loại sản phẩm mới có trùng với loại sản phẩm khác không
-    $sql_check = "SELECT * FROM category WHERE category_name='$tenloaisp' AND category_id != '$category_id'";
-    $result_check = mysqli_query($conn, $sql_check);
+    if (isset($_POST['status_id']) && $_POST['status_id'] == 6) {
+        // Trường hợp xóa (cập nhật status_id thành 6)
+        // Không cần kiểm tra category_name hay category_description
+        $sql = "UPDATE category SET status_id = ? WHERE category_id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ii", $status_id, $category_id);
 
-    if (mysqli_num_rows($result_check) > 0) {
-        // Nếu loại sản phẩm đã tồn tại
-        header('Location: ../../../Frontend/AdminUI/index.php?action=quanliloaisp&query=them&thanhcong=1');
-        exit;
-    } else {
-        // Nếu chưa tồn tại, thực hiện sửa
-        $sql_update = "UPDATE category SET category_name='$tenloaisp', category_description='$motaloaisp' WHERE category_id='$category_id'";
-        if (mysqli_query($conn, $sql_update)) {
-            // Cập nhật thành công
-            header('Location: ../../../Frontend/AdminUI/index.php?action=quanliloaisp&query=them&thanhcong=0');
+        if ($stmt->execute()) {
+            echo json_encode(['status' => 'success', 'message' => 'Thể loại đã được đánh dấu xóa!']);
         } else {
-            // Lỗi khi cập nhật
-            header('Location: ../../../Frontend/AdminUI/index.php?action=quanliloaisp&query=them&thanhcong=3');
+            echo json_encode(['status' => 'error', 'message' => 'Có lỗi khi đánh dấu xóa: ' . $conn->error]);
         }
-        exit;
+        $stmt->close();
+    } else {
+        // Trường hợp sửa (cập nhật thông tin)
+        // Kiểm tra tên thể loại không được để trống
+        if (empty($category_name)) {
+            echo json_encode(['status' => 'error', 'message' => 'Tên thể loại không được để trống!']);
+            exit;
+        }
+
+        // Chuyển status_id thành số nguyên và kiểm tra giá trị hợp lệ
+        if ($status_id != 1 && $status_id != 2) {
+            echo json_encode(['status' => 'error', 'message' => 'Trạng thái phải là 1 (Active) hoặc 2 (Inactive)!']);
+            exit;
+        }
+
+        // Kiểm tra trùng lặp tên, ngoại trừ chính nó
+        $current_name = $result->fetch_assoc()['category_name'];
+        if ($category_name !== $current_name) {
+            $check_sql = "SELECT category_name FROM category WHERE category_name = ? AND category_id != ?";
+            $stmt = $conn->prepare($check_sql);
+            $stmt->bind_param("si", $category_name, $category_id);
+            $stmt->execute();
+            $check_result = $stmt->get_result();
+
+            if ($check_result->num_rows > 0) {
+                echo json_encode(['status' => 'error', 'message' => 'Tên thể loại đã tồn tại! Vui lòng chọn tên khác.']);
+                exit;
+            }
+        }
+
+        // Cập nhật thông tin thể loại
+        $sql = "UPDATE category SET category_name = ?, category_description = ?, status_id = ? WHERE category_id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ssii", $category_name, $category_description, $status_id, $category_id);
+
+        if ($stmt->execute()) {
+            echo json_encode(['status' => 'success', 'message' => 'Thể loại đã được cập nhật thành công!']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Có lỗi khi cập nhật thể loại: ' . $conn->error]);
+        }
+        $stmt->close();
     }
 } else {
-    // Xử lý cập nhật trạng thái
-    $category_id = $_GET['category_id']; // Lấy ID của loại sản phẩm từ URL
-    $status_id = $_GET['status_id']; // Lấy trạng thái mới từ URL
+    // Trường hợp thêm mới (INSERT)
+    // Kiểm tra tên thể loại không được để trống
+    if (empty($category_name)) {
+        echo json_encode(['status' => 'error', 'message' => 'Tên thể loại không được để trống!']);
+        exit;
+    }
 
-    // Cập nhật trạng thái của loại sản phẩm
-    $sql_update_status = "UPDATE category SET status_id='$status_id' WHERE category_id='$category_id'";
-    mysqli_query($conn, $sql_update_status);
+    // Chuyển status_id thành số nguyên và kiểm tra giá trị hợp lệ
+    if ($status_id != 1 && $status_id != 2) {
+        echo json_encode(['status' => 'error', 'message' => 'Trạng thái phải là 1 (Active) hoặc 2 (Inactive)!']);
+        exit;
+    }
 
-    // Chuyển hướng về trang quản lý loại sản phẩm
-    header('Location: ../../../Frontend/AdminUI/index.php?action=quanliloaisp&query=them');
-    exit;
+    // Kiểm tra trùng lặp tên
+    $check_sql = "SELECT category_name FROM category WHERE category_name = ?";
+    $stmt = $conn->prepare($check_sql);
+    $stmt->bind_param("s", $category_name);
+    $stmt->execute();
+    $check_result = $stmt->get_result();
+
+    if ($check_result->num_rows > 0) {
+        echo json_encode(['status' => 'error', 'message' => 'Tên thể loại đã tồn tại! Vui lòng chọn tên khác.']);
+        exit;
+    }
+
+    // Thêm thể loại vào bảng category
+    $sql = "INSERT INTO category (category_name, category_description, status_id) VALUES (?, ?, ?)";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ssi", $category_name, $category_description, $status_id);
+
+    if ($stmt->execute()) {
+        echo json_encode(['status' => 'success', 'message' => 'Thể loại đã được thêm thành công!']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Có lỗi khi thêm thể loại: ' . $conn->error]);
+    }
+    $stmt->close();
 }
+
+$conn->close();
 ?>

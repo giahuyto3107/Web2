@@ -1,0 +1,37 @@
+/* .error-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 1rem;
+  height: 100%;
+}
+
+.error-heading {
+  font-size: 6rem;
+  font-weight: var(--fw-bold);
+  color: var(--clr-neutral-900);
+}
+
+.error-subheading {
+  font-size: 1.5rem;
+  color: var(--clr-neutral-900);
+}
+
+.error-text {
+  font-size: 1.2rem;
+}
+
+.error-button {
+  text-decoration: none;
+  font-size: 1rem;
+  background-color: #3b7ddd;
+  color: var(--clr-neutral-0);
+  padding: 0.4rem 1rem;
+  border-radius: 0.3rem;
+  transition: all 0.3s ease;
+}
+
+.error-button:hover {
+  background-color: #5694f1;
+} */
