@@ -1,14 +1,13 @@
 <?php
 include ('../../../BackEnd/Config/config.php');
+include ('phantrang.php'); // Include class Pagination
 
 $search_name = $_GET['search_name'] ?? '';
 $category = $_GET['category'] ?? '';
 $min_price = $_GET['min_price'] ?? '';
 $max_price = $_GET['max_price'] ?? '';
-$page = $_GET['page'] ?? 1;
-$limit = 8;
-$offset = ($page - 1) * $limit;
 
+// Lấy tất cả sản phẩm phù hợp với điều kiện tìm kiếm
 $query = "SELECT p.* FROM product p 
           LEFT JOIN product_category pc ON p.product_id = pc.product_id 
           LEFT JOIN category c ON pc.category_id = c.category_id 
@@ -25,22 +24,26 @@ if ($min_price) {
 if ($max_price) {
     $query .= " AND p.price <= " . floatval($max_price);
 }
+$query .= " GROUP BY p.product_id";
 
-$total_query = str_replace("SELECT p.*", "SELECT COUNT(DISTINCT p.product_id) as total", $query);
-$total_result = $conn->query($total_query);
-$total_row = $total_result->fetch_assoc();
-$total_pages = ceil($total_row['total'] / $limit);
-
-$query .= " GROUP BY p.product_id LIMIT $limit OFFSET $offset";
 $result = $conn->query($query);
-
-$uploads_path = "../../../BackEnd/Uploads/Product Picture/";
 $products = [];
+$uploads_path = "../../../BackEnd/Uploads/Product Picture/";
 while ($row = $result->fetch_assoc()) {
     $row['image_url'] = $uploads_path . htmlspecialchars($row['image_url']);
     $products[] = $row;
 }
-echo json_encode(['products' => $products, 'total_pages' => $total_pages]);
+
+// Sử dụng class Pagination để phân trang
+$pagination = new Pagination(2); // 8 sản phẩm mỗi trang
+$paginated_result = $pagination->paginate($products);
+
+// Trả về JSON
+echo json_encode([
+    'products' => $paginated_result['items'],
+    'total_pages' => $paginated_result['total_pages'],
+    'current_page' => $paginated_result['current_page']
+]);
 
 $conn->close();
 ?>

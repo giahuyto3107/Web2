@@ -201,87 +201,111 @@ include ('../../../BackEnd/Config/config.php');
         </nav>
     </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-$(document).ready(function () {
-    function fetchProducts(page = 1) {
-        let search_name = $("#search_name").val();
-        let category = $("#category").val();
-        let min_price = $("#min_price").val();
-        let max_price = $("#max_price").val();
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+    $(document).ready(function () {
+        function fetchProducts(page = 1) {
+            let search_name = $("#search_name").val();
+            let category = $("#category").val();
+            let min_price = $("#min_price").val();
+            let max_price = $("#max_price").val();
 
-        // Đảm bảo giá trị không âm
-        min_price = min_price < 0 ? 0 : min_price;
-        max_price = max_price < 0 ? 0 : max_price;
+            // Đảm bảo giá trị không âm
+            min_price = min_price < 0 ? 0 : min_price;
+            max_price = max_price < 0 ? 0 : max_price;
 
-        // Nếu min_price lớn hơn max_price, hoán đổi giá trị
-        if (min_price && max_price && parseFloat(min_price) > parseFloat(max_price)) {
-            [min_price, max_price] = [max_price, min_price];
+            // Nếu min_price lớn hơn max_price, hoán đổi giá trị
+            if (min_price && max_price && parseFloat(min_price) > parseFloat(max_price)) {
+                [min_price, max_price] = [max_price, min_price];
+            }
+
+            $.ajax({
+                url: "fetch_products.php",
+                method: "GET",
+                data: { search_name, category, min_price, max_price, page },
+                dataType: "json",
+                success: function (response) {
+                    let productsHtml = "";
+                    if (response.products.length > 0) {
+                        response.products.forEach(product => {
+                            productsHtml += `
+                                <div class="col-lg-3 col-md-4 col-sm-6 col-12">
+                                    <div class="card mb-4">
+                                        <a href="product_detail.php?id=${product.product_id}">
+                                            <img src="${product.image_url}" class="card-img-top" alt="Hình ảnh sản phẩm">                                    
+                                        </a>
+                                        <div class="card-body">
+                                            <h5 class="card-title">${product.product_name}</h5>
+                                            <p class="card-text">${product.product_description}</p>
+                                            <p class="text-danger fw-bold">${parseFloat(product.price).toLocaleString()} VNĐ</p>
+                                            <p class="text-muted">Kho: ${product.stock_quantity}</p>
+                                            <a href="product_detail.php?id=${product.product_id}" class="btn btn-primary">Xem chi tiết</a>
+                                        </div>
+                                    </div>
+                                </div>`;
+                        });
+                    } else {
+                        productsHtml = "<p class='text-center'>Không có sản phẩm nào!</p>";
+                    }
+                    $("#product-list").html(`<div class="row">${productsHtml}</div>`);
+                    generatePagination(response.total_pages, response.current_page);
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error:", error);
+                }
+            });
         }
 
-        $.ajax({
-            url: "fetch_products.php",
-            method: "GET",
-            data: { search_name, category, min_price, max_price, page },
-            dataType: "json",
-            success: function (response) {
-                let productsHtml = "";
-                if (response.products.length > 0) {
-                    response.products.forEach(product => {
-                        productsHtml += `
-                            <div class="col-lg-3 col-md-4 col-sm-6 col-12">
-                                <div class="card mb-4">
-                                    <a href="product_detail.php?id=${product.product_id}">
-                                        <img src="${product.image_url}" class="card-img-top" alt="Hình ảnh sản phẩm">                                    
-                                    </a>
-                                    <div class="card-body">
-                                        <h5 class="card-title">${product.product_name}</h5>
-                                        <p class="card-text">${product.product_description}</p>
-                                        <p class="text-danger fw-bold">${parseFloat(product.price).toLocaleString()} VNĐ</p>
-                                        <p class="text-muted">Kho: ${product.stock_quantity}</p>
-                                        <a href="product_detail.php?id=${product.product_id}" class="btn btn-primary">Xem chi tiết</a>
-                                    </div>
-                                </div>
-                            </div>`;
-                    });
-                } else {
-                    productsHtml = "<p class='text-center'>Không có sản phẩm nào!</p>";
+        function generatePagination(total_pages, current_page) {
+            let paginationHtml = "";
+            if (total_pages > 1) {
+                // // Nút Previous
+                // paginationHtml += `
+                //     <li class="page-item ${current_page === 1 ? 'disabled' : ''}">
+                //         <a class="page-link" href="#" data-page="${current_page - 1}">Previous</a>
+                //     </li>`;
+
+                // Các trang số
+                for (let i = 1; i <= total_pages; i++) {
+                    paginationHtml += `
+                        <li class="page-item ${i === current_page ? 'active' : ''}">
+                            <a class="page-link" href="#" data-page="${i}">${i}</a>
+                        </li>`;
                 }
-                $("#product-list").html(`<div class="row">${productsHtml}</div>`);
-                generatePagination(response.total_pages, page);
+
+                // // Nút Next
+                // paginationHtml += `
+                //     <li class="page-item ${current_page === total_pages ? 'disabled' : ''}">
+                //         <a class="page-link" href="#" data-page="${current_page + 1}">Next</a>
+                //     </li>`;
+            }
+            $("#pagination").html(paginationHtml);
+        }
+
+        // Ngăn nhập giá trị âm trực tiếp trên input
+        $("#min_price, #max_price").on('input', function() {
+            if (this.value < 0) {
+                this.value = 0;
             }
         });
-    }
 
-    function generatePagination(total_pages, current_page) {
-        let paginationHtml = "";
-        for (let i = 1; i <= total_pages; i++) {
-            paginationHtml += `<li class="page-item ${i == current_page ? 'active' : ''}">
-                <a class="page-link" href="#" data-page="${i}">${i}</a>
-            </li>`;
-        }
-        $("#pagination").html(paginationHtml);
-    }
+        // Sự kiện tìm kiếm và lọc
+        $("#search_name, #category, #min_price, #max_price").on("keyup change", function () {
+            fetchProducts();
+        });
 
-    // Ngăn nhập giá trị âm trực tiếp trên input
-    $("#min_price, #max_price").on('input', function() {
-        if (this.value < 0) {
-            this.value = 0;
-        }
-    });
+        // Sự kiện click phân trang
+        $(document).on("click", ".page-link", function (e) {
+            e.preventDefault();
+            let page = $(this).data("page");
+            if (page !== undefined && !$(this).parent().hasClass('disabled')) {
+                fetchProducts(page);
+            }
+        });
 
-    $(document).on("keyup change", "#search_name, #category, #min_price, #max_price", function () {
+        // Load sản phẩm ban đầu
         fetchProducts();
     });
-
-    $(document).on("click", ".page-link", function (e) {
-        e.preventDefault();
-        let page = $(this).data("page");
-        fetchProducts(page);
-    });
-
-    fetchProducts();
-});
-</script>
+    </script>
 </body>
 </html>
