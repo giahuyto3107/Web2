@@ -32,7 +32,7 @@ try {
     $order_id = $conn->insert_id;
 
     // Chuẩn bị câu lệnh để chèn order_items và cập nhật số lượng sản phẩm
-    $sql_order_items = "INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)";
+    $sql_order_items = "INSERT INTO order_items (order_id, product_id, quantity, price, review) VALUES (?, ?, ?, ?, ?)";
     $stmt_order_items = $conn->prepare($sql_order_items);
 
     $sql_update_quantity = "UPDATE product SET stock_quantity = stock_quantity - ? WHERE product_id = ?";
@@ -51,8 +51,9 @@ try {
             }
         }
 
-        // Thêm vào order_items
-        $stmt_order_items->bind_param("iiid", $order_id, $product_id, $quantity, $price);
+        // Thêm vào order_items với review mặc định là 0
+        $review = 0; // Thiết lập giá trị review mặc định là 0
+        $stmt_order_items->bind_param("iiidi", $order_id, $product_id, $quantity, $price, $review);
         $stmt_order_items->execute();
 
         // Giảm số lượng sản phẩm trong kho

@@ -1,125 +1,193 @@
 <?php
 session_start();
 // $user_id = $_SESSION['account_id'];
-$user_id =1;
+$user_id = 1;
 ?>
 
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lịch sử mua hàng</title>
+    <title>Lịch Sử Mua Hàng</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: 'Poppins', sans-serif;
         }
+
         body {
-            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+            background: #ffffff;
+            padding: 50px;
             min-height: 100vh;
+            color: #1a1a1a;
         }
+
         .container {
-            padding-top: 2rem;
-            padding-bottom: 2rem;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px;
         }
+
+        /* Header */
         h1 {
-            font-size: 2.5rem;
-            font-weight: 600;
-            color: #2c3e50;
+            font-size: 1.8rem;
+            font-weight: 400;
+            color: #1a1a1a;
             text-align: center;
-            margin-bottom: 2rem;
+            letter-spacing: 1px;
+            margin-bottom: 40px;
         }
-        .order-card {
-            background: #fff;
-            border: none;
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+        /* Filters */
+        .filters {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 40px;
         }
-        .order-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-        }
-        .order-card .status {
-            font-weight: 600;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            text-align: center;
-        }
-        .order-card .status.approved {
-            background: #e8f5e9;
-            color: #28a745;
-        }
-        .order-card .status.cancelled {
-            background: #ffebee;
-            color: #dc3545;
-        }
-        .order-card .status.pending {
-            background: #fff3e0;
-            color: #ffc107;
-        }
-        .btn-outline-primary {
-            border: 2px solid #3498db;
-            color: #3498db;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-        .btn-outline-primary:hover {
-            background: #3498db;
-            color: #fff;
-        }
+
         .form-control, .form-select {
-            border-radius: 8px;
-            padding: 0.75rem 1rem;
-            border: 1px solid #ddd;
-            transition: border-color 0.3s ease;
+            border-radius: 0;
+            border: 1px solid #e0e0e0;
+            padding: 10px 15px;
+            font-size: 0.9rem;
+            font-weight: 300;
+            color: #1a1a1a;
+            background: #fff;
         }
+
         .form-control:focus, .form-select:focus {
-            border-color: #3498db;
-            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+            border-color: #d4af37;
+            box-shadow: none;
         }
+
+        /* Order Card */
+        .order-card {
+            border-bottom: 1px solid #e0e0e0;
+            padding: 20px 0;
+        }
+
+        .order-card:last-child {
+            border-bottom: none;
+        }
+
+        .order-card .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .order-card h5 {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #1a1a1a;
+            margin: 0;
+        }
+
+        .order-card .date {
+            font-size: 0.85rem;
+            font-weight: 300;
+            color: #666;
+        }
+
+        .order-card .status {
+            font-size: 0.85rem;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .order-card .status.approved {
+            color: #1a1a1a;
+        }
+
+        .order-card .status.cancelled {
+            color: #1a1a1a;
+        }
+
+        .order-card .status.pending {
+            color: #d4af37;
+        }
+
+        .order-card .order-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .order-card .total {
+            font-size: 0.9rem;
+            font-weight: 400;
+            color: #1a1a1a;
+        }
+
+        .order-card .btn-outline-primary {
+            border: 1px solid #1a1a1a;
+            color: #1a1a1a;
+            font-size: 0.85rem;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 6px 15px;
+            background: none;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .order-card .btn-outline-primary:hover {
+            background: #1a1a1a;
+            color: #fff;
+        }
+
+        /* Pagination */
+        .pagination {
+            justify-content: center;
+            margin-top: 40px;
+        }
+
         .pagination .page-item .page-link {
-            border-radius: 8px;
-            margin: 0 4px;
-            color: #3498db;
-            border: 1px solid #3498db;
-            transition: all 0.3s ease;
+            border-radius: 0;
+            border: 1px solid #e0e0e0;
+            color: #1a1a1a;
+            font-size: 0.9rem;
+            font-weight: 400;
+            padding: 8px 12px;
+            margin: 0 5px;
+            background: #fff;
+            transition: background 0.3s ease, color 0.3s ease;
         }
+
         .pagination .page-item.active .page-link {
-            background: #3498db;
+            background: #d4af37;
             color: #fff;
-            border-color: #3498db;
+            border-color: #d4af37;
         }
+
         .pagination .page-item .page-link:hover {
-            background: #3498db;
+            background: #1a1a1a;
             color: #fff;
+            border-color: #1a1a1a;
         }
     </style>
 </head>
 <body>
-    <div class="container my-5">
-        <h1>Lịch sử mua hàng</h1>
-        <div class="row mb-4">
-            <div class="col-md-8">
-                <input type="text" class="form-control" id="search-input" placeholder="Tìm kiếm theo mã đơn hàng">
-            </div>
-            <div class="col-md-4">
-                <select class="form-select" id="status-filter">
-                    <option value="">Tất cả trạng thái</option>
-                    <option value="4">Đã duyệt</option>
-                    <option value="2">Đã hủy</option>
-                    <option value="3">Chờ duyệt</option>
-                </select>
-            </div>
+    <div class="container">
+        <h1>Lịch Sử Mua Hàng</h1>
+        <div class="filters">
+            <input type="text" class="form-control" id="search-input" placeholder="Tìm kiếm theo mã đơn hàng">
+            <select class="form-select" id="status-filter">
+                <option value="">Tất cả trạng thái</option>
+                <option value="4">Đã duyệt</option>
+                <option value="2">Đã hủy</option>
+                <option value="3">Chờ duyệt</option>
+            </select>
         </div>
         <div id="order-list">
             <?php
@@ -141,25 +209,20 @@ $user_id =1;
                     }
             ?>
                 <div class="order-card">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="order-header">
                         <div>
-                            <h5 class="mb-0">Mã đơn hàng: <?= htmlspecialchars($row['order_id']) ?></h5>
-                            <small class="text-muted">Ngày mua: <?= htmlspecialchars($row['order_date']) ?></small>
+                            <h5>Mã đơn hàng: <?= htmlspecialchars($row['order_id']) ?></h5>
+                            <div class="date">Ngày mua: <?= htmlspecialchars($row['order_date']) ?></div>
                         </div>
                         <div class="status <?= $status_class ?>">
                             <?= htmlspecialchars($row['status_name']) ?>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <p class="mb-0">Tổng giá trị: <?= htmlspecialchars($row['total_amount']) ?> đ</p>
-                        </div>
-                        <div class="col-md-6 text-end">
-                            
-                            <a href="chitietdonhang.php?order_id=<?= urlencode($row['order_id']) ?>" class="btn btn-outline-primary btn-sm">
-                                <i class="fas fa-eye"></i> Xem chi tiết
-                            </a>
-                        </div>
+                    <div class="order-details">
+                        <div class="total">Tổng giá trị: <?= htmlspecialchars($row['total_amount']) ?> đ</div>
+                        <a href="chitietdonhang.php?order_id=<?= urlencode($row['order_id']) ?>" class="btn btn-outline-primary">
+                            <i class="fas fa-eye"></i> Xem chi tiết
+                        </a>
                     </div>
                 </div>
             <?php
@@ -209,29 +272,25 @@ $user_id =1;
 
                                 html += `
                                 <div class="order-card">
-                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div class="order-header">
                                         <div>
-                                            <h5 class="mb-0">Mã đơn hàng: ${order.order_id}</h5>
-                                            <small class="text-muted">Ngày mua: ${order.order_date}</small>
+                                            <h5>Mã đơn hàng: ${order.order_id}</h5>
+                                            <div class="date">Ngày mua: ${order.order_date}</div>
                                         </div>
                                         <div class="status ${status_class}">
                                             ${order.status_name}
                                         </div>
                                     </div>
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <p class="mb-0">Tổng giá trị: ${order.total_amount} đ</p>
-                                        </div>
-                                        <div class="col-md-6 text-end">
-                                            <a href="chitietdonhang.php?order_id=${order.order_id}" class="btn btn-outline-primary btn-sm">
-                                                <i class="fas fa-eye"></i> Xem chi tiết
-                                            </a>
-                                        </div>
+                                    <div class="order-details">
+                                        <div class="total">Tổng giá trị: ${order.total_amount} đ</div>
+                                        <a href="chitietdonhang.php?order_id=${order.order_id}" class="btn btn-outline-primary">
+                                            <i class="fas fa-eye"></i> Xem chi tiết
+                                        </a>
                                     </div>
                                 </div>`;
                             });
                         } else {
-                            html = `<div class="text-center py-4">Không có đơn hàng nào</div>`;
+                            html = `<div class="text-center py-4" style="font-weight: 300; color: #666;">Không có đơn hàng nào</div>`;
                         }
 
                         $("#order-list").html(html);

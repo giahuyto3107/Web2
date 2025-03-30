@@ -10,6 +10,7 @@ $phone = $_POST['phone']; // Lấy số điện thoại từ POST
 $address = $_POST['address'];
 $products = json_decode($_POST['products'], true); 
 $price = $_SESSION['selectedProducts'];
+$review = 0; // Thiết lập giá trị review mặc định là 0
 
 $sql = "INSERT INTO orders (user_id, order_date, total_amount, status_id, payment_method, phone, address)
         VALUES (?, NOW(), ?, ?, ?, ?, ?)";
@@ -34,9 +35,9 @@ if (mysqli_stmt_execute($stmt)) {
         }
     
         // Thêm chi tiết đơn hàng vào bảng order_items
-        $sql = "INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)";
+        $sql = "INSERT INTO order_items (order_id, product_id, quantity, price, review) VALUES (?, ?, ?, ?, ?)";
         $stmt = mysqli_prepare($conn, $sql);
-        mysqli_stmt_bind_param($stmt, "iiid", $order_id, $product_id, $quantity, $price);
+        mysqli_stmt_bind_param($stmt, "iiidi", $order_id, $product_id, $quantity, $price, $review);
         mysqli_stmt_execute($stmt);
 
         // Giảm số lượng sản phẩm trong bảng products

@@ -19,6 +19,7 @@ if ($status !== "") {
     $sql .= " AND (orders.status_id = $status)";
 }
 
+$sql .= " ORDER BY orders.order_date DESC";
 
 $result = mysqli_query($conn, $sql);
 $orders = [];
@@ -27,10 +28,8 @@ while ($row = mysqli_fetch_assoc($result)) {
     $orders[] = $row;
 }
 
-
 $pagination = new Pagination(5); 
 $paginated_result = $pagination->paginate($orders);
-
 
 echo json_encode([
     'orders' => $paginated_result['items'],

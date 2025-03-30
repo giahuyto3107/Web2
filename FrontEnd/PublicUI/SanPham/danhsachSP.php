@@ -7,148 +7,167 @@ include ('../../../BackEnd/Config/config.php');
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Danh sách sản phẩm</title>
+    <title>Danh Sách Sản Phẩm</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
 
         body {
-            background-color: aliceblue;
-            font-family: 'Poppins', sans-serif;
-
+            background: #ffffff;
+            padding: 50px;
+            min-height: 100vh;
+            color: #1a1a1a;
         }
-
 
         .container {
-            background: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px;
         }
 
+        /* Header */
         h2 {
-            font-weight: bold;
-            color: #333;
-            text-transform: uppercase;
+            font-size: 1.8rem;
+            font-weight: 400;
+            color: #1a1a1a;
+            text-align: center;
             letter-spacing: 1px;
+            margin-bottom: 40px;
+            text-transform: uppercase;
         }
 
-
-        .row.mb-3 {
-            background: #ffffff;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+        /* Filters */
+        .filters {
+            display: flex;
+            
+            margin-bottom: 40px;
         }
-
 
         input, select {
-            border-radius: 5px;
-            border: 1px solid #ced4da;
-            transition: 0.3s;
+            border-radius: 0;
+            border: 1px solid #e0e0e0;
+            padding: 10px 15px;
+            font-size: 0.9rem;
+            font-weight: 300;
+            color: #1a1a1a;
+            background: #fff;
+            width: 100%;
         }
 
         input:focus, select:focus {
-            border-color:rgb(34, 56, 255);
-            box-shadow: 0 0 5px rgba(255, 87, 34, 0.3);
+            border-color: #d4af37;
+            box-shadow: none;
         }
 
-
+        /* Product List */
         #product-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-        }
-
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Sử dụng auto-fill để lấp đầy không gian */
+    gap: 30px;
+}
 
         .card {
-            border: none;
-            border-radius: 10px;
-            transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid #e0e0e0;
+            border-radius: 0;
             background: #fff;
             overflow: hidden;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
         }
-
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
-        }
-
 
         .card-img-top {
-            border-top-left-radius: 10px;
-            border-top-right-radius: 10px;
             height: 230px;
             object-fit: contain;
-            padding: 10px;
-            background: #f1f1f1;
+            padding: 15px;
+            background: #fff;
+            width: 100%;
         }
 
-        /* 🌟 Nội dung sản phẩm */
         .card-body {
             text-align: center;
+            padding: 20px;
         }
 
         .card-title {
-            font-size: 16px;
-            font-weight: bold;
-            color: #343a40;
+            font-size: 1rem;
+            font-weight: 400;
+            color: #1a1a1a;
             height: 40px;
             overflow: hidden;
             text-overflow: ellipsis;
+            margin-bottom: 10px;
         }
 
         .card-text {
-            color: #6c757d;
-            font-size: 14px;
+            font-size: 0.85rem;
+            font-weight: 300;
+            color: #666;
             height: 60px;
             overflow: hidden;
             text-overflow: ellipsis;
+            margin-bottom: 15px;
         }
 
         .text-danger {
-            font-size: 18px;
-            font-weight: bold;
-            color: #e44d26;
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: #d4af37;
+            margin-bottom: 15px;
         }
 
-        
         .btn-primary {
-            background-color: #ff5722;
-            border-color: #ff5722;
-            transition: 0.3s;
-            padding: 5px 15px;
-            font-size: 14px;
+            background: #1a1a1a;
+            border: none;
+            padding: 8px 20px;
+            font-size: 0.85rem;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #fff;
+            transition: background 0.3s ease;
         }
 
         .btn-primary:hover {
-            background-color: #d84315;
+            background: #333;
+            color: #fff;
         }
 
-        
+        /* Pagination */
         .pagination {
-            margin-top: 20px;
+            justify-content: center;
+            margin-top: 40px;
         }
 
         .pagination .page-item .page-link {
-            color: #ff5722;
-            border-radius: 5px;
-            margin: 0 3px;
+            border-radius: 0;
+            border: 1px solid #e0e0e0;
+            color: #1a1a1a;
+            font-size: 0.9rem;
+            font-weight: 400;
+            padding: 8px 12px;
+            margin: 0 5px;
+            background: #fff;
+            transition: background 0.3s ease, color 0.3s ease;
         }
 
         .pagination .page-item.active .page-link {
-            background-color: #ff5722;
-            border-color: #ff5722;
+            background: #d4af37;
             color: #fff;
+            border-color: #d4af37;
         }
 
         .pagination .page-item .page-link:hover {
-            background-color: #d84315;
+            background: #1a1a1a;
             color: #fff;
+            border-color: #1a1a1a;
         }
 
-        
+        /* Responsive */
         @media (max-width: 768px) {
             #product-list {
                 grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -159,23 +178,22 @@ include ('../../../BackEnd/Config/config.php');
             }
 
             .card-title {
-                font-size: 14px;
+                font-size: 0.9rem;
             }
 
             .text-danger {
-                font-size: 16px;
+                font-size: 1rem;
             }
         }
-
     </style>
 </head>
 <body>
-    <div class="container mt-5">
-        <h2 class="text-center mb-4">Danh sách sản phẩm</h2>
+    <div class="container">
+        <h2>Danh Sách Sản Phẩm</h2>
 
-        <div class="row mb-3">
+        <div class="row mb-3 filters">
             <div class="col-md-6">
-                <input type="text" id="search_name" class="form-control" placeholder="Bạn cần tìm gì...?">
+                <input type="text" id="search_name" class="form-control" placeholder="Tìm kiếm sản phẩm">
             </div>
             <div class="col-md-2">
                 <select id="category" class="form-control">
@@ -210,11 +228,9 @@ include ('../../../BackEnd/Config/config.php');
             let min_price = $("#min_price").val();
             let max_price = $("#max_price").val();
 
-            // Đảm bảo giá trị không âm
             min_price = min_price < 0 ? 0 : min_price;
             max_price = max_price < 0 ? 0 : max_price;
 
-            // Nếu min_price lớn hơn max_price, hoán đổi giá trị
             if (min_price && max_price && parseFloat(min_price) > parseFloat(max_price)) {
                 [min_price, max_price] = [max_price, min_price];
             }
@@ -229,7 +245,7 @@ include ('../../../BackEnd/Config/config.php');
                     if (response.products.length > 0) {
                         response.products.forEach(product => {
                             productsHtml += `
-                                <div class="col-lg-3 col-md-4 col-sm-6 col-12">
+                                <div class="col">
                                     <div class="card mb-4">
                                         <a href="product_detail.php?id=${product.product_id}">
                                             <img src="${product.image_url}" class="card-img-top" alt="Hình ảnh sản phẩm">                                    
@@ -237,17 +253,16 @@ include ('../../../BackEnd/Config/config.php');
                                         <div class="card-body">
                                             <h5 class="card-title">${product.product_name}</h5>
                                             <p class="card-text">${product.product_description}</p>
-                                            <p class="text-danger fw-bold">${parseFloat(product.price).toLocaleString()} VNĐ</p>
-                                            <p class="text-muted">Kho: ${product.stock_quantity}</p>
+                                            <p class="text-danger">${parseFloat(product.price).toLocaleString()} VNĐ</p>
                                             <a href="product_detail.php?id=${product.product_id}" class="btn btn-primary">Xem chi tiết</a>
                                         </div>
                                     </div>
                                 </div>`;
                         });
                     } else {
-                        productsHtml = "<p class='text-center'>Không có sản phẩm nào!</p>";
+                        productsHtml = "<p class='text-center' style='font-weight: 300; color: #666;'>Không có sản phẩm nào</p>";
                     }
-                    $("#product-list").html(`<div class="row">${productsHtml}</div>`);
+                    $("#product-list").html(productsHtml);
                     generatePagination(response.total_pages, response.current_page);
                 },
                 error: function(xhr, status, error) {
@@ -259,42 +274,26 @@ include ('../../../BackEnd/Config/config.php');
         function generatePagination(total_pages, current_page) {
             let paginationHtml = "";
             if (total_pages > 1) {
-                // // Nút Previous
-                // paginationHtml += `
-                //     <li class="page-item ${current_page === 1 ? 'disabled' : ''}">
-                //         <a class="page-link" href="#" data-page="${current_page - 1}">Previous</a>
-                //     </li>`;
-
-                // Các trang số
                 for (let i = 1; i <= total_pages; i++) {
                     paginationHtml += `
                         <li class="page-item ${i === current_page ? 'active' : ''}">
                             <a class="page-link" href="#" data-page="${i}">${i}</a>
                         </li>`;
                 }
-
-                // // Nút Next
-                // paginationHtml += `
-                //     <li class="page-item ${current_page === total_pages ? 'disabled' : ''}">
-                //         <a class="page-link" href="#" data-page="${current_page + 1}">Next</a>
-                //     </li>`;
             }
             $("#pagination").html(paginationHtml);
         }
 
-        // Ngăn nhập giá trị âm trực tiếp trên input
         $("#min_price, #max_price").on('input', function() {
             if (this.value < 0) {
                 this.value = 0;
             }
         });
 
-        // Sự kiện tìm kiếm và lọc
         $("#search_name, #category, #min_price, #max_price").on("keyup change", function () {
             fetchProducts();
         });
 
-        // Sự kiện click phân trang
         $(document).on("click", ".page-link", function (e) {
             e.preventDefault();
             let page = $(this).data("page");
@@ -303,7 +302,6 @@ include ('../../../BackEnd/Config/config.php');
             }
         });
 
-        // Load sản phẩm ban đầu
         fetchProducts();
     });
     </script>

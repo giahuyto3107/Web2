@@ -6,8 +6,7 @@ if (isset($_GET['order_id'])) {
     
     // Lấy thông tin đơn hàng
     $query = "SELECT orders.order_id, orders.order_date, orders.status_id, orders.total_amount
-              FROM order_items 
-              JOIN orders ON order_items.order_id = orders.order_id 
+              FROM orders 
               WHERE orders.order_id = '$order_id'";
     $result = mysqli_query($conn, $query);
     $order = mysqli_fetch_assoc($result);
@@ -17,9 +16,9 @@ if (isset($_GET['order_id'])) {
         exit;
     }
 
-
-    $query_items = "SELECT product.product_id, product.product_name, order_items.quantity 
-                           , product.image_url, order_items.price
+    // Lấy chi tiết đơn hàng
+    $query_items = "SELECT product.product_id, product.product_name, order_items.quantity, 
+                           product.image_url, order_items.price, order_items.review
                     FROM order_items 
                     JOIN product ON order_items.product_id = product.product_id 
                     WHERE order_items.order_id = '$order_id'";
@@ -36,283 +35,375 @@ mysqli_close($conn);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href=
-"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-          integrity=
-"sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
-          crossorigin="anonymous" 
-          referrerpolicy="no-referrer" />
-
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href=
-"https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" 
-          integrity=
-"sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" 
-          crossorigin="anonymous">
-</head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
     <title>Chi Tiết Đơn Hàng</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: 'Poppins', sans-serif;
         }
+
         body {
-            background-color: #f4f7f6;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            background: #ffffff;
+            padding: 50px;
+            min-height: 100vh;
+            color: #1a1a1a;
         }
+
         .container {
-            max-width: 900px;
-            background: #fff;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        h2 {
-            color: #333;
-            margin-bottom: 15px;
-            border-bottom: 2px solid #007bff;
-            padding-bottom: 10px;
-            text-align: center;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px;
         }
 
-        h3{
-            font-size: 1.2rem;
+        /* Header */
+        .order-header {
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e0e0e0;
+            margin-bottom: 40px;
         }
 
-        table {
+        .order-header h2 {
+            font-size: 1.6rem;
+            font-weight: 400;
+            letter-spacing: 1px;
+            color: #1a1a1a;
+        }
+
+        .order-header .order-info {
+            font-size: 0.85rem;
+            font-weight: 300;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        /* Order Items */
+        .order-items table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 5px;
-            background: #fff;
-            border-radius: 8px;
-            overflow: hidden;
         }
-        th, td {
-            padding: 12px;
-            text-align: center;
-            border-bottom: 1px solid #ddd;
+
+        .order-items tr {
+            border-bottom: 1px solid #e0e0e0;
         }
-        th {
-            background: #007bff;
+
+        .order-items th, .order-items td {
+            padding: 20px 15px;
+            vertical-align: middle;
+            text-align: left;
+        }
+
+        .order-items th {
+            font-size: 0.8rem;
+            font-weight: 400;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .order-items .product-image {
+            width: 100px;
+            height: 150px;
+            object-fit: cover;
+            border: 1px solid #e0e0e0;
+        }
+
+        .order-items .product-name {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #1a1a1a;
+        }
+
+        .order-items .btn-review {
+            background: #d4af37;
+            color: #fff;
+            border: none;
+            padding: 8px 20px;
+            font-size: 0.85rem;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: background 0.3s ease;
+        }
+
+        .order-items .btn-review:hover {
+            background: #b7950b;
+        }
+
+        .order-items .text-success {
+            color: #1a1a1a;
+            font-weight: 400;
+            font-style: italic;
+        }
+
+        /* Status Tracker */
+        .status-tracker {
+            padding: 30px 0;
+            margin-bottom: 40px;
+            border-top: 1px solid #e0e0e0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .status-tracker .d-flex {
+            align-items: center;
+            justify-content: space-between;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .status-tracker .btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            /* border: 1px solid #e0e0e0; */
+        }
+
+        .status-tracker .bg-success {
+            background: #1a1a1a !important;
             color: #fff;
         }
-        tr:hover {
-            background-color: #f1f1f1;
+
+        .status-tracker .bg-secondary {
+            background: #fff !important;
+            color: #666;
         }
-        .total {
-            margin-top: 20px;
-            font-size: 18px;
-            font-weight: bold;
-            text-align: right;
-            color: #d9534f;
-            padding: 15px;
-            background: #fff3f3;
-            border-radius: 8px;
+
+        .status-tracker .w-50.p-1 {
+            height: 2px;
+            /* background: #e0e0e0; */
         }
-        .back-btn {
-            width: 100%;
-            display: inline-block;
-            margin-top: 20px;
-            padding: 12px 20px;
-            background-color: #007bff;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            font-size: 16px;
-            font-weight: bold;
-            transition: 0.3s;
-            text-align: center;
+
+        .status-tracker .bg-success + .w-50.p-1 {
+            background: #1a1a1a;
         }
-        .back-btn:hover {
-            background-color: #0056b3;
-        }
-        .header{
+
+        .status-tracker .status-labels {
             display: flex;
             justify-content: space-between;
+            text-align: center;
+            margin-top: 15px;
+            font-size: 0.85rem;
+            color: #666;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
         }
-        .mr-n2, .mx-n2 {
-            margin-right: 0rem !important;
+
+        .status-tracker .status-labels p {
+            margin: 0;
+            font-weight: 300;
+        }
+
+        /* Total */
+        .order-total {
+            text-align: right;
+            padding: 20px 0;
+            font-size: 1.2rem;
+            font-weight: 400;
+            color: #1a1a1a;
+        }
+
+        .order-total span {
+            color: #d4af37;
+        }
+
+        /* Back Button */
+        .back-btn {
+            display: inline-block;
+            padding: 10px 25px;
+            background: #1a1a1a;
+            color: #fff;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: background 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: #333;
+            color: #fff;
+        }
+
+        /* Modal */
+        .modal-content {
+            border-radius: 0;
+            border: none;
+        }
+
+        .modal-header {
+            background: #1a1a1a;
+            color: #fff;
+            padding: 15px 20px;
+            border-bottom: none;
+        }
+
+        .modal-title {
+            font-size: 1.2rem;
+            font-weight: 400;
+            letter-spacing: 1px;
+        }
+
+        .modal-body {
+            padding: 30px;
+            background: #fff;
+        }
+
+        .form-label {
+            font-size: 0.9rem;
+            font-weight: 400;
+            color: #1a1a1a;
+            letter-spacing: 0.5px;
+        }
+
+        .form-control, .form-select {
+            border-radius: 0;
+            border: 1px solid #e0e0e0;
+            padding: 10px;
+            font-size: 0.9rem;
+            font-weight: 300;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #d4af37;
+            box-shadow: none;
+        }
+
+        textarea.form-control {
+            resize: none;
+            height: 100px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 10px;
+            background: #d4af37;
+            color: #fff;
+            border: none;
+            font-size: 0.9rem;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: background 0.3s ease;
+        }
+
+        .btn-submit:hover {
+            background: #b7950b;
         }
     </style>
 </head>
 <body>
 <div class="container">
-    <h2>Chi Tiết Đơn Hàng #<?= htmlspecialchars($order['order_id']) ?></h2>
-    <div class="header">
-        <h3>Danh sách sản phẩm</h3>
-        <h3>Ngày mua: <?= htmlspecialchars($order['order_date']) ?></h2>
-    </div>
-    <table>
-        <thead>
-            <tr>
-                <th></th>
-                <th>Tên sản phẩm</th>
-
-                <th>Số lượng</th>
-                <th>Giá</th>
-                <th>Thành tiền</th>
-                <?php if ($order_status == 4) : ?> <!-- Nếu đơn hàng đã giao -->
-                    <th>Đánh giá</th>
-                <?php endif; ?>
-            </tr>
-        </thead>
-        <tbody>
-            <?php 
-                $total_price = 0;
-                while ($item = mysqli_fetch_assoc($result_items)) { 
-                    $price = $item['price'] / $item['quantity'];
-                    
-            ?>
-                <tr>
-                    <td><img src="../../../BackEnd/Uploads/Product Picture/<?= urlencode($item['image_url']) ?>" width="50" class="img-thumbnail">
-                    </td>
-                    <td><?= htmlspecialchars($item['product_name']) ?></td>
-                    <td><?= htmlspecialchars($item['quantity']) ?></td>
-                    <td><?= number_format($price, 0, ',', '.') ?> đ</td>
-                    <td><?= number_format($item['price'], 0, ',', '.') ?> đ</td>
-                    
-                    <?php if ($order_status == 4) : ?>
-                        <td>
-                            <button class="btn btn-primary btn-sm btn-review" data-bs-toggle="modal" data-bs-target="#reviewModal" 
-                                    data-product-id="<?= $item['product_id'] ?>" 
-                                    data-product-name="<?= htmlspecialchars($item['product_name']) ?>">
-                                <i class="fa-solid fa-star"></i> Đánh giá
-                            </button>
-                        </td>
-                    <?php endif; ?>
-                </tr>
-            <?php } ?>
-        </tbody>
-    </table>
-    <div class="container-fluid">
-    <div class="row">
-        <div class="col-md-12">
-            <div class="container-fluid p-2 align-items-center">
-                <div class="d-flex justify-content-around">
-                    <?php
-                    // Danh sách trạng thái
-                    $status_map = [
-                        3 => 'Pending',
-                        4 => 'Order Confirmed',
-                        // 6 => 'Out for Delivery', 
-                        5 => 'Delivered'
-                    ];
-
-                    $status_colors = [
-                        3 => 'bg-success',
-                        4 => 'bg-success',
-                        // 6 => 'bg-success',
-                        5 => 'bg-success'
-                    ];
-
-                    $icons = [
-                        3 => "fa-spinner",
-                        4 => "fa-clipboard-check",
-                        // 6 => "fa-truck-arrow-right",
-                        5 => "fa-house-chimney"
-                    ];
-
-                    // Lấy trạng thái đơn hàng từ nguồn thực tế
-                    // Ví dụ: từ cơ sở dữ liệu hoặc tham số
-                    // Giả sử $order_status được truyền từ controller hoặc truy vấn SQL
-                    $order_status = isset($order['status_id']) ? $order['status_id'] : 3; // Mặc định là 3 nếu không có dữ liệu
-
-                    // Lặp qua từng trạng thái
-                    $keys = array_keys($status_map);
-                    $last_key = end($keys); // Lấy trạng thái cuối cùng
-                    foreach ($status_map as $key => $value) {
-                        // Nút xanh nếu trạng thái <= order_status
-                        $is_completed = $key <= $order_status;
-                        $btn_color = $is_completed ? $status_colors[$key] : 'bg-secondary';
-                        $icon = $icons[$key];
-                    ?>
-                        <!-- Nút trạng thái -->
-                        <button class="btn <?= $btn_color ?> text-white rounded-circle"
-                                data-bs-toggle="tooltip"
-                                title="<?= $value ?>">
-                            <i class="fa-solid <?= $icon ?>"></i>
-                        </button>
-
-                        <!-- Thanh nối, chỉ hiển thị nếu không phải trạng thái cuối -->
-                        <?php if ($key != $last_key): ?>
-                            <?php
-                            // Thanh nối xanh nếu trạng thái hiện tại đã hoàn thành (key < order_status)
-                            $next_key = $keys[array_search($key, $keys) + 1];
-                            $line_completed = $key < $order_status;
-                            $line_color = $line_completed ? $status_colors[$key] : 'bg-secondary';
-                            ?>
-                            <span class="<?= $line_color ?> w-50 p-1 mx-n1 rounded mt-auto mb-auto"></span>
-                        <?php endif; ?>
-                    <?php } ?>
-                </div>
-            </div>
+    <div class="order-header">
+        <h2>Đơn Hàng #<?= htmlspecialchars($order['order_id']) ?></h2>
+        <div class="order-info">
+            Ngày đặt hàng: <?= htmlspecialchars($order['order_date']) ?>
         </div>
     </div>
-</div>
 
-            <div class="row d-flex 
-                        justify-content-between 
-                        mx-n2">
-                <div class="row d-inline-flex 
-                            align-items-center">
-                    <i class="text-primary fa-solid 
-                              fa-spinner 
-                              fa-2xl mx-4 mb-3">
-                      </i>
-                    <p class="text-dark font-weight-bolder 
-                              py-1 px-1 mx-n2">
-                      Pending
-                      </p>
-                </div>
-                <div class="row d-inline-flex
-                            align-items-center">
-                    <i class="text-warning fa-solid
-                               fa-clipboard-check
-                              fa-2xl mx-4 mb-3">
-                      </i>
-                    <p class="text-dark  
-                              font-weight-bolder
-                              py-1 px-1 mx-n2">
-                      Order
-                      <br>
-                      Confirmed
-                      </p>
-                </div>
-                <!-- <div class="row d-inline-flex 
-                            align-items-center">
-                    <i class="text-info fa-solid 
-                              fa-truck-arrow-right
-                              fa-2xl mx-4 mb-3">
-                      </i>
-                    <p class="text-dark 
-                              font-weight-bolder
-                              py-1 px-1 mx-n2">
-                      Out for
-                      <br>
-                      Delivery
-                      </p>
-                </div> -->
-                <div class="row d-inline-flex 
-                            align-items-center">
-                    <i class="text-success fa-solid
-                              fa-house-chimney 
-                              fa-2xl mx-4 mb-3">
-                      </i>
-                    <p class="text-dark font-weight-bolder
-                              py-1 px-1 mx-n2">
-                        Delivered
-                      </p>
-                </div>
-            </div>
-    <!-- <div class="total">
-        Tổng tiền: <?= number_format($total_price, 0, ',', '.') ?> đ
-    </div> -->
+    <div class="order-items">
+        <table>
+            <thead>
+                <tr>
+                    <th>Hình ảnh</th>
+                    <th>Tên sản phẩm</th>
+                    <th>Số lượng</th>
+                    <th>Giá</th>
+                    <th>Thành tiền</th>
+                    <?php if ($order_status == 4) : ?> 
+                        <th>Đánh giá</th>
+                    <?php endif; ?>
+                </tr>
+            </thead>
+            <tbody>
+                <?php 
+                    while ($item = mysqli_fetch_assoc($result_items)) { 
+                        $price = $item['price'] / $item['quantity'];
+                ?>
+                    <tr>
+                        <td><img src="../../../BackEnd/Uploads/Product Picture/<?= urlencode($item['image_url']) ?>" class="product-image"></td>
+                        <td class="product-name"><?= htmlspecialchars($item['product_name']) ?></td>
+                        <td><?= htmlspecialchars($item['quantity']) ?></td>
+                        <td><?= number_format($price, 0, ',', '.') ?> đ</td>
+                        <td><?= number_format($item['price'], 0, ',', '.') ?> đ</td>
+                        <?php if ($order_status == 4) : ?>
+                            <td>
+                                <?php if ($item['review'] == 0) : ?>
+                                    <button class="btn btn-review" data-bs-toggle="modal" data-bs-target="#reviewModal" 
+                                            data-product-id="<?= $item['product_id'] ?>" 
+                                            data-product-name="<?= htmlspecialchars($item['product_name']) ?>">
+                                        Đánh giá
+                                    </button>
+                                <?php else : ?>
+                                    <span class="text-success">Đã đánh giá</span>
+                                <?php endif; ?>
+                            </td>
+                        <?php endif; ?>
+                    </tr>
+                <?php } ?>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="status-tracker">
+        <div class="d-flex">
+            <?php
+            $status_map = [
+                3 => 'Pending',
+                4 => 'Order Confirmed',
+                5 => 'Delivered'
+            ];
+
+            $status_colors = [
+                3 => 'bg-success',
+                4 => 'bg-success',
+                5 => 'bg-success'
+            ];
+
+            $icons = [
+                3 => "fa-spinner",
+                4 => "fa-clipboard-check",
+                5 => "fa-house-chimney"
+            ];
+
+            $order_status = isset($order['status_id']) ? $order['status_id'] : 3;
+            $keys = array_keys($status_map);
+            $last_key = end($keys);
+            foreach ($status_map as $key => $value) {
+                $is_completed = $key <= $order_status;
+                $btn_color = $is_completed ? $status_colors[$key] : 'bg-secondary';
+                $icon = $icons[$key];
+            ?>
+                <button class="btn <?= $btn_color ?> text-white" data-bs-toggle="tooltip" title="<?= $value ?>">
+                    <i class="fa-solid <?= $icon ?>"></i>
+                </button>
+                <?php if ($key != $last_key): ?>
+                    <span class="w-50 p-1 mx-n1 rounded mt-auto mb-auto"></span>
+                <?php endif; ?>
+            <?php } ?>
+        </div>
+        <div class="status-labels">
+            <p>Đang xử lý</p>
+            <p>Xác nhận đơn</p>
+            <p>Đã giao</p>
+        </div>
+    </div>
+
+    <div class="order-total">
+        Tổng tiền: <span><?= number_format($order['total_amount'], 0, ',', '.') ?> đ</span>
+    </div>
+
     <a href="http://localhost/Web2/FrontEnd/PublicUI/Lichsumuahang/listmuahang.php" class="back-btn">Quay lại</a>
 </div>
 
@@ -328,13 +419,14 @@ mysqli_close($conn);
             <div class="modal-body">
                 <form action="submit_review.php" method="POST">
                     <input type="hidden" name="product_id" id="product_id">
+                    <input type="hidden" name="order_id" value="<?= $order_id ?>">
                     
                     <div class="mb-3">
                         <label for="product_name" class="form-label">Sản phẩm:</label>
                         <input type="text" id="product_name" class="form-control" readonly>
                     </div>
 
-                    <div class="mb-3 rating-container">
+                    <div class="mb-3">
                         <label class="form-label">Chấm điểm:</label>
                         <select class="form-select" name="rating" required>
                             <option value="5">⭐⭐⭐⭐⭐ - Tuyệt vời</option>
@@ -357,91 +449,6 @@ mysqli_close($conn);
     </div>
 </div>
 
-<style>
-    /* Form đánh giá */
-.modal-content {
-    border-radius: 12px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
-    background: #fff;
-}
-
-.modal-header {
-    background: #005ab4;
-    color: white;
-    border-radius: 12px 12px 0 0;
-    text-align: center;
-}
-
-.modal-title {
-    font-weight: 600;
-}
-
-.btn-close {
-    border: none;
-    background: none;
-}
-
-/* Form body */
-.modal-body {
-    padding: 20px;
-    background: #f9f9f9;
-    border-radius: 0 0 12px 12px;
-}
-
-/* Nhãn */
-.form-label {
-    font-weight: 500;
-    color: #2c3e50;
-}
-
-/* Input & Select */
-.form-control, .form-select {
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    padding: 10px;
-    transition: 0.3s;
-}
-
-.form-control:focus, .form-select:focus {
-    border-color: #27ae60;
-    box-shadow: 0 0 8px rgba(39, 174, 96, 0.3);
-}
-
-/* Textarea */
-textarea.form-control {
-    resize: none;
-    height: 100px;
-}
-
-/* Hiệu ứng đánh giá bằng sao */
-.rating-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.rating-container select {
-    width: 100%;
-}
-
-/* Nút gửi đánh giá */
-.btn-submit {
-    width: 100%;
-    padding: 12px;
-    background: #27ae60;
-    color: white;
-    font-size: 16px;
-    font-weight: bold;
-    border: none;
-    border-radius: 8px;
-    transition: 0.3s;
-}
-
-.btn-submit:hover {
-    background: #219150;
-}
-
-</style>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
@@ -457,39 +464,37 @@ textarea.form-control {
     });
 </script>
 <script>
-document.querySelector("#reviewModal form").addEventListener("submit", function(event) {
-    event.preventDefault(); // Ngăn chặn reload trang
+    document.querySelector("#reviewModal form").addEventListener("submit", function(event) {
+        event.preventDefault();
 
-    let formData = new FormData(this);
+        let formData = new FormData(this);
 
-    fetch("submit_review.php", {
-        method: "POST",
-        body: formData
-    })
-    
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === "success") {
-            Swal.fire({
-                title: "Thành công!",
-                text: data.message,
-                icon: "success",
-                confirmButtonText: "OK"
-            }).then(() => {
-                window.location.href = "http://localhost/Web2/FrontEnd/PublicUI/Lichsumuahang/listmuahang.php"; 
-            });
-        } else {
-            Swal.fire({
-                title: "Lỗi!",
-                text: data.message,
-                icon: "error",
-                confirmButtonText: "Thử lại"
-            });
-        }
-    })
-    .catch(error => console.error("Lỗi:", error));
-});
+        fetch("submit_review.php", {
+            method: "POST",
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "success") {
+                Swal.fire({
+                    title: "Thành công!",
+                    text: data.message,
+                    icon: "success",
+                    confirmButtonText: "OK"
+                }).then(() => {
+                    location.reload();
+                });
+            } else {
+                Swal.fire({
+                    title: "Lỗi!",
+                    text: data.message,
+                    icon: "error",
+                    confirmButtonText: "Thử lại"
+                });
+            }
+        })
+        .catch(error => console.error("Lỗi:", error));
+    });
 </script>
-
 </body>
 </html>
