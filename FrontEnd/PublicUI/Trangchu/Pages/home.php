@@ -1,5 +1,6 @@
 <?php
 include ('../../../BackEnd/Config/config.php');
+
 $query_categories = "SELECT category_id, category_name FROM category WHERE status_id = 1";
 $result_categories = mysqli_query($conn, $query_categories);
 $categories = mysqli_fetch_all($result_categories, MYSQLI_ASSOC);
@@ -22,7 +23,9 @@ $categories = mysqli_fetch_all($result_categories, MYSQLI_ASSOC);
         <?php foreach ($categories as $category): ?>
             <?php
             $category_id = $category['category_id'];
-            $query_products = "SELECT product_id, product_name, price, image_url FROM product WHERE status_id = 1 AND category_id = $category_id ORDER BY created_at DESC LIMIT 4";
+            $query_products = "SELECT product_id, product_name, price, image_url FROM product 
+                               WHERE status_id = 1 AND category_id = $category_id 
+                               ORDER BY created_at DESC LIMIT 4";
             $result_products = mysqli_query($conn, $query_products);
             $products = mysqli_fetch_all($result_products, MYSQLI_ASSOC);
             ?>
@@ -32,7 +35,8 @@ $categories = mysqli_fetch_all($result_categories, MYSQLI_ASSOC);
                     <div class="grid grid-cols-4 gap-4">
                         <?php foreach ($products as $product): ?>
                             <div class="bg-white p-4 shadow rounded">
-                                <img src="<?php echo 'http://localhost/Web2/BackEnd/Uploads/Product%20Picture/' . rawurlencode($product['image_url']); ?>" alt="<?= htmlspecialchars($product['product_name']) ?>" class="product-image mb-2">
+                                <img src="<?php echo 'http://localhost/Web2/BackEnd/Uploads/Product%20Picture/' . rawurlencode($product['image_url']); ?>" 
+                                     alt="<?= htmlspecialchars($product['product_name']) ?>" class="product-image mb-2">
                                 <h3 class="text-lg font-semibold"> <?= htmlspecialchars($product['product_name']) ?> </h3>
                                 <p class="text-red-500 font-bold">$<?= number_format($product['price'], 2) ?></p>
                                 <a href="product.php?id=<?= $product['product_id'] ?>" class="text-blue-500 hover:underline">Xem chi tiết</a>
