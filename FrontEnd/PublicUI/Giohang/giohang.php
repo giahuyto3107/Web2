@@ -74,7 +74,7 @@ mysqli_close($conn);
         }
 
         .items { box-shadow: 5px 5px 4px -1px rgba(0, 0, 0, 0.08); padding: 10px; border-radius: 5px; }
-        .payment-info { background: aliceblue; padding: 15px; border-radius: 6px; color: #000000; }
+        .payment-info {  padding: 15px; border-radius: 6px; color: #000000; }
         .btn-primary { background: blue; border: none; }
         .form-control { border-radius: 5px; }
         .payment-method label { margin-right: 15px; cursor: pointer; }
@@ -123,7 +123,7 @@ mysqli_close($conn);
             font-style: italic;
             color: #007bff; 
             margin-top: 10px;
-            border: 1px dashed #007bff; 
+            border: 1px dashedrgb(119, 119, 119); 
             padding: 15px;
             border-radius: 10px; 
             background-color: #f0f8ff;
@@ -421,7 +421,7 @@ $(document).ready(function () {
                 $("#momo-option").prop("disabled", true);
                 $("#QR-option").prop("disabled", true);
                 $("#phone").css("border-color", "red"); 
-                $("#phone").focus();
+                // $("#phone").focus();
             }
         }
         $("#phone, #address").on("input", function () {

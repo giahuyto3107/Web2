@@ -1,66 +1,96 @@
 <?php
-include ('../../../BackEnd/Config/config.php');
+include('../../../BackEnd/Config/config.php');
+header('Content-Type: application/json');
 
-if (isset($_POST['themncc'])) {
-    // Lấy dữ liệu từ form
-    $tenncc = $_POST['tennhacungcap'];
-    $sdt=$_POST['sdt'];
-    $diachi=$_POST['diachi'];
-    $trangthai=$_POST['trangthai'];
+$supplier_id = $_POST['supplier_id'] ?? null;
+$supplier_name = trim($_POST['supplier_name'] ?? '');
+$contact_phone = trim($_POST['contact_phone'] ?? '');
+$address = trim($_POST['address'] ?? '');
+$publisher = trim($_POST['publisher'] ?? '');
+$status_id = (int)($_POST['status_id'] ?? 1);
 
-    // Kiểm tra xem loại sản phẩm đã tồn tại hay chưa
-    $sql_check = "SELECT * FROM supplier WHERE supplier_name='$tenncc'";
-    $result_check = mysqli_query($conn, $sql_check);
+if ($supplier_id) {
+    $check_id_sql = "SELECT supplier_name FROM supplier WHERE supplier_id = ?";
+    $stmt = $conn->prepare($check_id_sql);
+    $stmt->bind_param("i", $supplier_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-    if (mysqli_num_rows($result_check) > 0) {
-        // Nếu loại sản phẩm đã tồn tại
-        header('Location: ../../../Frontend/AdminUI/index.php?action=quanlinhacungcap&query=them&thanhcong=1');
-        exit;
-    } else {
-        // Nếu chưa tồn tại, thực hiện thêm
-        $sql_them = "INSERT INTO supplier (supplier_name, contact_phone, address, status_id) VALUES ('$tenncc', '$sdt','$diachi', '$trangthai')";
-        mysqli_query($conn, $sql_them);
-        header('Location: ../../../Frontend/AdminUI/index.php?action=quanlinhacungcap&query=them&thanhcong=2');
+    if ($result->num_rows === 0) {
+        echo json_encode(['status' => 'error', 'message' => 'Nhà cung cấp không tồn tại!']);
         exit;
     }
-} elseif (isset($_POST['suancc'])) {
-    // Lấy dữ liệu từ form
-    $idncc = $_POST['idncc']; // ID của loại sản phẩm cần sửa
-    $tenncc = $_POST['tennhacungcap'];
-    $sdt=$_POST['sdt'];
-    $diachi=$_POST['diachi'];
 
-    // Kiểm tra xem tên loại sản phẩm mới có trùng với loại sản phẩm khác không
-    $sql_check = "SELECT * FROM supplier WHERE supplier_name='$tenncc' AND supplier_id != '$idncc'";
-    $result_check = mysqli_query($conn, $sql_check);
+    if (isset($_POST['status_id']) && $_POST['status_id'] == 6) {
+        $sql = "UPDATE supplier SET status_id = ? WHERE supplier_id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ii", $status_id, $supplier_id);
 
-    if (mysqli_num_rows($result_check) > 0) {
-        // Nếu loại sản phẩm đã tồn tại
-        header('Location: ../../../Frontend/AdminUI/index.php?action=quanlinhacungcap&query=them&thanhcong=1');
-        exit;
-    } else {
-        // Nếu chưa tồn tại, thực hiện sửa
-        $sql_update = "UPDATE supplier SET supplier_name='$tenncc', contact_phone='$sdt',address='$diachi' WHERE supplier_id='$idncc'";
-        if (mysqli_query($conn, $sql_update)) {
-            // Cập nhật thành công
-            header('Location: ../../../Frontend/AdminUI/index.php?action=quanlinhacungcap&query=them&thanhcong=0');
+        if ($stmt->execute()) {
+            echo json_encode(['status' => 'success', 'message' => 'Nhà cung cấp đã được đánh dấu xóa!']);
         } else {
-            // Lỗi khi cập nhật
-            header('Location: ../../../Frontend/AdminUI/index.php?action=quanlinhacungcap&query=them&thanhcong=3');
+            echo json_encode(['status' => 'error', 'message' => 'Có lỗi khi đánh dấu xóa: ' . $conn->error]);
         }
-        exit;
+        $stmt->close();
+    } else {
+        if (empty($supplier_name)) {
+            echo json_encode(['status' => 'error', 'message' => 'Tên nhà cung cấp không được để trống!']);
+            exit;
+        }
+
+        $current_name = $result->fetch_assoc()['supplier_name'];
+        if ($supplier_name !== $current_name) {
+            $check_sql = "SELECT supplier_name FROM supplier WHERE supplier_name = ? AND supplier_id != ?";
+            $stmt = $conn->prepare($check_sql);
+            $stmt->bind_param("si", $supplier_name, $supplier_id);
+            $stmt->execute();
+            $check_result = $stmt->get_result();
+
+            if ($check_result->num_rows > 0) {
+                echo json_encode(['status' => 'error', 'message' => 'Tên nhà cung cấp đã tồn tại!']);
+                exit;
+            }
+        }
+
+        $sql = "UPDATE supplier SET supplier_name = ?, contact_phone = ?, address = ?, publisher = ?, status_id = ? WHERE supplier_id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ssssii", $supplier_name, $contact_phone, $address, $publisher, $status_id, $supplier_id);
+
+        if ($stmt->execute()) {
+            echo json_encode(['status' => 'success', 'message' => 'Nhà cung cấp đã được cập nhật thành công!']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Có lỗi khi cập nhật nhà cung cấp: ' . $conn->error]);
+        }
+        $stmt->close();
     }
 } else {
-    // Xử lý cập nhật trạng thái
-    $idncc = $_GET['idncc']; // Lấy ID của loại sản phẩm từ URL
-    $status_id = $_GET['status_id']; // Lấy trạng thái mới từ URL
+    if (empty($supplier_name)) {
+        echo json_encode(['status' => 'error', 'message' => 'Tên nhà cung cấp không được để trống!']);
+        exit;
+    }
 
-    // Cập nhật trạng thái của loại sản phẩm
-    $sql_update_status = "UPDATE supplier SET status_id='$status_id' WHERE supplier_id='$idncc'";
-    mysqli_query($conn, $sql_update_status);
+    $check_sql = "SELECT supplier_name FROM supplier WHERE supplier_name = ?";
+    $stmt = $conn->prepare($check_sql);
+    $stmt->bind_param("s", $supplier_name);
+    $stmt->execute();
+    $check_result = $stmt->get_result();
 
-    // Chuyển hướng về trang quản lý loại sản phẩm
-    header('Location: ../../../Frontend/AdminUI/index.php?action=quanlinhacungcap&query=them');
-    exit;
+    if ($check_result->num_rows > 0) {
+        echo json_encode(['status' => 'error', 'message' => 'Tên nhà cung cấp đã tồn tại!']);
+        exit;
+    }
+
+    $sql = "INSERT INTO supplier (supplier_name, contact_phone, address, publisher, status_id) VALUES (?, ?, ?, ?, ?)";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ssssi", $supplier_name, $contact_phone, $address, $publisher, $status_id);
+
+    if ($stmt->execute()) {
+        echo json_encode(['status' => 'success', 'message' => 'Nhà cung cấp đã được thêm thành công!']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Có lỗi khi thêm nhà cung cấp: ' . $conn->error]);
+    }
+    $stmt->close();
 }
+
+$conn->close();
 ?>

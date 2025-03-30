@@ -1,34 +1,35 @@
-<?php
-$sql_sua_loaisp = "SELECT * FROM category WHERE category_id='$_GET[idloaisp]' LIMIT 1";
-$query_sua_loaisp = mysqli_query($conn, $sql_sua_loaisp);
-?>
-
-<div class="popup" id="edit-popup">
-    <div class="overlay"></div>
-    <div class="popup-content">
-        <h2>Sửa Loại Sản Phẩm</h2>
-        <div class="form">
-            <div class="form-content">
-                <form method="POST" action="../../BackEnd/Model/quanliloaisanpham/xuliloaisanpham.php">
-                    <?php while ($dong = mysqli_fetch_array($query_sua_loaisp)) { ?>
-                        <!-- Thêm trường ẩn để truyền category_id -->
-                        <input type="hidden" name="category_id" value="<?php echo $dong['category_id'] ?>">
-
-                        <div class="input1">
-                            <p>Tên Loại sản phẩm</p>
-                            <input type="text" name="tenloaisp" value="<?php echo $dong['category_name'] ?>" required>
-                        </div>
-                        <div class="input1">
-                            <p>Mô tả Loại sản phẩm</p>
-                            <input type="text" name="motaloaisp" value="<?php echo $dong['category_description'] ?>" required>
-                        </div>
-                        <div class="input2">
-                            <input type="submit" name="sualoaisp" value="Sửa Loại sản phẩm">
-                        </div>
-                    <?php } ?>
-                </form>
-            </div>
-        </div>
-        <button class="close-btn">X</button>
+<dialog data-modal id="edit-modal">
+    <div class="modal-header">
+        <h2>Edit Category</h2>
+        <a class="modal-close" data-id="edit-modal" id="edit-close-button-icon">
+            <i class="fa fa-times" style="font-size: 1.5rem; height: 1.5rem"></i>
+        </a>
     </div>
-</div>
+    <div>
+        <form class="modal-form" id="modal-edit-form" method="post">
+            <input type="hidden" id="modal-edit-category-id" name="category_id" /> <!-- Ẩn để lưu category_id -->
+            <label for="modal-edit-name">
+                <span>Name</span>
+                <input type="text" id="modal-edit-name" name="category_name" required />
+                <p class="modal-error" id="modal-edit-name-error"></p>
+            </label>
+            <label for="modal-edit-desc" class="modal-desc-label">
+                <span>Description</span>
+                <textarea id="modal-edit-desc" name="category_description" rows="5"></textarea>
+                <p class="modal-error" id="modal-edit-desc-error"></p>
+            </label>
+            <label for="modal-edit-status">
+                <span>Status</span>
+                <select id="modal-edit-status" name="status_id" required>
+                    <option value="1">Active</option>
+                    <option value="2">Inactive</option>
+                </select>
+                <p class="modal-error" id="modal-edit-status-error"></p>
+            </label>
+            <div class="modal-buttons">
+                <button type="button" class="cancel" id="edit-close-button">Cancel</button>
+                <button type="submit" class="submit">Submit</button>
+            </div>
+        </form>
+    </div>
+</dialog>

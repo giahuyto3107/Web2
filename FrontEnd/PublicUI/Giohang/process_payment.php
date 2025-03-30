@@ -10,6 +10,7 @@ $phone = $_POST['phone']; // Lấy số điện thoại từ POST
 $address = $_POST['address'];
 $products = json_decode($_POST['products'], true); 
 $price = $_SESSION['selectedProducts'];
+$review = 0; // Thiết lập giá trị review mặc định là 0
 
 $sql = "INSERT INTO orders (user_id, order_date, total_amount, status_id, payment_method, phone, address)
         VALUES (?, NOW(), ?, ?, ?, ?, ?)";
@@ -33,15 +34,20 @@ if (mysqli_stmt_execute($stmt)) {
             }
         }
     
-        $sql = "INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)";
+        // Thêm chi tiết đơn hàng vào bảng order_items
+        $sql = "INSERT INTO order_items (order_id, product_id, quantity, price, review) VALUES (?, ?, ?, ?, ?)";
         $stmt = mysqli_prepare($conn, $sql);
-        mysqli_stmt_bind_param($stmt, "iiid", $order_id, $product_id, $quantity, $price);
+        mysqli_stmt_bind_param($stmt, "iiidi", $order_id, $product_id, $quantity, $price, $review);
+        mysqli_stmt_execute($stmt);
+
+        // Giảm số lượng sản phẩm trong bảng products
+        $sql = "UPDATE product SET stock_quantity = stock_quantity - ? WHERE product_id = ?";
+        $stmt = mysqli_prepare($conn, $sql);
+        mysqli_stmt_bind_param($stmt, "ii", $quantity, $product_id);
         mysqli_stmt_execute($stmt);
     }
     
-
-    echo json_encode(["success" => true, "message" => "Đơn hàng đã được thêm thành công!"]);
-    
+    // Xóa sản phẩm khỏi giỏ hàng
     foreach ($products as $product) {
         $product_id = $product['product_id'];
 
@@ -50,6 +56,8 @@ if (mysqli_stmt_execute($stmt)) {
         mysqli_stmt_bind_param($stmt, "ii", $user_id, $product_id);
         mysqli_stmt_execute($stmt);
     }
+
+    echo json_encode(["success" => true, "message" => "Đơn hàng đã được thêm thành công!"]);
 } else {
     echo json_encode(["success" => false, "message" => "Lỗi khi thêm đơn hàng: " . mysqli_error($conn)]);
 }

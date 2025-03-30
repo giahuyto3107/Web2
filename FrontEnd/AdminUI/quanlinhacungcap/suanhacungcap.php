@@ -1,38 +1,45 @@
-<?php
-$sql_sua_ncc = "SELECT * FROM supplier WHERE supplier_id='$_GET[idncc]' LIMIT 1";
-$query_sua_ncc = mysqli_query($conn, $sql_sua_ncc);
-?>
-
-<div class="popup" id="edit-popup">
-    <div class="overlay"></div>
-    <div class="popup-content">
-        <h2>Sửa Nhà cung cấp</h2>
-        <div class="form">
-            <div class="form-content">
-                <form method="POST" action="../../BackEnd/Model/quanlinhacungcap/xulinhacungcap.php">
-                    <?php while ($dong = mysqli_fetch_array($query_sua_ncc)) { ?>
-                        <!-- Thêm trường ẩn để truyền category_id -->
-                        <input type="hidden" name="idncc" value="<?php echo $dong['supplier_id'] ?>">
-
-                        <div class="input1">
-                            <p>Tên Loại sản phẩm</p>
-                            <input type="text" name="tennhacungcap" value="<?php echo $dong['supplier_name'] ?>" required>
-                        </div>
-                        <div class="input1">
-                            <p>Số điện thoại liên lạc</p>
-                            <input type="text" name="sdt" value="<?php echo $dong['contact_phone'] ?>" required>
-                        </div>
-                        <div class="input1">
-                            <p>Địa chỉ</p>
-                            <input type="text" name="diachi" value="<?php echo $dong['address'] ?>" required>
-                        </div>
-                        <div class="input2">
-                            <input type="submit" name="suancc" value="Sửa Nhà cung cấp">
-                        </div>
-                    <?php } ?>
-                </form>
-            </div>
-        </div>
-        <button class="close-btn">X</button>
+<dialog data-modal id="edit-modal">
+    <div class="modal-header">
+        <h2>Chỉnh sửa Nhà Cung Cấp</h2>
+        <button class="modal-close" data-id="edit-modal">
+            <i class="fa fa-times" style="font-size: 1.5rem; height: 1.5rem"></i>
+        </button>
     </div>
-</div>
+    <div class="modal-content">
+        <form id="modal-edit-form" class="modal-form">
+            <input type="hidden" id="modal-edit-supplier-id" name="supplier_id" />
+            <div class="modal-input">
+                <span>Tên nhà cung cấp</span>
+                <input type="text" id="modal-edit-name" name="supplier_name" required />
+                <p class="modal-error" id="modal-edit-name-error"></p>
+            </div>
+            <div class="modal-input">
+                <span>Số điện thoại</span>
+                <input type="text" id="modal-edit-contact-phone" name="contact_phone" required />
+                <p class="modal-error" id="modal-edit-contact-phone-error"></p>
+            </div>
+            <div class="modal-input">
+                <span>Địa chỉ</span>
+                <input type="text" id="modal-edit-address" name="address" required />
+                <p class="modal-error" id="modal-edit-address-error"></p>
+            </div>
+            <div class="modal-input">
+                <span>Nhà xuất bản</span>
+                <input type="text" id="modal-edit-publisher" name="publisher" required />
+                <p class="modal-error" id="modal-edit-publisher-error"></p>
+            </div>
+            <div class="modal-input">
+                <span>Trạng thái</span>
+                <select id="modal-edit-status" name="status_id" required>
+                    <option value="1">Active</option>
+                    <option value="2">Inactive</option>
+                </select>
+                <p class="modal-error" id="modal-edit-status-error"></p>
+            </div>
+            <div class="modal-buttons">
+                <button class="close" id="edit-close-button">Hủy</button>
+                <button type="submit" class="save">Lưu</button>
+            </div>
+        </form>
+    </div>
+</dialog>
