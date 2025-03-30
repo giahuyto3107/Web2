@@ -8,17 +8,17 @@ class Pagination {
     private $total_pages;
 
     public function __construct($limit = 8) {
-        $this->limit = max(1, intval($limit)); // Đảm bảo limit không âm
+        $this->limit = max(1, intval($limit)); 
         $this->page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
         $this->offset = ($this->page - 1) * $this->limit;
     }
 
     public function paginate($items) {
-        // Lấy tổng số items từ danh sách đầu vào
+        
         $this->total_items = count($items);
         $this->total_pages = ceil($this->total_items / $this->limit);
 
-        // Cắt danh sách theo offset và limit
+        
         $paginated_items = array_slice($items, $this->offset, $this->limit);
 
         return [

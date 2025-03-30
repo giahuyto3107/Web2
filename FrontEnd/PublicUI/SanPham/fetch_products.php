@@ -1,6 +1,6 @@
 <?php
 include ('../../../BackEnd/Config/config.php');
-include ('phantrang.php'); // Include class Pagination
+include ('../../../BackEnd/Model/phantrang.php'); 
 
 $search_name = $_GET['search_name'] ?? '';
 $category = $_GET['category'] ?? '';
@@ -34,8 +34,8 @@ while ($row = $result->fetch_assoc()) {
     $products[] = $row;
 }
 
-// Sử dụng class Pagination để phân trang
-$pagination = new Pagination(2); // 8 sản phẩm mỗi trang
+
+$pagination = new Pagination(4); 
 $paginated_result = $pagination->paginate($products);
 
 // Trả về JSON
