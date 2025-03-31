@@ -1,133 +1,256 @@
 <?php
-include('../../Config/config.php');
+include('../../../BackEnd/Config/config.php');
+header('Content-Type: application/json');
 
-// URL chuyển hướng
-$redirect_url = "../../../Frontend/AdminUI/index.php?action=quanlitaikhoan&query=them";
+// Lấy dữ liệu từ POST
+$account_id = $_POST['account_id'] ?? null;
+$account_name = trim($_POST['account_name'] ?? '');
+$email = trim($_POST['email'] ?? '');
+$full_name = trim($_POST['full_name'] ?? '');
+$role_id = (int)($_POST['role_id'] ?? 0);
+$status_id = (int)($_POST['status_id'] ?? 1);
+$password = $_POST['password'] ?? null;
+$date_of_birth = trim($_POST['date_of_birth'] ?? '');
 
-// Xử lý khi form được submit
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    if (isset($_POST['action'])) {
-        // Xử lý thêm mới tài khoản
-        if ($_POST['action'] == 'add') {
-            // Lấy dữ liệu từ form
-            $account_name = mysqli_real_escape_string($conn, $_POST['account_name']);
-            $email = mysqli_real_escape_string($conn, $_POST['email']);
-            $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-            $full_name = mysqli_real_escape_string($conn, $_POST['full_name']);
-            $date_of_birth = !empty($_POST['date_of_birth']) ? $_POST['date_of_birth'] : NULL;
-            $status_id = $_POST['status_id'];
-            $role_id = $_POST['role_id'];
-            $created_at = date('Y-m-d H:i:s');
-            $updated_at = date('Y-m-d H:i:s');
+// Xử lý khi có account_id (cập nhật hoặc xóa)
+if ($account_id) {
+    // Kiểm tra xem tài khoản có tồn tại không
+    $check_id_sql = "SELECT a.account_name, a.email, u.profile_picture 
+                     FROM account a 
+                     LEFT JOIN user u ON a.account_id = u.account_id 
+                     WHERE a.account_id = ?";
+    $stmt = $conn->prepare($check_id_sql);
+    $stmt->bind_param("i", $account_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-            // Xử lý upload ảnh
-            $profile_picture = NULL;
-            if (isset($_FILES['profile_picture']) && $_FILES['profile_picture']['error'] == 0) {
-                $target_dir = "../../Uploads/Profile Picture/";
-                $file_extension = strtolower(pathinfo($_FILES["profile_picture"]["name"], PATHINFO_EXTENSION));
-                $new_filename = uniqid() . '.' . $file_extension;
-                $target_file = $target_dir . $new_filename;
+    if ($result->num_rows === 0) {
+        echo json_encode(['status' => 'error', 'message' => 'Tài khoản không tồn tại!']);
+        exit;
+    }
 
-                // Kiểm tra loại file và kích thước (ví dụ: chỉ cho phép ảnh dưới 5MB)
-                $allowed_types = array('jpg', 'jpeg', 'png', 'gif');
-                if (in_array($file_extension, $allowed_types) && $_FILES["profile_picture"]["size"] <= 5000000) {
-                    if (move_uploaded_file($_FILES["profile_picture"]["tmp_name"], $target_file)) {
-                        $profile_picture = $new_filename;
-                    }
-                }
-            }
+    // Xử lý xóa tài khoản (cập nhật status_id thành 6)
+    if (isset($_POST['status_id']) && $_POST['status_id'] == 6) {
+        $sql = "UPDATE account SET status_id = ?, updated_at = NOW() WHERE account_id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ii", $status_id, $account_id);
 
-            // Kiểm tra email đã tồn tại chưa
-            $check_email = "SELECT * FROM account WHERE email = '$email'";
-            $result = mysqli_query($conn, $check_email);
-
-            if (mysqli_num_rows($result) > 0) {
-                echo "<script>alert('Email đã tồn tại!'); window.location='$redirect_url';</script>";
-            } else {
-                // Thêm vào bảng account trước
-                $sql_account = "INSERT INTO account (account_name, email, password_hash, status_id, role_id, created_at, updated_at) 
-                               VALUES ('$account_name', '$email', '$password', '$status_id', '$role_id', '$created_at', '$updated_at')";
-
-                if (mysqli_query($conn, $sql_account)) {
-                    $account_id = mysqli_insert_id($conn); // Lấy ID vừa tạo
-
-                    // Thêm vào bảng user
-                    $sql_user = "INSERT INTO user (full_name, account_id, profile_picture, date_of_birth, created_at, updated_at) 
-                                 VALUES ('$full_name', '$account_id', " . ($profile_picture ? "'$profile_picture'" : "NULL") . ", 
-                                 " . ($date_of_birth ? "'$date_of_birth'" : "NULL") . ", '$created_at', '$updated_at')";
-
-                    if (mysqli_query($conn, $sql_user)) {
-                        echo "<script>alert('Thêm tài khoản thành công!'); window.location='$redirect_url';</script>";
-                    } else {
-                        // Nếu thêm user thất bại, xóa account vừa tạo để đảm bảo đồng bộ
-                        mysqli_query($conn, "DELETE FROM account WHERE account_id = '$account_id'");
-                        echo "<script>alert('Có lỗi khi thêm thông tin user: " . mysqli_error($conn) . "'); window.location='$redirect_url';</script>";
-                    }
-                } else {
-                    echo "<script>alert('Có lỗi khi thêm tài khoản: " . mysqli_error($conn) . "'); window.location='$redirect_url';</script>";
-                }
-            }
+        if ($stmt->execute()) {
+            echo json_encode(['status' => 'success', 'message' => 'Tài khoản đã được đánh dấu xóa!']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Có lỗi khi đánh dấu xóa: ' . $conn->error]);
         }
-        // Xử lý cập nhật thông tin tài khoản
-        elseif ($_POST['action'] == 'update') {
-            // Lấy dữ liệu từ form
-            $id = mysqli_real_escape_string($conn, $_POST['id']);
-            $acc = mysqli_real_escape_string($conn, $_POST['acc']);
-            $name = mysqli_real_escape_string($conn, $_POST['name']);
-            $dob = mysqli_real_escape_string($conn, $_POST['dob']);
-            $email = mysqli_real_escape_string($conn, $_POST['email']);
-            $role = mysqli_real_escape_string($conn, $_POST['role']);
-            $status = mysqli_real_escape_string($conn, $_POST['status']);
-
-            // Xử lý upload ảnh
-            $pro5Image = $_FILES['pro5Image']['name'];
-            $pro5Image_tmp = $_FILES['pro5Image']['tmp_name'];
-            $imageUpdate = "";
-
-            if (!empty($pro5Image)) {
-                move_uploaded_file($pro5Image_tmp, '../../Uploads/Profile Picture/' . $pro5Image);
-                $imageUpdate = ", profile_picture = '$pro5Image'";
-
-                // Xóa hình ảnh cũ
-                $sql = "SELECT * FROM user WHERE user_id = '$id' LIMIT 1";
-                $query = mysqli_query($conn, $sql);
-                while ($row = mysqli_fetch_array($query)) {
-                    unlink('../../Uploads/Profile Picture/' . $row['profile_picture']);
-                }
-            }
-
-            // Query để lấy role_id từ role_name
-            $roleQuery = "SELECT id FROM role WHERE role_name = '$role'";
-            $roleResult = mysqli_query($conn, $roleQuery);
-
-            if ($roleRow = mysqli_fetch_assoc($roleResult)) {
-                $role_id = $roleRow['id']; // Lấy role_id
-
-                // Cập nhật bảng account
-                $sql_updateAcc = "UPDATE account 
-                                 SET account_name = '$acc', email = '$email', status_id = $status, role_id = $role_id 
-                                 WHERE account_id = $id";
-
-                // Cập nhật bảng user
-                $sql_updateUser = "UPDATE user 
-                                  SET full_name = '$name', date_of_birth = '$dob' $imageUpdate
-                                  WHERE account_id = $id";
-
-                // Thực thi các câu lệnh SQL
-                if (mysqli_query($conn, $sql_updateAcc) && mysqli_query($conn, $sql_updateUser)) {
-                    echo "<script>alert('Cập nhật thông tin thành công!'); window.location='$redirect_url';</script>";
-                } else {
-                    echo "<script>alert('Có lỗi khi cập nhật thông tin: " . mysqli_error($conn) . "'); window.location='$redirect_url';</script>";
-                }
-            } else {
-                echo "<script>alert('Không tìm thấy role!'); window.location='$redirect_url';</script>";
-            }
-        }
+        $stmt->close();
     } else {
-        echo "<script>alert('Hành động không hợp lệ!'); window.location='$redirect_url';</script>";
+        // Xử lý cập nhật tài khoản
+        if (empty($account_name)) {
+            echo json_encode(['status' => 'error', 'message' => 'Tên tài khoản không được để trống!']);
+            exit;
+        }
+
+        if (empty($email)) {
+            echo json_encode(['status' => 'error', 'message' => 'Email không được để trống!']);
+            exit;
+        }
+
+        if (empty($full_name)) {
+            echo json_encode(['status' => 'error', 'message' => 'Họ tên không được để trống!']);
+            exit;
+        }
+
+        if ($role_id <= 0) {
+            echo json_encode(['status' => 'error', 'message' => 'Chức vụ không hợp lệ!']);
+            exit;
+        }
+
+        if ($status_id <= 0) {
+            echo json_encode(['status' => 'error', 'message' => 'Trạng thái không hợp lệ!']);
+            exit;
+        }
+
+        // Kiểm tra trùng lặp account_name và email
+        $current_data = $result->fetch_assoc();
+        $current_account_name = $current_data['account_name'];
+        $current_email = $current_data['email'];
+
+        if ($account_name !== $current_account_name || $email !== $current_email) {
+            $check_sql = "SELECT account_name, email FROM account WHERE (account_name = ? OR email = ?) AND account_id != ?";
+            $stmt = $conn->prepare($check_sql);
+            $stmt->bind_param("ssi", $account_name, $email, $account_id);
+            $stmt->execute();
+            $check_result = $stmt->get_result();
+
+            if ($check_result->num_rows > 0) {
+                $row = $check_result->fetch_assoc();
+                if ($row['account_name'] === $account_name) {
+                    echo json_encode(['status' => 'error', 'message' => 'Tên tài khoản đã tồn tại!']);
+                } else {
+                    echo json_encode(['status' => 'error', 'message' => 'Email đã tồn tại!']);
+                }
+                exit;
+            }
+        }
+
+        // Xử lý upload ảnh đại diện (nếu có)
+        $profile_picture = null;
+        $current_image = $current_data['profile_picture'];
+
+        if (isset($_FILES['profile_picture']) && $_FILES['profile_picture']['error'] === UPLOAD_ERR_OK) {
+            $upload_dir = '../../../BackEnd/Uploads/Profile Picture/';
+            $file_name = time() . '_' . basename($_FILES['profile_picture']['name']);
+            $file_path = $upload_dir . $file_name;
+
+            if (move_uploaded_file($_FILES['profile_picture']['tmp_name'], $file_path)) {
+                $profile_picture = $file_name;
+                // Xóa ảnh cũ nếu có
+                if ($current_image && file_exists($upload_dir . $current_image)) {
+                    unlink($upload_dir . $current_image);
+                }
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Không thể upload ảnh đại diện!']);
+                exit;
+            }
+        } else {
+            $profile_picture = $current_image; // Giữ ảnh cũ nếu không upload ảnh mới
+        }
+
+        // Cập nhật bảng account
+        $sql_account = "UPDATE account SET account_name = ?, email = ?, role_id = ?, status_id = ?, updated_at = NOW() WHERE account_id = ?";
+        $stmt_account = $conn->prepare($sql_account);
+        $stmt_account->bind_param("ssiii", $account_name, $email, $role_id, $status_id, $account_id);
+
+        // Cập nhật bảng user
+        $sql_user = "UPDATE user SET full_name = ?, date_of_birth = ?, profile_picture = ?, updated_at = NOW() WHERE account_id = ?";
+        $stmt_user = $conn->prepare($sql_user);
+        $date_of_birth = $date_of_birth ?: null; // Nếu không có ngày sinh, đặt là NULL
+        $stmt_user->bind_param("sssi", $full_name, $date_of_birth, $profile_picture, $account_id);
+
+        // Thực thi cả hai truy vấn
+        $conn->begin_transaction();
+        try {
+            if ($stmt_account->execute() && $stmt_user->execute()) {
+                $conn->commit();
+                echo json_encode(['status' => 'success', 'message' => 'Tài khoản đã được cập nhật thành công!']);
+            } else {
+                $conn->rollback();
+                echo json_encode(['status' => 'error', 'message' => 'Có lỗi khi cập nhật tài khoản: ' . $conn->error]);
+            }
+        } catch (Exception $e) {
+            $conn->rollback();
+            echo json_encode(['status' => 'error', 'message' => 'Có lỗi khi cập nhật tài khoản: ' . $e->getMessage()]);
+        }
+
+        $stmt_account->close();
+        $stmt_user->close();
     }
 } else {
-    header("Location: $redirect_url");
-    exit();
+    // Xử lý thêm tài khoản mới
+    if (empty($account_name)) {
+        echo json_encode(['status' => 'error', 'message' => 'Tên tài khoản không được để trống!']);
+        exit;
+    }
+
+    if (empty($email)) {
+        echo json_encode(['status' => 'error', 'message' => 'Email không được để trống!']);
+        exit;
+    }
+
+    if (empty($full_name)) {
+        echo json_encode(['status' => 'error', 'message' => 'Họ tên không được để trống!']);
+        exit;
+    }
+
+    if ($role_id <= 0) {
+        echo json_encode(['status' => 'error', 'message' => 'Chức vụ không hợp lệ!']);
+        exit;
+    }
+
+    if ($status_id <= 0) {
+        echo json_encode(['status' => 'error', 'message' => 'Trạng thái không hợp lệ!']);
+        exit;
+    }
+
+    if (empty($password)) {
+        echo json_encode(['status' => 'error', 'message' => 'Mật khẩu không được để trống!']);
+        exit;
+    }
+
+    // Kiểm tra trùng lặp account_name và email
+    $check_sql = "SELECT account_name, email FROM account WHERE account_name = ? OR email = ?";
+    $stmt = $conn->prepare($check_sql);
+    $stmt->bind_param("ss", $account_name, $email);
+    $stmt->execute();
+    $check_result = $stmt->get_result();
+
+    if ($check_result->num_rows > 0) {
+        $row = $check_result->fetch_assoc();
+        if ($row['account_name'] === $account_name) {
+            echo json_encode(['status' => 'error', 'message' => 'Tên tài khoản đã tồn tại!']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Email đã tồn tại!']);
+        }
+        exit;
+    }
+
+    // Xử lý upload ảnh đại diện (nếu có)
+    $profile_picture = null;
+    if (isset($_FILES['profile_picture']) && $_FILES['profile_picture']['error'] === UPLOAD_ERR_OK) {
+        $upload_dir = '../../../BackEnd/Uploads/Profile Picture/';
+        $file_name = time() . '_' . basename($_FILES['profile_picture']['name']);
+        $file_path = $upload_dir . $file_name;
+
+        if (move_uploaded_file($_FILES['profile_picture']['tmp_name'], $file_path)) {
+            $profile_picture = $file_name;
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Không thể upload ảnh đại diện!']);
+            exit;
+        }
+    }
+
+    // Mã hóa mật khẩu
+    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+    // Thêm tài khoản mới vào bảng account
+    $sql_account = "INSERT INTO account (account_name, email, password_hash, role_id, status_id, created_at, updated_at) 
+                    VALUES (?, ?, ?, ?, ?, NOW(), NOW())";
+    $stmt_account = $conn->prepare($sql_account);
+    $stmt_account->bind_param("sssii", $account_name, $email, $hashed_password, $role_id, $status_id);
+
+    // Bắt đầu transaction để đảm bảo tính toàn vẹn dữ liệu
+    $conn->begin_transaction();
+    try {
+        if ($stmt_account->execute()) {
+            // Lấy account_id vừa thêm
+            $new_account_id = $conn->insert_id;
+
+            // Thêm thông tin vào bảng user
+            $sql_user = "INSERT INTO user (full_name, account_id, profile_picture, date_of_birth, created_at, updated_at) 
+                         VALUES (?, ?, ?, ?, NOW(), NOW())";
+            $stmt_user = $conn->prepare($sql_user);
+            $date_of_birth = $date_of_birth ?: null; // Nếu không có ngày sinh, đặt là NULL
+            $stmt_user->bind_param("siss", $full_name, $new_account_id, $profile_picture, $date_of_birth);
+
+            if ($stmt_user->execute()) {
+                $conn->commit();
+                echo json_encode(['status' => 'success', 'message' => 'Tài khoản đã được thêm thành công!']);
+            } else {
+                $conn->rollback();
+                echo json_encode(['status' => 'error', 'message' => 'Có lỗi khi thêm thông tin người dùng: ' . $conn->error]);
+            }
+
+            $stmt_user->close();
+        } else {
+            $conn->rollback();
+            echo json_encode(['status' => 'error', 'message' => 'Có lỗi khi thêm tài khoản: ' . $conn->error]);
+        }
+    } catch (Exception $e) {
+        $conn->rollback();
+        echo json_encode(['status' => 'error', 'message' => 'Có lỗi khi thêm tài khoản: ' . $e->getMessage()]);
+    }
+
+    $stmt_account->close();
 }
+
+// Đóng kết nối
+$conn->close();
 ?>

@@ -1,195 +1,249 @@
-<?php
-$sql_pn = 
-        "SELECT po.purchase_order_id, 
-            s.supplier_name, 
-            u.full_name AS user_name, 
-            po.order_date, 
-            po.total_amount AS amount,
-            po.total_price, 
-            po.status_id, 
-            po.import_status
-        FROM purchase_order po
-        JOIN supplier s ON s.supplier_id = po.supplier_id
-        JOIN purchase_order_items pot ON po.purchase_order_id = pot.purchase_order_id
-        JOIN user u ON u.user_id = po.user_id
-        WHERE pot.purchase_order_item_id = (
-            SELECT MIN(pot2.purchase_order_item_id)
-            FROM purchase_order_items pot2
-            WHERE pot2.purchase_order_id = po.purchase_order_id
-        )
-        ORDER BY po.purchase_order_id ASC;";
-
-$query_pn = mysqli_query($conn, $sql_pn);
-if (!$query_pn) {
-    die("Query failed: " . mysqli_error($conn));
-}
-?>
-
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý phiếu nhập</title>
+    <link rel="stylesheet" href="path/to/your/css.css"> <!-- Thay bằng đường dẫn CSS thực tế -->
+    <script src="https://kit.fontawesome.com/yourkit.js" crossorigin="anonymous"></script> <!-- Thay bằng mã FontAwesome của bạn -->
+</head>
+<body>
 <div class="form">
     <div class="form-title">
         <h2>Quản lý phiếu nhập</h2>
     </div>
 
-    <!-- <div class="top-right-button">
-        <button id="open-popup-phieunhap">Thêm Sản Phẩm</button>
-    </div> -->
-    
     <div class="form-content">
-        <table>
-            <tr>
-                <th>Mã đơn</th>
-                <th>Nhà Xuất Bản</th>
-                <th>Nhân Viên</th>
-                <th>Ngày Lập</th>
-                <th>Số lượng</th>
-                <th>Tổng tiền</th>
-                <th>Quản lý</th>
-            </tr>
-
-            <?php
-                while ($row = mysqli_fetch_array($query_pn)) {
-                   ; 
-            ?>
-            <tr>
-                <td><?= $row['purchase_order_id'] ?></td>
-                <td><?= $row['supplier_name'] ?></td>
-                <td><?= $row['user_name'] ?></td>
-                <td><?= $row['order_date'] ?></td>
-                <td><?= $row['amount'] ?></td>
-                <td><?= $row['total_price'] ?></td>
-                <td>
-                    <?php if ($row['status_id'] == 1) {
-                            echo '<p class="active">Đã duyệt</p>';
-                        } else if ($row['status_id'] == 2) {
-                            echo '<a class="inactive" href="../../BackEnd/Model/quanliphieunhap/xuliphieunhap.php?purchase_order_id=' . $row['purchase_order_id'] . '&status=' . $row['status_id'] . '">Duyệt đơn</a>';
-                        }
-                    ?> 
-                    <a class ="detail-button" href="index.php?action=quanliphieunhap&query=xemphieunhap&id=<?= $row['purchase_order_id'] ?>" class="btn detail-btn"><b></b>Chi tiết</a>      
-                    <!-- <button class="detail-button" id = "open-popup" data-id="<?= $row['purchase_order_id'] ?>">Xem chi tiết</button> -->
-                </td>
-                <!-- <script>
-                    document.querySelectorAll(".detail-button").forEach(button => {
-                        button.addEventListener("click", function() {
-                            let purchaseId = this.getAttribute("data-id");
-                            window.location.href = "index.php?action=quanliphieunhap&query=xemphieunhap?id=" + purchaseId;
-                        });
-                    });
-                </script> -->
-            </tr>
-
-            <?php
-                }
-            ?>
+        <table id="purchase-order-table">
+            <thead>
+                <tr>
+                    <th>Mã đơn</th>
+                    <th>Nhà Xuất Bản</th>
+                    <th>Nhân Viên</th>
+                    <th>Ngày Lập</th>
+                    <th>Số lượng</th>
+                    <th>Tổng tiền</th>
+                    <th>Quản lý</th>
+                </tr>
+            </thead>
+            <tbody id="table-body"></tbody>
         </table>
     </div>
 </div>
 
+<!-- Include modal -->
+<?php
+    include 'quanliphieunhap/xemchitietphieunhap.php'; // View Modal
+    include 'quanliphieunhap/duyetdon.php'; // Approve Modal
+?>
 
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Biến toàn cục
+    let purchaseOrders = [];
 
-<style>
-    body {
-            background-color: #f8f9fa;
-            display: flex;
-            min-height: 100vh;
-            padding: 20px;
+    // Hàm render bảng
+    function renderTable(data) {
+        const tableBody = document.getElementById('table-body');
+        tableBody.innerHTML = '';
+
+        if (data.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="7">Không có phiếu nhập nào.</td></tr>';
+            return;
         }
-    .form {
-            width: 100%;
-            background: white;
-            padding: 50px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-        
+
+        data.forEach(order => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${order.purchase_order_id}</td>
+                <td>${order.supplier_name || 'N/A'}</td>
+                <td>${order.user_name || 'N/A'}</td>
+                <td>${order.order_date || 'N/A'}</td>
+                <td>${order.amount || '0'}</td>
+                <td>${order.total_price || '0'}</td>
+                <td>
+                    ${order.import_status == 1 ? 
+                        '<p class="active">Đã duyệt</p>' : 
+                        (order.import_status == 0 ? 
+                            `<a href="#" class="inactive approvePurchaseOrder" data-purchase-order-id="${order.purchase_order_id}">Duyệt đơn</a>` : 
+                            '')
+                    }
+                    <a href="#" class="detail-button viewPurchaseOrder" data-purchase-order-id="${order.purchase_order_id}">Chi tiết</a>
+                </td>
+            `;
+            tableBody.appendChild(row);
+        });
     }
 
-    .form-title {
-        text-align: center;
+    // Fetch dữ liệu ban đầu từ server
+    fetch('quanliphieunhap/fetch_phieunhap.php')
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                purchaseOrders = data.data;
+                console.log('Fetched purchase orders:', purchaseOrders); // Debug dữ liệu
+                renderTable(purchaseOrders);
+            } else {
+                console.error('Error:', data.message);
+                document.getElementById('table-body').innerHTML = '<tr><td colspan="7">Lỗi khi tải danh sách phiếu nhập: ' + data.message + '</td></tr>';
+            }
+        })
+        .catch(error => {
+            console.error('Fetch error:', error);
+            document.getElementById('table-body').innerHTML = '<tr><td colspan="7">Lỗi khi tải danh sách phiếu nhập.</td></tr>';
+        });
+
+    // Hàm lấy và hiển thị chi tiết phiếu nhập
+    function loadPurchaseOrderItems(purchaseOrderId) {
+        fetch(`quanliphieunhap/fetch_phieunhap_items.php?purchase_order_id=${purchaseOrderId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.status !== 'success') {
+                    console.error('Lỗi khi tải chi tiết phiếu nhập:', data.message);
+                    return;
+                }
+
+                const orderInfo = data.data.order_info;
+                const items = data.data.items;
+                const totalValue = data.data.total_value;
+
+                // Điền thông tin chung
+                document.getElementById('modal-view-user-name').textContent = orderInfo.user_name || 'N/A';
+                document.getElementById('modal-view-supplier-name').textContent = orderInfo.supplier_name || 'N/A';
+                document.getElementById('modal-view-order-date').textContent = orderInfo.order_date || 'N/A';
+                document.getElementById('modal-view-total-value').textContent = totalValue.toLocaleString() + ' VND';
+
+                // Hiển thị danh sách sản phẩm dưới dạng bảng ngang
+                const tableBody = document.getElementById('purchase-order-items-body');
+                tableBody.innerHTML = '';
+
+                if (items.length > 0) {
+                    items.forEach(item => {
+                        const row = `
+                            <tr>
+                                <td>${item.product_id || 'N/A'}</td>
+                                <td>${item.product_name || 'N/A'}</td>
+                                <td>${item.profit || '0'}</td>
+                                <td>${item.quantity || '0'}</td>
+                                <td>${item.price || '0'}</td>
+                            </tr>
+                        `;
+                        tableBody.innerHTML += row;
+                    });
+                } else {
+                    tableBody.innerHTML = '<tr><td colspan="5">Không có sản phẩm trong phiếu nhập.</td></tr>';
+                }
+            })
+            .catch(error => {
+                console.error('Lỗi khi tải chi tiết phiếu nhập:', error);
+                document.getElementById('purchase-order-items-body').innerHTML = '<tr><td colspan="5">Lỗi khi tải chi tiết phiếu nhập.</td></tr>';
+            });
     }
 
-    .form-content {
-        background-color: white;
-        border-radius: 20px;
-        width: 100%;
-        margin: 10px;
-        padding: 20px;
+    // Hàm duyệt đơn (chuyển import_status từ 0 thành 1)
+    function approvePurchaseOrder(purchaseOrderId) {
+        const formData = new FormData();
+        formData.append('purchase_order_id', purchaseOrderId);
+        formData.append('import_status', 1);
+
+        fetch('../../BackEnd/Model/quanliphieunhap/xuliphieunhap.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.status === 'success') {
+                fetch('quanliphieunhap/fetch_phieunhap.php')
+                    .then(response => response.json())
+                    .then(data => {
+                        purchaseOrders = data.data;
+                        renderTable(purchaseOrders);
+                        const approveModalEl = document.getElementById('approve-modal');
+                        if (approveModalEl) {
+                            approveModalEl.close();
+                        }
+                        alert(result.message || 'Phiếu nhập đã được duyệt');
+                    })
+                    .catch(error => console.error('Có lỗi khi lấy dữ liệu phiếu nhập:', error));
+            } else {
+                alert(result.message || 'Duyệt đơn thất bại');
+            }
+        })
+        .catch(error => {
+            console.error('Lỗi khi gửi yêu cầu duyệt:', error);
+            alert('Lỗi khi gửi yêu cầu duyệt');
+        });
     }
 
-    table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-    }
-    tr, th {
-        border: 1px solid #ccc;
-        
+    // Sử dụng event delegation để xử lý các hành động
+    document.getElementById('table-body').addEventListener('click', (e) => {
+        const target = e.target.closest('a');
+        if (!target) return;
+
+        e.preventDefault();
+        const purchaseOrderId = target.getAttribute('data-purchase-order-id');
+
+        if (target.classList.contains('viewPurchaseOrder')) {
+            const viewModalEl = document.getElementById("view-modal");
+            if (viewModalEl) {
+                viewModalEl.showModal();
+                loadPurchaseOrderItems(purchaseOrderId);
+            }
+        } else if (target.classList.contains('approvePurchaseOrder')) {
+            const approveModalEl = document.getElementById("approve-modal");
+            if (approveModalEl) {
+                approveModalEl.setAttribute("data-purchase-order-id", purchaseOrderId);
+                approveModalEl.showModal();
+            }
+        }
+    });
+
+    // Event listener cho nút duyệt trong approve-modal
+    const approveModalEl = document.getElementById('approve-modal');
+    if (approveModalEl) {
+        const approveButton = approveModalEl.querySelector('#approve-button');
+        if (approveButton) {
+            approveButton.addEventListener('click', () => {
+                const purchaseOrderId = parseInt(approveModalEl.getAttribute('data-purchase-order-id'));
+                approvePurchaseOrder(purchaseOrderId);
+            });
+        }
     }
 
-    th {
-        background-color: #f2f2f2;
+    // Đóng modal
+    function addModalCloseButtonEventListeners() {
+        document.addEventListener('click', (e) => {
+            const closeEl = e.target.closest('.modal-close');
+            if (closeEl) {
+                const modalId = closeEl.dataset.id;
+                const modalEl = document.getElementById(modalId);
+                if (modalEl) {
+                    modalEl.close();
+                }
+            }
+        });
     }
 
-    td {
-        background-color: white;
-        text-align: center;
+    function addModalCancelButtonEventListener(modalEl) {
+        if (!modalEl) return;
+        const cancelButton = modalEl.querySelector('[id$="-close-button"]');
+        if (cancelButton) {
+            cancelButton.addEventListener("click", () => {
+                modalEl.close();
+            });
+        }
     }
 
-    .top-right-button {
-        position: absolute;
-        top: 1.5%;
-        left: 88%;
+    addModalCloseButtonEventListeners();
+    const viewModal = document.getElementById('view-modal');
+    if (viewModal) {
+        addModalCancelButtonEventListener(viewModal);
     }
-
-    #open-popup-phieunhap {
-        color: white;
-        background-color: #3284ed;
-        border-radius: 15px;
-        padding: 12px 25px;
-        border: none
+    const approveModal = document.getElementById('approve-modal');
+    if (approveModal) {
+        addModalCancelButtonEventListener(approveModal);
     }
-
-    .active, .inactive, .detail-button {
-        display: inline-block;        /* Để có thể áp dụng padding và border */
-        padding: 5px 10px;           /* Khoảng cách bên trong */
-        text-decoration: none;        /* Bỏ gạch chân */
-        color: white;                 /* Màu chữ trắng */
-        border: 1px solid black;      /* Khung bên ngoài màu đen */
-        border-radius: 15px;          /* Bo góc nhẹ */
-        transition: background-color 0.3s; /* Hiệu ứng chuyển màu nền */
-        padding: 6px 12px;
-    }
-
-    .inactive, .detail-button {
-        cursor: pointer;
-    }
-
-    .active:hover, .inactive:hover {
-        opacity: 0.8;                /* Hiệu ứng giảm độ trong suốt khi hover */
-    }
-
-    .active {
-        background: #28a745; /* Green for approved */
-        color: white;
-    }
-
-    .active:hover {
-        background: #218838;
-    }
-
-    .inactive {
-        background-color: #008cba;   /* Màu xanh lam cho khôi phục */
-    }
-
-    .detail-button {
-        /* border: 1px black solid; */
-        background: #007bff; /* Gray */
-        color: white;
-        font-weight: bold;
-    }
-
-    .detail-button:hover {
-        background: #0056b3;
-    }
-    
-</style>
+});
+</script>
+</body>
+</html>
