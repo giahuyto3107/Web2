@@ -10,121 +10,161 @@ include ('../../../BackEnd/Config/config.php');
     <title>Đăng ký</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-       
-        /* Định dạng nền */
+        /* Global Styles */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
         body {
-            background-color: #f9f9f9;
-            font-family: 'Arial', sans-serif;
+            background: #ffffff; 
+            color: #1a1a1a;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
-        .flex-grow{
-            background-color: #f7e6c4;
-        }
-        /* Định dạng chính */
+
+
         .main-container {
             flex: 1;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 90px 0;
-            
+            padding: 60px 0; 
+            width: 100%;
         }
 
-        /* Form đăng ký */
+      
         .register-container {
-            background: linear-gradient(135deg,#fef3c7 , #ffffff); /* Trắng sang vàng nhạt */
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+            background: #ffffff; 
+            padding: 40px;
+            border: 1px solid #e0e0e0; 
             width: 400px;
             text-align: center;
-            border: 2px solid #000;
+            margin-top:50px
         }
 
-        /* Tiêu đề */
         .register-container h2 {
-            font-size: 26px;
-            color: #000;
-            margin-bottom: 20px;
-            font-weight: bold;
+            font-size: 1.8rem;
+            font-weight: 400;
+            color: #1a1a1a;
+            letter-spacing: 2px;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            position: relative;
         }
 
-        /* Ô nhập liệu */
+        .register-container h2::after {
+            content: '';
+            width: 40px;
+            height: 1px;
+            background: #d4af37; 
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
         .register-container input {
             width: 100%;
-            padding: 12px;
-            margin-bottom: 15px;
-            border: 2px solid #000;
-            border-radius: 8px;
-            font-size: 16px;
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            border: 1px solid #e0e0e0;
+            font-size: 0.9rem;
+            font-weight: 300;
+            color: #1a1a1a;
+            background: #fff;
             outline: none;
-            transition: border-color 0.3s, background 0.3s;
+            transition: border-color 0.3s ease; 
         }
 
-        /* Hiệu ứng khi focus vào ô nhập */
         .register-container input:focus {
-            border-color: #facc15; /* Vàng */
-            background: #fff9db;
+            border-color: #d4af37; 
         }
 
-        /* Nút đăng ký */
         .register-container button {
             width: 100%;
-            background-color: #facc15; /* Vàng */
-            color: #000;
+            background: #1a1a1a;
+            color: #fff;
             padding: 12px;
-            border: 2px solid #000;
-            border-radius: 8px;
+            border: 1px solid #1a1a1a;
             cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-            transition: background 0.3s, color 0.3s;
+            font-size: 0.9rem;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: background 0.3s ease, color 0.3s ease;
         }
 
-        /* Hiệu ứng hover */
         .register-container button:hover {
-            background-color: #000;
-            color: #facc15;
+            background: #d4af37; 
+            color: #1a1a1a;
         }
 
-        /* Link chuyển sang đăng nhập */
         .register-container p a {
-            color: #facc15;
+            color: #d4af37; 
             text-decoration: none;
-            font-weight: bold;
+            font-weight: 400;
+            transition: color 0.3s ease; 
         }
 
         .register-container p a:hover {
-            text-decoration: underline;
+            color: #8b0000; 
         }
 
+        #message {
+            font-size: 0.85rem;
+            padding: 8px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
 
+        #message.hidden {
+            display: none;
+        }
+
+        #message.text-red-500 {
+            color: #8b0000; 
+            background: #ffe6e6;
+        }
+
+        #message.text-green-500 {
+            color: #1a1a1a; 
+            background: #e6f0e6;
+        }
     </style>
 </head>
-<body class="bg-gray-100 flex justify-center items-center h-screen">
-<div class="main-container">
-    <div class="register-container bg-white p-6 rounded-lg shadow-lg w-96">
-        <h2 class="text-2xl font-semibold mb-4 text-center">Đăng ký</h2>
+<body>
+    <div class="main-container">
+        <div class="register-container">
+            <h2>Đăng ký</h2>
 
-        <!-- Thông báo -->
-        <div id="message" class="hidden p-2 rounded text-center mb-2"></div>
+            <!-- Thông báo -->
+            <div id="message" class="hidden p-2 rounded text-center mb-2"></div>
 
-        <form id="signup-form">
-            <input type="text" id="name" name="name" placeholder="Tên tài khoản" required class="w-full p-2 border rounded mb-2">
-            <input type="email" id="email" name="email" placeholder="Email" required class="w-full p-2 border rounded mb-2">
-            <input type="password" id="password" name="password" placeholder="Mật khẩu" required class="w-full p-2 border rounded mb-2">
-            <input type="password" id="confirm_password" name="confirm_password" placeholder="Xác nhận mật khẩu" required class="w-full p-2 border rounded mb-2">
+            <form id="signup-form">
+                <input type="text" id="name" name="name" placeholder="Tên tài khoản" required>
+                <input type="email" id="email" name="email" placeholder="Email" required>
+                <input type="password" id="password" name="password" placeholder="Mật khẩu" required>
+                <input type="password" id="confirm_password" name="confirm_password" placeholder="Xác nhận mật khẩu" required>
+                <button type="submit">Đăng ký</button>
+            </form>
 
-            <button type="submit" class="w-full bg-blue-500 text-white p-2 rounded">Đăng ký</button>
-        </form>
-
-        <p class="text-sm mt-4 text-center">Đã có tài khoản? 
-            <a href="index.php?page=login" class="text-blue-500">Đăng nhập</a>
-        </p>
+            <p class="text-sm mt-4 text-center">Đã có tài khoản? 
+                <a href="index.php?page=login">Đăng nhập</a>
+            </p>
+        </div>
     </div>
-</div>
+
     <script>
         document.getElementById("signup-form").addEventListener("submit", function(event) {
-            event.preventDefault(); // Ngăn chặn load lại trang
+            event.preventDefault();
             
             let password = document.getElementById("password").value;
             let confirmPassword = document.getElementById("confirm_password").value;
@@ -149,11 +189,11 @@ include ('../../../BackEnd/Config/config.php');
                 messageBox.classList.remove("hidden");
 
                 if (data.status === "success") {
-                    messageBox.classList.remove("text-red-500", "bg-red-100"); // Xóa màu lỗi
-                    messageBox.classList.add("text-green-500", "bg-green-100"); // Thêm màu thành công
+                    messageBox.classList.remove("text-red-500", "bg-red-100");
+                    messageBox.classList.add("text-green-500", "bg-green-100");
 
                     setTimeout(function() {
-                        console.log("Chuyển hướng..."); // Kiểm tra xem có log ra không
+                        console.log("Chuyển hướng...");
                         window.location.href = "index.php";
                     }, 2000);
                 } else {
@@ -163,9 +203,6 @@ include ('../../../BackEnd/Config/config.php');
             })
             .catch(error => console.error("Lỗi:", error));
         });
-
     </script>
 </body>
 </html>
-
-
