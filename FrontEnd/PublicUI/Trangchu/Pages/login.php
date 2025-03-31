@@ -2,151 +2,168 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Đăng nhập</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng Nhập</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Căn giữa form */
-        main {
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: #ffffff;
+            color: #1a1a1a;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .main-container {
+            flex: 1;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: calc(100vh - 100px);
-            background: #f9f9f9;
+            padding: 60px 0;
+            width: 100%;
+            margin-top:50px;
         }
 
-        /* Khung đăng nhập */
         .login-container {
-            background: linear-gradient(135deg,#fef3c7 , #ffffff);
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+            background: #ffffff;
+            padding: 40px;
+            border: 1px solid #e0e0e0;
             width: 400px;
             text-align: center;
-            border: 2px solid #000;
         }
 
-        /* Tiêu đề */
         .login-container h2 {
-            font-size: 26px;
-            color: #000;
-            margin-bottom: 20px;
-            font-weight: bold;
+            font-size: 1.8rem;
+            font-weight: 400;
+            color: #1a1a1a;
+            letter-spacing: 2px;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            position: relative;
         }
 
-        /* Input */
+        .login-container h2::after {
+            content: '';
+            width: 40px;
+            height: 1px;
+            background: #d4af37;
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
         .login-container input {
             width: 100%;
-            padding: 12px;
-            margin-bottom: 15px;
-            border: 2px solid #000;
-            border-radius: 8px;
-            font-size: 16px;
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            border: 1px solid #e0e0e0;
+            font-size: 0.9rem;
+            font-weight: 300;
+            color: #1a1a1a;
+            background: #fff;
             outline: none;
-            transition: border-color 0.3s, background 0.3s;
+            transition: border-color 0.3s ease;
         }
 
-        /* Hiệu ứng khi focus vào ô nhập */
         .login-container input:focus {
-            border-color: #facc15; /* Vàng */
-            background: #fff9db;
+            border-color: #d4af37;
         }
 
-        /* Nút đăng nhập */
         .login-container button {
             width: 100%;
-            background-color: #facc15; /* Vàng */
-            color: #000;
+            background: #1a1a1a;
+            color: #fff;
             padding: 12px;
-            border: 2px solid #000;
-            border-radius: 8px;
+            border: 1px solid #1a1a1a;
             cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-            transition: background 0.3s, color 0.3s;
+            font-size: 0.9rem;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: background 0.3s ease, color 0.3s ease;
         }
 
-        /* Hiệu ứng hover */
         .login-container button:hover {
-            background-color: #000;
-            color: #facc15;
+            background: #d4af37;
+            color: #1a1a1a;
         }
 
-        /* Link chuyển sang đăng ký */
+        .login-container button:disabled {
+            background: #666;
+            border-color: #666;
+            cursor: not-allowed;
+        }
+
         .login-container p a {
-            color: #facc15;
+            color: #d4af37;
             text-decoration: none;
-            font-weight: bold;
+            font-weight: 400;
+            transition: color 0.3s ease;
         }
 
         .login-container p a:hover {
-            text-decoration: underline;
+            color: #8b0000;
         }
 
-        /* Hiển thị lỗi khi đăng nhập */
-        #login-error {
-            font-size: 14px;
-            color: red;
-            margin-top: 10px;
-        }
-
-        /* Thông báo thành công (màu xanh) */
-        #login-success {
-            font-size: 14px;
-            color: green;
-            margin-top: 10px;
-            font-weight: bold;
-        }
         #login-message {
-            font-size: 14px;
-            margin-top: 10px;
-            font-weight: bold;
+            font-size: 0.85rem;
+            margin-top: 15px;
+            font-weight: 300;
             display: none;
+            padding: 8px;
+            border-radius: 4px;
         }
 
-        /* Màu đỏ khi có lỗi */
         #login-message.error {
-            color: red;
+            color: #8b0000;
+            background: #ffe6e6;
         }
 
-        /* Màu xanh khi đăng nhập thành công */
         #login-message.success {
-            color: green;
-        }
-        .flex-grow{
-            background-color: #f7e6c4;
+            color: #1a1a1a;
+            background: #e6f0e6;
         }
     </style>
 </head>
-<body class="flex flex-col justify-center items-center min-h-screen">
-
-    <div class="login-container">
-        <h2>Đăng Nhập</h2>
-
-        <form id="loginForm">
-            <input id="email" type="email" name="email" placeholder="Email" required>
-            <input id="password" type="password" name="password" placeholder="Mật khẩu" required>
-            <button id="submit-login" type="submit">Đăng nhập</button>
-            <p id="login-message"></p> <!-- Thông báo lỗi hoặc thành công -->
-        </form>
-
-        <p class="text-sm mt-4">Chưa có tài khoản? <a href="index.php?page=signup">Đăng ký ngay</a></p>
+<body>
+    <div class="main-container">
+        <div class="login-container">
+            <h2>Đăng Nhập</h2>
+            <form id="loginForm">
+                <input id="email" type="email" name="email" placeholder="Email" required>
+                <input id="password" type="password" name="password" placeholder="Mật khẩu" required>
+                <button id="submit-login" type="submit">Đăng nhập</button>
+                <p id="login-message"></p>
+            </form>
+            <p class="text-sm mt-4">Chưa có tài khoản? <a href="index.php?page=signup">Đăng ký ngay</a></p>
+        </div>
     </div>
 
     <script>
         document.getElementById("loginForm").addEventListener("submit", function (event) {
-            event.preventDefault(); // Ngăn chặn form submit mặc định
+            event.preventDefault();
 
             const email = document.getElementById("email").value.trim();
             const password = document.getElementById("password").value.trim();
             const messageBox = document.getElementById("login-message");
             const submitButton = document.getElementById("submit-login");
 
-            // Xóa thông báo cũ
             messageBox.style.display = "none";
             messageBox.textContent = "";
             messageBox.classList.remove("success", "error");
 
-            // Kiểm tra nếu bỏ trống
             if (!email || !password) {
                 messageBox.textContent = "Vui lòng nhập đầy đủ email và mật khẩu!";
                 messageBox.classList.add("error");
@@ -154,11 +171,10 @@
                 return;
             }
 
-            // Vô hiệu hóa nút để tránh spam request
             submitButton.disabled = true;
             submitButton.textContent = "Đang đăng nhập...";
 
-            fetch("Pages/process-login.php", { // Đường dẫn xử lý đăng nhập
+            fetch("Pages/process-login.php", {
                 method: "POST",
                 headers: { "Content-Type": "application/x-www-form-urlencoded" },
                 body: `email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`
@@ -167,17 +183,16 @@
             .then(data => {
                 if (data.success) {
                     messageBox.textContent = "Đăng nhập thành công! Đang chuyển hướng...";
-                    messageBox.classList.remove("error"); // Xóa class error nếu có
-                    messageBox.classList.add("success"); // Thêm class success (màu xanh)
+                    messageBox.classList.remove("error");
+                    messageBox.classList.add("success");
                     messageBox.style.display = "block";
-                    // Chờ 2 giây trước khi chuyển hướng
                     setTimeout(() => {
                         window.location.href = data.redirect;
                     }, 2000);
                 } else {
                     messageBox.textContent = data.message;
-                    messageBox.classList.remove("success"); // Xóa class success nếu có
-                    messageBox.classList.add("error"); // Thêm class error (màu đỏ)
+                    messageBox.classList.remove("success");
+                    messageBox.classList.add("error");
                     messageBox.style.display = "block";
                 }
             })
@@ -192,6 +207,5 @@
             });
         });
     </script>
-
 </body>
 </html>

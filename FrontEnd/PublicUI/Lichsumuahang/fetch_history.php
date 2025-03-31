@@ -1,8 +1,8 @@
 <?php
 include ('../../../BackEnd/Config/config.php');
 include ('../../../BackEnd/Model/phantrang.php');
-
-$user_id = 1;
+session_start();
+$user_id = $_SESSION['user_id'];
 $search = isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['search']) : '';
 $status = isset($_GET['status']) ? mysqli_real_escape_string($conn, $_GET['status']) : '';
 

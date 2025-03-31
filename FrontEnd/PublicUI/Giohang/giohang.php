@@ -7,7 +7,7 @@ if (!$conn) {
 }
 
 // Giả sử user_id là 1
-$user_id = 1;
+$user_id = $_SESSION['user_id'];
 
 // Lấy dữ liệu giỏ hàng
 $sql = "SELECT cart_items.product_id, product.product_name, product.image_url, product.price, cart_items.quantity 
