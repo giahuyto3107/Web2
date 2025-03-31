@@ -5,8 +5,8 @@ session_start();
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     //$user_id  = $_SESSION['user_id']; 
     //$account_id  = $_SESSION['account_id']; 
-    $account_id = 1;
-    $user_id = 1;
+    $user_id = $_SESSION['user_id'];
+    // $user_id = 1;
     $fullName = $_POST['fullName'];
     $email    = $_POST['email'];
     $dob      = $_POST['dob'];

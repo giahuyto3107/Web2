@@ -1,3 +1,8 @@
+<?php
+include ('../../../BackEnd/Config/config.php');
+session_start();
+
+?> 
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -316,8 +321,9 @@ body {
             <div class="main_giohang_content">
                 <?php  
                     include ('../../../BackEnd/Config/config.php');
-                                    
-                    $account_id = 1; 
+                                  
+                    $account_id = $_SESSION['user_id']; 
+                    
 
                     $sql_user = "SELECT 
                                     u.full_name, 
@@ -337,8 +343,8 @@ body {
                         <div class="profile-nav">
                             <div class="user-heading">
                                 <img src="../../../BackEnd/Uploads/Profile Picture/<?php echo $row_user_data['profile_picture']; ?>" alt="">
-                                <h1><?php echo $row_user_data['full_name']; ?></h1>
-                                <p>ID: <?php echo $account_id; ?></p>
+                                <!-- <h1><?php echo $row_user_data['full_name']; ?></h1>
+                                <p>ID: <?php echo $account_id; ?></p> -->
                             </div>
                             <ul class="nav nav-pills nav-stacked">
                                 <li class="nav-item active"><a class="nav-link" href="#"> <i class="fas fa-user"></i> Profile</a></li>
