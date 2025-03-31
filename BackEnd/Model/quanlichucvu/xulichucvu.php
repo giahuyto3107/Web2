@@ -1,73 +1,117 @@
 <?php
-include('../../Config/config.php');
+include('../../../BackEnd/Config/config.php');
+header('Content-Type: application/json');
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    if (isset($_POST['updateRole'])) {
-    $role_id = isset($_POST['id']) ? intval($_POST['id']) : 0;
-    $role_name = isset($_POST['name']) ? trim($_POST['name']) : '';
-    $role_description = isset($_POST['description']) ? trim($_POST['description']) : '';
-    $status_id = isset($_POST['status']) ? intval($_POST['status']) : 0;
+$role_id = $_POST['id'] ?? null;
+$role_name = trim($_POST['role_name'] ?? '');
+$role_description = trim($_POST['role_description'] ?? '');
+$status_id = (int)($_POST['status_id'] ?? 1);
 
-    if ($role_id > 0 && !empty($role_name) && !empty($role_description) && ($status_id == 1 || $status_id == 2)) {
-        $sql_check = "SELECT * FROM role WHERE role_name = ? AND id != ?";
-        $stmt_check = $conn->prepare($sql_check);
-        $stmt_check->bind_param("si", $role_name, $role_id);
-        $stmt_check->execute();
-        $result_check = $stmt_check->get_result();
+if ($role_id) {
+    // Kiểm tra sự tồn tại của chức vụ
+    $check_id_sql = "SELECT role_name FROM role WHERE id = ?";
+    $stmt = $conn->prepare($check_id_sql);
+    $stmt->bind_param("i", $role_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-        if ($result_check->num_rows > 0) {
-            echo "Tên vai trò đã tồn tại.";
-        } else {
-            $sql_update = "UPDATE role SET role_name = ?, role_description = ?, status_id = ? WHERE id = ?";
-            $stmt_update = $conn->prepare($sql_update);
-            $stmt_update->bind_param("ssii", $role_name, $role_description, $status_id, $role_id);
-
-            if ($stmt_update->execute()) {
-                header('Location: ../../../Frontend/AdminUI/index.php?action=quanlichucvu&query=them&thanhcong=0');
-                exit;
-            } else {
-                echo "Có lỗi xảy ra khi cập nhật: " . $stmt_update->error;
-            }
-        }
-    } 
-}elseif (isset($_POST['themchucvu'])) {
-    // Lấy dữ liệu từ form
-    $tenchucvu = $_POST['role_name'];
-    $mota = $_POST['role_description'];
-    $trangthai = $_POST['status_id'];
-    $permissions = isset($_POST['permissions']) ? $_POST['permissions'] : array();
-
-    // Kiểm tra xem tên chức vụ đã tồn tại chưa
-    $sql_check = "SELECT * FROM role WHERE role_name = '$tenchucvu'";
-    $result_check = mysqli_query($conn, $sql_check);
-
-    if (mysqli_num_rows($result_check) > 0) {
-        header('Location: ../../../Frontend/AdminUI/index.php?action=quanlichucvu&query=them&thanhcong=1');
+    if ($result->num_rows === 0) {
+        echo json_encode(['status' => 'error', 'message' => 'Chức vụ không tồn tại!']);
         exit;
-    } else {
-        $sql_them = "INSERT INTO role (role_name, role_description, status_id) 
-                     VALUES ('$tenchucvu', '$mota', '$trangthai')";
-        
-        if (mysqli_query($conn, $sql_them)) {
-            $role_id = mysqli_insert_id($conn);
+    }
 
-            if (!empty($permissions)) {
-                foreach ($permissions as $permission_id) {
-                    $sql_insert_permission = "INSERT INTO role_permission (role_id, permission_id) 
-                                             VALUES ('$role_id', '$permission_id')";
-                    mysqli_query($conn, $sql_insert_permission);
-                }
-            }
+    // Xử lý xóa (đánh dấu status_id = 6)
+    if (isset($_POST['status_id']) && $_POST['status_id'] == 6) {
+        $sql = "UPDATE role SET status_id = ? WHERE id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ii", $status_id, $role_id);
 
-            header('Location: ../../../Frontend/AdminUI/index.php?action=quanlichucvu&query=them&thanhcong=2');
-            exit;
+        if ($stmt->execute()) {
+            echo json_encode(['status' => 'success', 'message' => 'Chức vụ đã được đánh dấu xóa!']);
         } else {
-            echo "Lỗi: " . mysqli_error($conn);
+            echo json_encode(['status' => 'error', 'message' => 'Có lỗi khi đánh dấu xóa: ' . $conn->error]);
         }
+        $stmt->close();
+    } else {
+        // Xử lý cập nhật chức vụ
+        if (empty($role_name)) {
+            echo json_encode(['status' => 'error', 'message' => 'Tên chức vụ không được để trống!']);
+            exit;
+        }
+
+        // Kiểm tra trùng lặp role_name (trừ bản ghi hiện tại)
+        $current_name = $result->fetch_assoc()['role_name'];
+        if ($role_name !== $current_name) {
+            $check_sql = "SELECT role_name FROM role WHERE role_name = ? AND id != ?";
+            $stmt = $conn->prepare($check_sql);
+            $stmt->bind_param("si", $role_name, $role_id);
+            $stmt->execute();
+            $check_result = $stmt->get_result();
+
+            if ($check_result->num_rows > 0) {
+                echo json_encode(['status' => 'error', 'message' => 'Tên chức vụ đã tồn tại!']);
+                exit;
+            }
+        }
+
+        // Cập nhật thông tin chức vụ
+        $sql = "UPDATE role SET role_name = ?, role_description = ?, status_id = ? WHERE id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ssii", $role_name, $role_description, $status_id, $role_id);
+
+        if ($stmt->execute()) {
+            echo json_encode(['status' => 'success', 'message' => 'Chức vụ đã được cập nhật thành công!']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Có lỗi khi cập nhật chức vụ: ' . $conn->error]);
+        }
+        $stmt->close();
     }
 } else {
-    echo "Yêu cầu không hợp lệ.";
+    // Xử lý thêm mới chức vụ
+    if (empty($role_name)) {
+        echo json_encode(['status' => 'error', 'message' => 'Tên chức vụ không được để trống!']);
+        exit;
+    }
+
+    // Kiểm tra trùng lặp role_name
+    $check_sql = "SELECT role_name FROM role WHERE role_name = ?";
+    $stmt = $conn->prepare($check_sql);
+    $stmt->bind_param("s", $role_name);
+    $stmt->execute();
+    $check_result = $stmt->get_result();
+
+    if ($check_result->num_rows > 0) {
+        echo json_encode(['status' => 'error', 'message' => 'Tên chức vụ đã tồn tại!']);
+        exit;
+    }
+
+    // Thêm mới chức vụ
+    $sql = "INSERT INTO role (role_name, role_description, status_id) VALUES (?, ?, ?)";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ssi", $role_name, $role_description, $status_id);
+
+    if ($stmt->execute()) {
+        $new_role_id = $conn->insert_id;
+
+        // Xử lý quyền (nếu có)
+        if (isset($_POST['permissions']) && is_array($_POST['permissions'])) {
+            $insert_permission_sql = "INSERT INTO role_permission (role_id, permission_id) VALUES (?, ?)";
+            $stmt_permission = $conn->prepare($insert_permission_sql);
+
+            foreach ($_POST['permissions'] as $permission_id) {
+                $permission_id = (int)$permission_id;
+                $stmt_permission->bind_param("ii", $new_role_id, $permission_id);
+                $stmt_permission->execute();
+            }
+            $stmt_permission->close();
+        }
+
+        echo json_encode(['status' => 'success', 'message' => 'Chức vụ đã được thêm thành công!']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Có lỗi khi thêm chức vụ: ' . $conn->error]);
+    }
+    $stmt->close();
 }
-}
+
 $conn->close();
 ?>

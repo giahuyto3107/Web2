@@ -1,55 +1,619 @@
-<?php
-    $sql_role = "SELECT r.id,
-                    r.role_name,
-                    r.role_description,
-                    st.status_name
-                from role r
-                join status st on st.id = r.status_id
-                ORDER BY r.id ASC";
 
-    $query_role = mysqli_query($conn, $sql_role);
-    if (!$query_role) {
-        die("Query failed: " . mysqli_error($conn));
-    }
-?>
 
-<div class="form">
-    <div class="form-title">
-        <h2>Quản lý chức vụ</h2>
+<div class="header"></div>
+<div class="data-table">
+  <div class="success-message" id="success-message" style="display: none">
+    <div class="success-text">
+      <p>Dummy Text</p>
+      <a id="success-message-cross" style="cursor: pointer">
+        <i class="fa fa-times" style="font-size: 1.5rem; height: 1.5rem"></i>
+      </a>
+    </div>
+    <div class="progress-container">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+  </div>
+  <h1 class="heading"> Quản lý <span>CHỨC VỤ</span></h1>
+  <div class="toolbar">
+    <div class="filters">
+      <div class="filter-options-wrapper">
+        <label for="filter-options" class="filter-label">Bộ lọc </label>
+        <select id="filter-options">
+          <option value="role_name">Tên chức vụ</option>
+          <option value="role_description">Mô tả</option>
+          <option value="status_id">Trạng thái</option>
+        </select>
+      </div>
+      <div class="search">
+        <input type="text" id="search-text" name="search-text" placeholder="Tìm kiếm..." />
+      </div>
+    </div>
+    <div class="toolbar-button-wrapper">
+      <button class="toolbar-button add-product-button" id="add-product-toolbar">
+        <span>Thêm chức vụ</span>
+        <i class="bx bx-plus-medical"></i>
+      </button>
+    </div>
+  </div>
+
+  <div id="selected-products"></div>
+
+  <div class="table-container">
+    <div class="no-products">
+      <p>Có vẻ hiện tại bạn chưa có chức vụ nào?</p>
     </div>
 
-    <div class="form-content">
-        <table>
-            <tr>
-                <th>STT</th>
-                <th>Tên chức vụ</th>
-                <th>Mô tả</th>
-                <th>Trạng thái  </th>
-                <th>Quản lý</th>
-            </tr>
-
-            <?php
-                while($row = mysqli_fetch_array($query_role)) {
-                    ;
-            ?>
-
-            <tr>
-                <td><?= $row['id'] ?></td>
-                <td><?= $row['role_name'] ?></td>
-                <td><?= $row['role_description'] ?></td>
-                <td><?= $row['status_name'] ?></td>
-                <td>
-                    <a class ="edit" href="index.php?action=quanlichucvu&query=sua&id=<?= $row['id'] ?>">Sửa</a>      
-                    <a class ="edit" href="index.php?action=quanlichucvu&query=menu&id=<?= $row['id'] ?> &name=<?= $row['role_name'] ?>">Menu</a>      
-                </td>
-            </tr>
-
-            <?php
-                }
-            ?>
-        </table>
-    </div>
-
+    <table class="table" id="data-table">
+      <thead>
+        <tr>
+          <th data-id="id">ID</th>
+          <th data-id="role_name">Tên chức vụ</th>
+          <th data-id="role_description">Mô tả</th>
+          <th data-id="status_id">Trạng thái</th>
+          <th class="actionsTH">Quản lý</th>
+        </tr>
+      </thead>
+      <tbody id="table-body"></tbody>
+    </table>
+  </div>
 </div>
 
+<!-- Script để fetch và hiển thị dữ liệu -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Biến toàn cục
+    let roles = []; // Dữ liệu gốc, không thay đổi
 
+    // Hàm chuyển status_id thành văn bản
+    function getStatusText(statusId) {
+        switch (statusId) {
+            case 1: return 'Active';
+            case 2: return 'Inactive';
+            default: return 'N/A';
+        }
+    }
+
+    // Hàm thêm sự kiện lọc và tìm kiếm
+    function addFilterEventListener() {
+        const searchEl = document.getElementById("search-text");
+        const filterOptionsEl = document.getElementById("filter-options");
+
+        if (!searchEl || !filterOptionsEl) {
+            console.error('Required elements not found: #search-text or #filter-options');
+            return;
+        }
+
+        searchEl.addEventListener("input", () => {
+            const filterBy = filterOptionsEl.value;
+            const searchValue = searchEl.value.trim();
+
+            let filteredData = roles;
+
+            if (searchValue !== "") {
+                filteredData = roles.filter((role) => {
+                    if (typeof role[filterBy] === "string") {
+                        return role[filterBy].toLowerCase().includes(searchValue.toLowerCase());
+                    } else {
+                        return role[filterBy].toString().includes(searchValue);
+                    }
+                });
+            }
+
+            renderTable(filteredData);
+        });
+
+        filterOptionsEl.addEventListener("change", () => {
+            searchEl.value = "";
+            renderTable(roles);
+        });
+    }
+
+    // Hàm render bảng
+    function renderTable(displayedRoles) {
+        const tableBody = document.getElementById('table-body');
+        const noProductsEl = document.querySelector('.no-products');
+
+        if (!tableBody || !noProductsEl) {
+            console.error('Required elements not found: #table-body or .no-products');
+            return;
+        }
+
+        tableBody.innerHTML = '';
+        const activeRoles = displayedRoles.filter(role => role.status_id !== 6);
+
+        if (activeRoles.length > 0) {
+            noProductsEl.style.display = 'none';
+            activeRoles.forEach((role, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${role.id}</td>
+                    <td>${role.role_name || 'N/A'}</td>
+                    <td>${role.role_description || 'N/A'}</td>
+                    <td>${getStatusText(role.status_id)}</td>
+                    <td class="actions">
+                        <div class="dropdown">
+                            <button class="dropdownButton"><i class="fa fa-ellipsis-v dropIcon"></i></button>
+                            <div class="dropdown-content">
+                                <a href="#" class="viewRole" data-role-id="${role.id}">Xem <i class="fa fa-eye"></i></a>
+                                <a href="#" class="editRole" data-role-id="${role.id}">Sửa <i class="fa fa-edit"></i></a>
+                                <a href="#" class="deleteRole" data-role-id="${role.id}">Xóa <i class="fa fa-trash"></i></a>
+                                <a href="index.php?action=quanlichucvu&query=menu&id=${role.id}&name=${role.role_name}" class="menuRole">Menu <i class="fa fa-list"></i></a>
+                            </div>
+                        </div>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        } else {
+            noProductsEl.style.display = 'flex';
+            tableBody.innerHTML = '<tr><td colspan="5">Không tìm thấy chức vụ.</td></tr>';
+        }
+    }
+
+    // Fetch dữ liệu ban đầu từ server
+    fetch('quanlichucvu/fetch_chucvu.php')
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                roles = data.data;
+                console.log('Initial roles:', roles);
+                renderTable(roles);
+                addFilterEventListener();
+            } else {
+                console.error('Error:', data.message);
+                document.getElementById('table-body').innerHTML = '<tr><td colspan="5">Lỗi khi tải chức vụ.</td></tr>';
+            }
+        })
+        .catch(error => {
+            console.error('Fetch error:', error);
+            document.getElementById('table-body').innerHTML = '<tr><td colspan="5">Lỗi khi tải chức vụ.</td></tr>';
+        });
+
+    // Sử dụng event delegation để xử lý các hành động
+    document.getElementById('table-body').addEventListener('click', (e) => {
+        const target = e.target.closest('a');
+    if (!target) return;
+
+    e.preventDefault();
+    const roleId = parseInt(target.getAttribute('data-role-id')); // Chuyển roleId thành số
+    const role = roles.find(r => r.id === roleId);
+    const roleName = target.getAttribute('data-role-name');
+
+    if (!role) {
+        console.error('Role not found:', roleId);
+        alert('Chức vụ không tồn tại hoặc đã bị xóa. Vui lòng làm mới trang.');
+        return;
+    }
+
+    if (target.classList.contains('viewRole')) {
+        const viewModalEl = document.getElementById("view-modal");
+        addModalData(viewModalEl, role, "innerHTML");
+        viewModalEl.showModal();
+    } else if (target.classList.contains('editRole')) {
+        const editModalEl = document.getElementById("edit-modal");
+        openEditModal(role);
+    } else if (target.classList.contains('deleteRole')) {
+        const deleteModalEl = document.getElementById("delete-modal");
+        deleteModalEl.setAttribute("data-role-id", roleId);
+        deleteModalEl.showModal();
+    } else if (target.classList.contains('updatePermission')) {
+        const permissionModal = document.getElementById('permission-modal');
+        document.getElementById('modal-role-id').value = roleId;
+        document.getElementById('modal-role-name').textContent = roleName;
+        fetchPermissions(roleId, permissionModal); // Load permissions
+        permissionModal.showModal();
+    }
+    });
+
+    // Hàm mở modal chỉnh sửa
+    function openEditModal(role) {
+        const editModal = document.getElementById('edit-modal');
+        const form = document.getElementById('modal-edit-form');
+
+        document.getElementById('modal-edit-role-id').value = role.id;
+        document.getElementById('modal-edit-name').value = role.role_name || '';
+        document.getElementById('modal-edit-description').value = role.role_description || '';
+        document.getElementById('modal-edit-status').value = role.status_id;
+
+        clearFormErrors(form);
+        form.removeEventListener('submit', handleEditSubmit);
+        form.addEventListener('submit', handleEditSubmit);
+        editModal.showModal();
+    }
+
+    // Hàm xử lý submit form chỉnh sửa
+    function handleEditSubmit(e) {
+        e.preventDefault();
+        const form = document.getElementById('modal-edit-form');
+        const editModal = document.getElementById('edit-modal');
+        const errorContainer = editModal.querySelector('.modal-error') || document.createElement('p');
+
+        clearFormErrors(form);
+        if (!errorContainer.parentElement) {
+            editModal.querySelector('.modal-buttons').insertAdjacentElement('beforebegin', errorContainer);
+        }
+        errorContainer.textContent = '';
+        errorContainer.style.display = 'none';
+
+        const isError = validateModalFormInputs(form);
+        if (isError) {
+            errorContainer.style.display = 'block';
+            errorContainer.style.color = 'var(--clr-error)';
+            editModal.scrollTop = 0;
+            return;
+        }
+
+        updateRole(form);
+    }
+
+    // Hàm cập nhật chức vụ
+    function updateRole(form) {
+        const formData = new FormData(form);
+        fetch('../../BackEnd/Model/quanlichucvu/xulichucvu.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(result => {
+            const editModal = document.getElementById('edit-modal');
+            if (result.status === 'success') {
+                fetch('quanlichucvu/fetch_chucvu.php')
+                    .then(response => response.json())
+                    .then(data => {
+                        roles = data.data;
+                        renderTable(roles);
+                        editModal.close();
+                        const successMessage = document.getElementById('success-message');
+                        successMessage.querySelector('.success-text p').textContent = result.message || 'Chức vụ đã được cập nhật';
+                        successMessage.style.display = 'block';
+                        setTimeout(() => {
+                            successMessage.style.display = 'none';
+                        }, 3000);
+                    })
+                    .catch(error => console.error('Có lỗi khi lấy dữ liệu chức vụ:', error));
+            } else {
+                const errorContainer = editModal.querySelector('.modal-error');
+                errorContainer.textContent = result.message || 'Có lỗi khi cập nhật chức vụ';
+                errorContainer.style.display = 'block';
+                errorContainer.style.color = 'var(--clr-error)';
+                editModal.scrollTop = 0;
+            }
+        })
+        .catch(error => {
+            console.error('Cập nhật chức vụ thất bại:', error);
+            const editModal = document.getElementById('edit-modal');
+            editModal.scrollTop = 0;
+        });
+    }
+
+    // Hàm thêm chức vụ
+    function addRole(formEl) {
+        const formData = new FormData(formEl);
+        fetch('../../BackEnd/Model/quanlichucvu/xulichucvu.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(result => {
+            const addRoleModal = document.getElementById("add-modal");
+            if (result.status === 'success') {
+                fetch('quanlichucvu/fetch_chucvu.php')
+                    .then(response => response.json())
+                    .then(data => {
+                        roles = data.data;
+                        renderTable(roles);
+                        addRoleModal.close();
+                        const successMessage = document.getElementById('success-message');
+                        successMessage.querySelector('.success-text p').textContent = result.message || 'Chức vụ thêm thành công';
+                        successMessage.style.display = 'block';
+                        setTimeout(() => {
+                            successMessage.style.display = 'none';
+                        }, 3000);
+                    })
+                    .catch(error => console.error('Có lỗi khi lấy dữ liệu chức vụ:', error));
+            } else {
+                const errorContainer = addRoleModal.querySelector('.modal-error');
+                errorContainer.textContent = result.message || 'Có lỗi khi thêm chức vụ';
+                errorContainer.style.display = 'block';
+                errorContainer.style.color = 'var(--clr-error)';
+                addRoleModal.scrollTop = 0;
+            }
+        })
+        .catch(error => {
+            console.error('Thêm chức vụ thất bại:', error);
+            const addRoleModal = document.getElementById("add-modal");
+            addRoleModal.scrollTop = 0;
+        });
+    }
+
+    // Hàm xóa chức vụ (cập nhật status_id thành 6)
+    function deleteRole(roleId) {
+        const formData = new FormData();
+        formData.append('id', roleId);
+        formData.append('status_id', "6");
+
+        fetch('../../BackEnd/Model/quanlichucvu/xulichucvu.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.status === 'success') {
+                fetch('quanlichucvu/fetch_chucvu.php')
+                    .then(response => response.json())
+                    .then(data => {
+                        roles = data.data;
+                        renderTable(roles);
+                        const deleteModalEl = document.getElementById('delete-modal');
+                        deleteModalEl.close();
+                        const successMessage = document.getElementById('success-message');
+                        successMessage.querySelector('.success-text p').textContent = result.message || 'Chức vụ đã được đánh dấu xóa';
+                        successMessage.style.display = 'block';
+                        setTimeout(() => {
+                            successMessage.style.display = 'none';
+                        }, 3000);
+                    })
+                    .catch(error => console.error('Có lỗi khi lấy dữ liệu chức vụ:', error));
+            } else {
+                const successMessage = document.getElementById('success-message');
+                successMessage.querySelector('.success-text p').textContent = result.message || 'Xóa thất bại';
+                successMessage.style.display = 'block';
+                successMessage.style.backgroundColor = 'var(--clr-error)';
+                setTimeout(() => {
+                    successMessage.style.display = 'none';
+                    successMessage.style.backgroundColor = '';
+                }, 3000);
+            }
+        })
+        .catch(error => {
+            console.error('Lỗi khi gửi yêu cầu xóa:', error);
+            const successMessage = document.getElementById('success-message');
+            successMessage.querySelector('.success-text p').textContent = 'Lỗi khi gửi yêu cầu xóa';
+            successMessage.style.display = 'block';
+            successMessage.style.backgroundColor = 'var(--clr-error)';
+            setTimeout(() => {
+                successMessage.style.display = 'none';
+                successMessage.style.backgroundColor = '';
+            }, 3000);
+        });
+    }
+
+    // Event listener cho nút xóa trong delete-modal
+    const deleteModalEl = document.getElementById('delete-modal');
+    const deleteDeleteButton = deleteModalEl.querySelector('#delete-delete-button');
+    deleteDeleteButton.addEventListener('click', () => {
+        const roleId = parseInt(deleteModalEl.getAttribute('data-role-id'));
+        deleteRole(roleId);
+    });
+
+    // Hàm xử lý modal Add
+    function addViewRoleModalEventListener() {
+        const addRoleModal = document.getElementById("add-modal");
+        const formEl = document.getElementById("modal-add-form");
+        const addCloseButton = addRoleModal.querySelector("#add-close-button");
+        const addRoleToolbar = document.querySelector("#add-product-toolbar");
+
+        addRoleToolbar.addEventListener("click", () => {
+            addRoleModal.showModal();
+        });
+
+        addCloseButton.addEventListener("click", () => {
+            addRoleModal.close();
+        });
+
+        formEl.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const isError = validateAddModalFormInputs(formEl);
+            if (!isError) {
+                addRole(formEl);
+            } else {
+                addRoleModal.scrollTop = 0;
+            }
+        });
+    }
+
+    // Hàm xóa lỗi form
+    function clearFormErrors(form) {
+        const errorEls = form.querySelectorAll('.modal-error');
+        errorEls.forEach(errorEl => errorEl.textContent = '');
+        const inputs = form.querySelectorAll('input, textarea, select');
+        inputs.forEach(input => input.style.border = '');
+    }
+
+    // Hàm validate form cho edit-modal
+    function validateModalFormInputs(form) {
+        const inputs = form.querySelectorAll('input[required], textarea[required], select[required]');
+        let isError = false;
+
+        inputs.forEach(input => {
+            const value = input.value.trim();
+            const errorEl = input.parentElement.querySelector('.modal-error');
+            input.style.border = '';
+            if (errorEl) errorEl.textContent = '';
+
+            if (!value) {
+                isError = true;
+                input.style.border = '1px solid var(--clr-error)';
+                if (errorEl) errorEl.textContent = 'Trường này không được để trống!';
+                return;
+            }
+
+            if (input.id === 'modal-edit-name') {
+                if (!/^[a-zA-Z\s-]+$/.test(value)) {
+                    isError = true;
+                    input.style.border = '1px solid var(--clr-error)';
+                    if (errorEl) errorEl.textContent = 'Tên chức vụ chỉ chứa chữ cái, khoảng trắng, và dấu gạch ngang';
+                } else if (value.length > 50) {
+                    isError = true;
+                    input.style.border = '1px solid var(--clr-error)';
+                    if (errorEl) errorEl.textContent = 'Tên chức vụ không được vượt quá 50 ký tự';
+                }
+            }
+
+            if (input.id === 'modal-edit-description') {
+                if (value.length > 200) {
+                    isError = true;
+                    input.style.border = '1px solid var(--clr-error)';
+                    if (errorEl) errorEl.textContent = 'Mô tả không được vượt quá 200 ký tự';
+                }
+            }
+        });
+
+        return isError;
+    }
+
+    // Hàm validate form cho add-modal
+    function validateAddModalFormInputs(form) {
+        const inputs = form.querySelectorAll('input[required], textarea[required], select[required]');
+        let isError = false;
+
+        inputs.forEach(input => {
+            const value = input.value.trim();
+            const errorEl = input.parentElement.querySelector('.modal-error');
+            input.style.border = '';
+            if (errorEl) errorEl.textContent = '';
+
+            if (!value) {
+                isError = true;
+                input.style.border = '1px solid var(--clr-error)';
+                if (errorEl) errorEl.textContent = 'Trường này không được để trống!';
+                return;
+            }
+
+            if (input.id === 'modal-add-name') {
+                if (!/^[a-zA-Z\s-]+$/.test(value)) {
+                    isError = true;
+                    input.style.border = '1px solid var(--clr-error)';
+                    if (errorEl) errorEl.textContent = 'Tên chức vụ chỉ chứa chữ cái, khoảng trắng, và dấu gạch ngang';
+                } else if (value.length > 50) {
+                    isError = true;
+                    input.style.border = '1px solid var(--clr-error)';
+                    if (errorEl) errorEl.textContent = 'Tên chức vụ không được vượt quá 50 ký tự';
+                }
+            }
+
+            if (input.id === 'modal-add-description') {
+                if (value.length > 200) {
+                    isError = true;
+                    input.style.border = '1px solid var(--clr-error)';
+                    if (errorEl) errorEl.textContent = 'Mô tả không được vượt quá 200 ký tự';
+                }
+            }
+        });
+
+        return isError;
+    }
+
+    // Hàm thêm dữ liệu vào modal
+    function addModalData(modalEl, role, type) {
+        if (type === "innerHTML") {
+            modalEl.querySelector("#modal-view-role-id").textContent = role.id || 'N/A';
+            modalEl.querySelector("#modal-view-name").textContent = role.role_name || 'N/A';
+            modalEl.querySelector("#modal-view-description").textContent = role.role_description || 'N/A';
+            modalEl.querySelector("#modal-view-status").textContent = getStatusText(role.status_id);
+        } else if (type === "value") {
+            modalEl.querySelector("#modal-edit-role-id").value = role.id;
+            modalEl.querySelector("#modal-edit-name").value = role.role_name || '';
+            modalEl.querySelector("#modal-edit-description").value = role.role_description || '';
+            modalEl.querySelector("#modal-edit-status").value = role.status_id;
+        }
+    }
+
+    // Hàm xử lý modal
+    function addModalCloseButtonEventListeners() {
+        document.addEventListener('click', (e) => {
+            const closeEl = e.target.closest('.modal-close');
+            if (closeEl) {
+                const modalId = closeEl.dataset.id;
+                const modalEl = document.getElementById(modalId);
+                if (modalEl) {
+                    modalEl.close();
+                    const formEl = modalEl.querySelector('form.modal-form');
+                    if (formEl) {
+                        clearFormErrors(formEl);
+                    }
+                }
+            }
+        });
+    }
+
+    function addModalCancelButtonEventListener(modalEl) {
+        const cancelButton = modalEl.querySelector('[id$="-close-button"]');
+        if (!cancelButton) {
+            console.error('Cancel button with id ending in "-close-button" not found in modal!');
+            return;
+        }
+
+        cancelButton.addEventListener("click", () => {
+            modalEl.close();
+            const formEl = modalEl.querySelector('form.modal-form');
+            if (formEl) {
+                clearFormErrors(formEl);
+            }
+        });
+    }
+
+    // Gọi hàm để thêm sự kiện
+    addViewRoleModalEventListener();
+    addModalCloseButtonEventListeners();
+    const addModal = document.getElementById('add-modal');
+    if (addModal) {
+        addModalCancelButtonEventListener(addModal);
+    }
+    const editModal = document.getElementById('edit-modal');
+    if (editModal) {
+        addModalCancelButtonEventListener(editModal);
+    }
+    const viewModal = document.getElementById('view-modal');
+    if (viewModal) {
+        addModalCancelButtonEventListener(viewModal);
+    }
+    const deleteModal = document.getElementById('delete-modal');
+    if (deleteModal) {
+        addModalCancelButtonEventListener(deleteModal);
+    }
+});
+document.getElementById('table-body').addEventListener('click', (e) => {
+    const target = e.target.closest('.updatePermission');
+    if (!target) return;
+
+    e.preventDefault();
+    const roleId = parseInt(target.getAttribute('data-role-id'));
+    const roleName = target.getAttribute('data-role-name');
+
+    const permissionModal = document.getElementById('permission-modal');
+    document.getElementById('modal-role-id').value = roleId;
+    document.getElementById('modal-role-name').textContent = roleName;
+
+    // Fetch danh sách quyền đã gán
+    fetch(`../../BackEnd/Model/quanliphanquyen/xuliphanquyen_chucvu.php?role_id=${roleId}`)
+        .then(response => response.json())
+        .then(data => {
+            const assignedPermissions = new Set(data.map(Number));
+            document.querySelectorAll('input[name="permissions[]"]').forEach(checkbox => {
+                checkbox.checked = assignedPermissions.has(Number(checkbox.value));
+            });
+            permissionModal.showModal();
+        })
+        .catch(error => console.error('Error fetching permissions:', error));
+});
+</script>
+
+<?php
+    include 'quanlichucvu/themchucvu.php'; // Add Modal
+    include 'quanlichucvu/suachucvu.php'; // Edit Modal
+    include 'quanlichucvu/xemchucvu.php'; // View Modal
+    include 'quanlichucvu/xoachucvu.php'; // Delete Modal
+    include 'quanlichucvu/menuphanquyen.php'; // Delete Modal
+?>
+</div>
