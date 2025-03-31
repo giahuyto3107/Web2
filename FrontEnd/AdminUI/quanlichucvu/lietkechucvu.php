@@ -596,7 +596,7 @@ document.getElementById('table-body').addEventListener('click', (e) => {
     document.getElementById('modal-role-name').textContent = roleName;
 
     // Fetch danh sách quyền đã gán
-    fetch(`../../BackEnd/Model/quanliphanquyen/xuliphanquyen_chucvu.php?role_id=${roleId}`)
+    fetch(`../../BackEnd/Model/quanlichucvu/xuliphanquyen_chucvu.php?role_id=${roleId}`)
         .then(response => response.json())
         .then(data => {
             const assignedPermissions = new Set(data.map(Number));
