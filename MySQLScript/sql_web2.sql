@@ -369,3 +369,40 @@ CREATE TABLE IF NOT EXISTS price_history (
         ON DELETE SET NULL
         ON UPDATE CASCADE
 );
+
+DELIMITER //
+CREATE TRIGGER after_price_update
+AFTER UPDATE ON product
+FOR EACH ROW
+BEGIN
+    DECLARE v_latest_user_id INT;
+    
+    IF NEW.price != OLD.price THEN
+        -- Lấy user_id từ đơn nhập hàng gần nhất chứa sản phẩm này
+        SELECT po.user_id INTO v_latest_user_id
+        FROM purchase_order po
+        JOIN purchase_order_items poi ON po.purchase_order_id = poi.purchase_order_id
+        WHERE poi.product_id = NEW.product_id
+        ORDER BY po.order_date DESC
+        LIMIT 1;
+        
+        INSERT INTO price_history (
+            product_id,
+            old_price,
+            new_price,
+            changed_by,
+            reason
+        ) VALUES (
+            NEW.product_id,
+            OLD.price,
+            NEW.price,
+            IFNULL(v_latest_user_id, NULL), 
+            CONCAT('Tự động cập nhật. Giá thay đổi từ ', 
+                  OLD.price, ' → ', NEW.price,
+                  IF(v_latest_user_id IS NOT NULL, 
+                     CONCAT('. Người nhập hàng gần nhất: ', v_latest_user_id),
+                     ''))
+        );
+    END IF;
+END //
+DELIMITER ;
