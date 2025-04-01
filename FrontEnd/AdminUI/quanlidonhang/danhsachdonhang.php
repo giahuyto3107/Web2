@@ -1,398 +1,351 @@
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>List Đơn Hàng</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        body {
-            background-color: #f8f9fa;
-            display: flex;
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 1100px;
-            background: white;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-        }
-
-        h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 20px;
-            border-bottom: 4px solid #007bff;
-            padding-bottom: 10px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        thead {
-            background: #007bff;
-            color: white;
-            font-weight: bold;
-        }
-
-        thead tr {
-            background: #007bff !important;
-        }
-
-        th, td {
-            padding: 12px;
-            text-align: center;
-            border-bottom: 1px solid #ddd;
-        }
-
-        tbody tr:nth-child(even) {
-            background: #f9f9f9;
-        }
-
-        tbody tr:hover {
-            background: #f1f1f1;
-            transition: 0.2s;
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 8px 12px;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: bold;
-            transition: 0.3s;
-            border: none;
-            cursor: pointer;
-        }
-
-        .approve-btn {
-            background: #28a745;
-            color: white;
-        }
-
-        .approve-btn:hover {
-            background: #218838;
-        }
-
-        .cancel-btn {
-            background: #dc3545;
-            color: white;
-        }
-
-        .cancel-btn:hover {
-            background: #c82333;
-        }
-
-        .detail-btn {
-            background:rgb(158, 204, 253);
-            color: white;
-            
-        }
-
-        .detail-btn:hover {
-            background: #0056b3;
-        }
-
-
-        .status-approved {
-            color: green;
-        }
-
-        .status-refused {
-            color: red;
-        }
-
-        /* Responsive */
-        @media screen and (max-width: 768px) {
-            body {
-                padding: 10px;
-            }
-
-            .container {
-                width: 100%;
-                padding: 15px;
-            }
-
-            table, th, td {
-                font-size: 14px;
-            }
-
-            button, a {
-                font-size: 14px;
-                padding: 6px 8px;
-            }
-        }
-
-        #pagination {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 20px;
-        }
-
-        .page-btn {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            background: #f0f0f0;
-            color: #333;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.3s;
-            user-select: none;
-        }
-
-        .page-btn:hover {
-            background: #007bff;
-            color: white;
-        }
-
-        .page-btn.active {
-            background: #007bff;
-            color: white;
-            box-shadow: 0 0 8px rgba(0, 123, 255, 0.6);
-        }
-
-        .filter {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-        }
-
-        .filter input, .filter select, .filter button {
-            padding: 8px;
-            font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        .filter input {
-            flex: 1;
-            min-width: 200px;
-        }
-
-        .filter button {
-            background: #007bff;
-            color: white;
-            cursor: pointer;
-            border: none;
-            transition: 0.3s;
-        }
-
-        .filter button:hover {
-            background: #0056b3;
-        }
-
-        
-
-    </style>
-
-</head>
 <body>
-    <div class="container">
-        <h1>Danh Sách Đơn Hàng</h1>
-        <div class="filter">
-            <input class="input1" type="text" id="search-input" placeholder="Tìm kiếm theo tên hoặc địa chỉ...">
-            
-            <select id="status-filter">
-                <option value="">Tất cả trạng thái</option>
-                <option value="4">Đã duyệt</option>
-                <option value="2">Đã hủy</option>
-                <option value="3">Chờ duyệt</option>
-            </select>
+<div class="header"></div>
+<div class="data-table">
+    <div class="success-message" id="success-message" style="display: none">
+        <div class="success-text">
+            <p>Đơn hàng đã được xóa</p>
+            <a id="success-message-cross" style="cursor: pointer">
+                <i class="fa fa-times" style="font-size: 1.5rem; height: 1.5rem"></i>
+            </a>
+        </div>
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+    </div>
+    <h1 class="heading"> Quản lý <span>ĐƠN HÀNG</span></h1>
+    <div class="toolbar">
+        <div class="filters">
+            <div class="filter-options-wrapper">
+                <label for="filter-options" class="filter-label">Bộ lọc </label>
+                <select id="filter-options">
+                    <option value="order_id">Mã đơn</option>
+                    <option value="user_name">Khách hàng</option>
+                    <option value="order_date">Ngày đặt</option>
+                    <option value="total_amount">Tổng tiền</option>
+                    <option value="status_id">Trạng thái</option>
+                    <option value="payment_method">Phương thức thanh toán</option>
+                    <option value="phone">Số điện thoại</option>
+                    <option value="address">Địa chỉ</option>
+                </select>
+            </div>
+            <div class="search">
+                <input type="text" id="search-text" name="search-text" placeholder="Tìm kiếm..." />
+            </div>
+        </div>
+        <div class="toolbar-button-wrapper">
+            <!-- Bỏ nút Thêm đơn hàng -->
+        </div>
+    </div>
 
+    <div id="selected-products"></div>
+
+    <div class="table-container">
+        <div class="no-products">
+            <p>Có vẻ hiện tại bạn chưa có đơn hàng nào?</p>
         </div>
 
-        <table>
+        <table class="table" id="data-table">
             <thead>
                 <tr>
-                    <th>STT</th>
-                    <th>Tên Khách Hàng</th>
-                    <th>Địa chỉ</th>
-                    <th>Ngày Đặt</th>
-                    <th>Thanh Toán</th>
-                    <th>Trạng Thái</th>
-                    <th>Thao Tác</th>
+                    <th data-id="order_id">Mã đơn</th>
+                    <th data-id="user_name">Khách hàng</th>
+                    <th data-id="order_date">Ngày đặt</th>
+                    <th data-id="total_amount">Tổng tiền</th>
+                    <th data-id="status_id">Trạng thái</th>
+                    <th data-id="payment_method">Phương thức thanh toán</th>
+                    <th data-id="phone">Số điện thoại</th>
+                    <th data-id="address">Địa chỉ</th>
+                    <th class="actionsTH">Hành động</th>
                 </tr>
             </thead>
-            <tbody id="order-list">
-                <?php
-                    include ('../../BackEnd/Config/config.php');
-                    $query_lietke_dh = "SELECT orders.order_id, user.full_name, orders.order_date, orders.payment_method, status.id, orders.address 
-                                        FROM orders 
-                                        JOIN user ON orders.user_id = user.user_id 
-                                        JOIN status ON status.id = orders.status_id;";
-                    $result = mysqli_query($conn, $query_lietke_dh);
-
-                    $i = 0;
-                    while ($row = mysqli_fetch_array($result)) {
-                        $i++;
-                ?>
-                <tr>
-                    <td><?= $i ?></td>
-                    <td><?= htmlspecialchars($row['full_name']) ?></td>
-                    <td><?= htmlspecialchars($row['address']) ?></td>               
-                    <td><?= htmlspecialchars($row['order_date']) ?></td>
-                    <td>
-                        <?php 
-                            if ($row['payment_method'] == 'Cash') {
-                                echo '<i class="fas fa-truck"></i> COD';
-                            } elseif ($row['payment_method'] == 'Credit Card') {
-                                echo '<i class="fas fa-credit-card"></i> Online';
-                            }
-                        ?>
-                    </td>
-                    <td>
-                        <?php 
-                            if ($row['id'] == '4') {
-                                echo '<span class="status-approved">Đã duyệt</span>';
-                            } else if ($row['id'] == '2') {
-                                echo '<span class="status-refused">Đã hủy</span>';
-                            }else {
-                                echo '
-                                    <form method="POST" action="../../BackEnd/Model/quanlidonhang/xulidonhang.php" style="display:inline;">
-                                        <input type="hidden" name="order_id" value="'.$row['order_id'].'">
-                                        <button type="submit" name="approve" class="btn approve-btn">Duyệt</button>
-                                    </form>
-                                    <form method="POST" action="../../BackEnd/Model/quanlidonhang/xulidonhang.php" style="display:inline;">
-                                        <input type="hidden" name="order_id" value="'.$row['order_id'].'">
-                                        <button type="submit" name="cancel" class="btn cancel-btn">Hủy</button>
-                                    </form>
-                                ';
-                            }
-                        ?>
-                    </td>
-                    <td>
-                        <a href="index.php?action=quanlidonhang&query=xemdonhang&order_id=<?= $row['order_id'] ?>" class="btn detail-btn"><b></b>Chi tiết</a>
-                    </td>
-                </tr>
-                <?php
-                    }
-                    mysqli_close($conn);
-                ?>
-            </tbody>
+            <tbody id="table-body"></tbody>
         </table>
-        <div id="pagination" style="text-align: center; margin-top: 20px;">
-            
-        </div>
-
-
     </div>
-</body>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    $(document).ready(function() {
-        let currentPage = 1; 
-        let totalPages = 1; 
+    <!-- Script để fetch và hiển thị dữ liệu -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Biến toàn cục
+        let orders = []; // Dữ liệu gốc, không thay đổi
 
-        function loadOrders(page) {
-            let search = $("#search-input").val();
-            let status = $("#status-filter").val();
-            let date = $("#date-filter").val();
+        // Hàm chuyển status_id thành văn bản
+        function getStatusText(statusId) {
+            switch (statusId) {
+                case "3": return 'Pending';
+                case "4": return 'Delivered';
+                default: return 'N/A';
+            }
+        }
 
-            $.ajax({
-                url: "quanlidonhang/fetch_orders.php",
-                type: "GET",
-                data: { 
-                    page: page, 
-                    search: search, 
-                    status: status, 
-                    date: date 
-                },
-                dataType: "json",
-                success: function(response) {
-                    let orders = response.orders;
-                    totalPages = response.total_pages;
-                    let html = "";
+        // Hàm thêm sự kiện lọc và tìm kiếm
+        function addFilterEventListener() {
+            const searchEl = document.getElementById("search-text");
+            const filterOptionsEl = document.getElementById("filter-options");
 
-                    if (orders.length > 0) {
-                        $.each(orders, function(index, order) {
-                            html += `<tr>
-                                <td>${(page - 1) * 5 + index + 1}</td>
-                                <td>${order.full_name}</td>
-                                <td>${order.address}</td>
-                                <td>${order.order_date}</td>
-                                <td>${order.payment_method === 'Cash' ? '<i class="fas fa-truck"></i> COD' : '<i class="fas fa-credit-card"></i> Online'}</td>
-                                <td>${order.id == '4' ? '<span class="status-approved">✅ Đã duyệt</span>' : 
-                                    (order.id == '2' ? '<span class="status-refused">❌ Đã hủy</span>' : 
-                                    `<form method="POST" action="../../BackEnd/Model/quanlidonhang/xulidonhang.php" style="display:inline;">
-                                        <input type="hidden" name="order_id" value="${order.order_id}">
-                                        <button type="submit" name="approve" class="btn approve-btn">✔️ Duyệt</button>
-                                    </form>
-                                    <form method="POST" action="../../BackEnd/Model/quanlidonhang/xulidonhang.php" style="display:inline;">
-                                        <input type="hidden" name="order_id" value="${order.order_id}">
-                                        <button type="submit" name="cancel" class="btn cancel-btn">❌ Hủy</button>
-                                    </form>`) }
-                                </td>
-                                <td>
-                                    <a href=" index.php?action=quanlidonhang&query=xemdonhang=${order.order_id}" class="btn detail-btn">Chi tiết</a>
-                                </td>
-                            </tr>`;
+            if (!searchEl || !filterOptionsEl) {
+                console.error('Required elements not found: #search-text or #filter-options');
+                return;
+            }
+
+            searchEl.addEventListener("input", () => {
+                const filterBy = filterOptionsEl.value;
+                const searchValue = searchEl.value.trim();
+
+                let filteredData = orders;
+
+                if (searchValue !== "") {
+                    filteredData = orders.filter((order) => {
+                        if (typeof order[filterBy] === "string") {
+                            return order[filterBy].toLowerCase().includes(searchValue.toLowerCase());
+                        } else {
+                            return order[filterBy].toString().includes(searchValue);
+                        }
+                    });
+                }
+
+                renderTable(filteredData);
+            });
+
+            filterOptionsEl.addEventListener("change", () => {
+                searchEl.value = "";
+                renderTable(orders);
+            });
+        }
+
+        // Hàm render bảng
+        function renderTable(displayedOrders) {
+            const tableBody = document.getElementById('table-body');
+            const noProductsEl = document.querySelector('.no-products');
+
+            if (!tableBody || !noProductsEl) {
+                console.error('Required elements not found: #table-body or .no-products');
+                return;
+            }
+
+            tableBody.innerHTML = '';
+            const activeOrders = displayedOrders;
+
+            if (activeOrders.length > 0) {
+                noProductsEl.style.display = 'none';
+                activeOrders.forEach((order, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${order.order_id}</td>
+                        <td>${order.user_name || 'N/A'}</td>
+                        <td>${order.order_date || 'N/A'}</td>
+                        <td>${order.total_amount || '0'}</td>
+                        <td>${getStatusText(order.status_id)}</td>
+                        <td>${order.payment_method || 'N/A'}</td>
+                        <td>${order.phone || 'N/A'}</td>
+                        <td>${order.address || 'N/A'}</td>
+                        <td class="actions">
+                            <div class="dropdown">
+                                <button class="dropdownButton"><i class="fa fa-ellipsis-v dropIcon"></i></button>
+                                <div class="dropdown-content">
+                                    <a href="#" class="viewOrder" data-order-id="${order.order_id}">Xem <i class="fa fa-eye"></i></a>
+                                    <a href="#" class="deleteOrder" data-order-id="${order.order_id}">Xóa <i class="fa fa-trash"></i></a>
+                                </div>
+                            </div>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } else {
+                noProductsEl.style.display = 'flex';
+                tableBody.innerHTML = '<tr><td colspan="9">Không tìm thấy đơn hàng nào.</td></tr>';
+            }
+        }
+
+        // Fetch dữ liệu ban đầu từ server
+        fetch('quanlidonhang/fetch_donhang.php')
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    orders = data.data;
+                    console.log('Initial orders:', orders);
+                    renderTable(orders);
+                    addFilterEventListener();
+                } else {
+                    console.error('Error:', data.message);
+                    document.getElementById('table-body').innerHTML = '<tr><td colspan="9">Lỗi khi tải danh sách đơn hàng.</td></tr>';
+                }
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+                document.getElementById('table-body').innerHTML = '<tr><td colspan="9">Lỗi khi tải danh sách đơn hàng.</td></tr>';
+            });
+
+        // Sử dụng event delegation để xử lý các hành động
+        document.getElementById('table-body').addEventListener('click', (e) => {
+            const target = e.target.closest('a');
+            if (!target) return;
+
+            e.preventDefault();
+            const orderId = target.getAttribute('data-order-id');
+            const order = orders.find(o => o.order_id === orderId);
+
+            if (!order) {
+                console.error('Order not found:', orderId);
+                return;
+            }
+
+            if (target.classList.contains('viewOrder')) {
+                const viewModalEl = document.getElementById("view-modal");
+                loadOrderItems(orderId);
+                viewModalEl.showModal();
+            } else if (target.classList.contains('deleteOrder')) {
+                const deleteModalEl = document.getElementById("delete-modal");
+                deleteModalEl.setAttribute("data-order-id", orderId);
+                deleteModalEl.showModal();
+            }
+        });
+                    }
+
+                    const orderInfo = data.data.order_info;
+                    const items = data.data.items;
+                    const totalValue = data.data.total_value;
+
+                    // Điền thông tin chung
+                    document.getElementById('modal-view-order-id').textContent = orderInfo.order_id || 'N/A';
+                    document.getElementById('modal-view-user-name').textContent = orderInfo.user_name || 'N/A';
+                    document.getElementById('modal-view-order-date').textContent = orderInfo.order_date || 'N/A';
+                    document.getElementById('modal-view-total-amount').textContent = totalValue.toLocaleString() + ' VND';
+                    document.getElementById('modal-view-status').textContent = getStatusText(orderInfo.status_id);
+                    document.getElementById('modal-view-payment-method').textContent = orderInfo.payment_method || 'N/A';
+                    document.getElementById('modal-view-phone').textContent = orderInfo.phone || 'N/A';
+                    document.getElementById('modal-view-address').textContent = orderInfo.address || 'N/A';
+
+                    // Hiển thị danh sách sản phẩm
+                    const tableBody = document.getElementById('order-items-body');
+                    tableBody.innerHTML = '';
+
+                    if (items.length > 0) {
+                        items.forEach(item => {
+                            const row = `
+                                <tr>
+                                    <td>${item.product_id || 'N/A'}</td>
+                                    <td>${item.product_name || 'N/A'}</td>
+                                    <td>${item.quantity || '0'}</td>
+                                    <td>${item.price || '0'}</td>
+                                    <td>${(item.quantity * item.price).toLocaleString() || '0'} VND</td>
+                                </tr>
+                            `;
+                            tableBody.innerHTML += row;
                         });
                     } else {
-                        html = `<tr><td colspan="7">Không có đơn hàng nào</td></tr>`;
+                        tableBody.innerHTML = '<tr><td colspan="5">Không có sản phẩm trong đơn hàng.</td></tr>';
                     }
+                })
+                .catch(error => {
+                    console.error('Lỗi khi tải chi tiết đơn hàng:', error);
+                    document.getElementById('order-items-body').innerHTML = '<tr><td colspan="5">Lỗi khi tải chi tiết đơn hàng.</td></tr>';
+                });
+        }
 
-                    $("#order-list").html(html);
-                    loadPagination();
+        // Hàm xóa đơn hàng
+        function deleteOrder(orderId) {
+            const formData = new FormData();
+            formData.append('order_id', orderId);
+            formData.append('action', 'delete');
+
+            fetch('../../BackEnd/Model/quanlidonhang/xulidonhang.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.status === 'success') {
+                    fetch('quanlidonhang/fetch_donhang.php')
+                        .then(response => response.json())
+                        .then(data => {
+                            orders = data.data;
+                            renderTable(orders);
+                            const deleteModalEl = document.getElementById('delete-modal');
+                            deleteModalEl.close();
+                            const successMessage = document.getElementById('success-message');
+                            successMessage.querySelector('.success-text p').textContent = result.message || 'Đơn hàng đã được xóa';
+                            successMessage.style.display = 'block';
+                            setTimeout(() => {
+                                successMessage.style.display = 'none';
+                            }, 3000);
+                        })
+                        .catch(error => console.error('Có lỗi khi lấy dữ liệu đơn hàng:', error));
+                } else {
+                    const successMessage = document.getElementById('success-message');
+                    successMessage.querySelector('.success-text p').textContent = result.message || 'Xóa thất bại';
+                    successMessage.style.display = 'block';
+                    successMessage.style.backgroundColor = 'var(--clr-error)';
+                    setTimeout(() => {
+                        successMessage.style.display = 'none';
+                        successMessage.style.backgroundColor = 'var(--clr-success)';
+                    }, 3000);
+                }
+            })
+            .catch(error => {
+                console.error('Lỗi khi gửi yêu cầu xóa:', error);
+                const successMessage = document.getElementById('success-message');
+                successMessage.querySelector('.success-text p').textContent = 'Lỗi khi gửi yêu cầu xóa';
+                successMessage.style.display = 'block';
+                successMessage.style.backgroundColor = 'var(--clr-error)';
+                setTimeout(() => {
+                    successMessage.style.display = 'none';
+                    successMessage.style.backgroundColor = 'var(--clr-success)';
+                }, 3000);
+            });
+        }
+
+        // Event listener cho nút xóa trong delete-modal
+        const deleteModalEl = document.getElementById('delete-modal');
+        const deleteDeleteButton = deleteModalEl.querySelector('#delete-delete-button');
+        deleteDeleteButton.addEventListener('click', () => {
+            const orderId = parseInt(deleteModalEl.getAttribute('data-order-id'));
+            deleteOrder(orderId);
+        });
+
+        // Hàm xử lý modal
+        function addModalCloseButtonEventListeners() {
+            document.addEventListener('click', (e) => {
+                const closeEl = e.target.closest('.modal-close');
+                if (closeEl) {
+                    const modalId = closeEl.dataset.id;
+                    const modalEl = document.getElementById(modalId);
+                    if (modalEl) {
+                        modalEl.close();
+                    }
                 }
             });
         }
 
-        function loadPagination() {
-            let paginationHtml = "";
-            for (let i = 1; i <= totalPages; i++) {
-                paginationHtml += `<div class="page-btn ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</div>`;
+        function addModalCancelButtonEventListener(modalEl) {
+            const cancelButton = modalEl.querySelector('[id$="-close-button"]');
+            if (!cancelButton) {
+                console.error('Cancel button with id ending in "-close-button" not found in modal!');
+                return;
             }
-            $("#pagination").html(paginationHtml);
 
-            $(".page-btn").click(function() {
-                let page = $(this).data("page");
-                if (page !== currentPage) {
-                    currentPage = page;
-                    loadOrders(currentPage);
-                }
+            cancelButton.addEventListener("click", () => {
+                modalEl.close();
             });
         }
 
-        $("#filter-btn").click(function() {
-            currentPage = 1;
-            loadOrders(currentPage);
-        });
-
-        $("#search-input, #status-filter, #date-filter").on("change keyup", function() {
-            currentPage = 1;
-            loadOrders(currentPage);
-        });
-
-        loadOrders(currentPage);
+        // Gọi hàm để thêm sự kiện
+        addModalCloseButtonEventListeners();
+        const viewModal = document.getElementById('view-modal');
+        if (viewModal) {
+            addModalCancelButtonEventListener(viewModal);
+        }
+        const deleteModal = document.getElementById('delete-modal');
+        if (deleteModal) {
+            addModalCancelButtonEventListener(deleteModal);
+        }
     });
-</script>
+    </script>
+</div>
 
+<?php
+    include 'quanlidonhang/xemchitietdonhang.php'; // View Modal
+    include 'quanlidonhang/xoadonhang.php'; // Delete Modal
+?>
 
+</body>
 </html>
