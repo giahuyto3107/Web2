@@ -1,41 +1,27 @@
 <?php
-session_start();
+include 'header.php';
 ?>
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trang Chủ</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body>
-    <?php include 'header.php'; ?>
+<div class="content-wrapper">
+<?php
+$page = isset($_GET['page']) ? $_GET['page'] : 'home';
+$allowed_pages = ['home', 'login', 'signup', 'about', 'contact', 'profile', 'orders', 'cart'];
+$page_file = __DIR__ . "/Pages/$page.php";
 
-    <main>
-        <?php 
-        $page = isset($_GET['page']) ? $_GET['page'] : 'home';
-        $allowed_pages = ['home', 'login', 'signup'];
-
-        if (in_array($page, $allowed_pages)) {
-            switch ($page) {
-                case 'login':
-                    $file = __DIR__ . '/Login/login.php';
-                    if (!file_exists($file)) {
-                        die("<p class='text-center text-red-500'>File không tồn tại: Login/login.php</p>");
-                    }
-                    include $file;
-                    break;
-                default:
-                    include "$page.php";
-                    break;
-            }
-        } else {
-            echo "<p class='text-center text-red-500'>Trang không tồn tại</p>";
-        }
-        ?>
-    </main>
-
-    <?php include 'footer.php'; ?>
-</body>
-</html>
+if ($page === 'home' || !in_array($page, $allowed_pages) || !file_exists($page_file)) {
+    include __DIR__ . '/Pages/home.php';
+} else if ($page === 'profile') {
+    include 'D:/xampp/htdocs/Web2/FrontEnd/PublicUI/User/user.php';
+} else if ($page === 'cart') {
+    include 'D:/xampp/htdocs/Web2/FrontEnd/PublicUI/Giohang/giohang.php';
+} else if ($page === 'orders') {
+    include 'D:/xampp/htdocs/Web2/FrontEnd/PublicUI/Lichsumuahang/listmuahang.php';
+} else if (in_array($page, $allowed_pages) && file_exists($page_file)) {
+    include $page_file;
+} else if ($page !== 'logout') {
+    echo "<section><h2>Trang không tồn tại</h2></section>";
+}
+?>
+</div>
+<?php
+include 'footer.php';
+?>

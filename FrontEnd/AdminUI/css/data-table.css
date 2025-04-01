@@ -172,7 +172,7 @@ dialog::backdrop {
 
 .modal-buttons .submit {
   padding-block: 0.825rem;
-  background-color: #28a745;
+  /* background-color: #28a745; */
   font-weight: bold;
 }
 

@@ -206,6 +206,7 @@ CREATE TABLE IF NOT EXISTS order_items (
     product_id INT,
     price DECIMAL(10, 2) NOT NULL,
     quantity INT NOT NULL DEFAULT 1, 
+    review INT NOT NULL DEFAULT 0,
     FOREIGN KEY (order_id) REFERENCES orders(order_id)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
@@ -213,13 +214,13 @@ CREATE TABLE IF NOT EXISTS order_items (
         ON DELETE CASCADE
         ON UPDATE CASCADE
 );
-INSERT INTO `order_items` (`order_id`, `product_id`, `quantity`,`price`) 
+INSERT INTO `order_items` (`order_id`, `product_id`, `quantity`,`price`,`review`) 
 VALUES
-    (1, 1, 2,123),
-    (1, 3, 1,123),
-    (2, 2, 3,123),
-    (3, 4, 1,123),
-    (4, 1, 2,123);
+    (1, 1, 2,123,0),
+    (1, 3, 1,123,0),
+    (2, 2, 3,123,0),
+    (3, 4, 1,123,0),
+    (4, 1, 2,123,0);
 
 CREATE TABLE IF NOT EXISTS supplier (
     supplier_id INT AUTO_INCREMENT PRIMARY KEY,

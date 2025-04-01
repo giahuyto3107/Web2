@@ -78,7 +78,7 @@ if (!empty($_POST)) {
 
 // Kiểm tra trạng thái thanh toán khi người dùng quay lại
 if (isset($_GET['resultCode'])) {
-    $_SESSION['payment_status'] = 'ok'; // Luôn đặt là 'ok' dù thanh toán thành công hay thất bại
+    $_SESSION['payment_status'] = 'ok'; 
 
     if ($_GET['resultCode'] == '0') {
         $_SESSION['payment_message'] = "Thanh toán Momo thành công!";

@@ -199,15 +199,6 @@
                 deleteModalEl.showModal();
             }
         });
-
-        // Hàm lấy và hiển thị chi tiết đơn hàng
-        function loadOrderItems(orderId) {
-            fetch(`quanlidonhang/fetch_donhang_items.php?order_id=${orderId}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status !== 'success') {
-                        console.error('Lỗi khi tải chi tiết đơn hàng:', data.message);
-                        return;
                     }
 
                     const orderInfo = data.data.order_info;
