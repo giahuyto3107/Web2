@@ -60,36 +60,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     mysqli_close($conn);
 
 
-    $fetchProductSql = "Select product_id, quantity, price, profit from Product where status_id = 1";
-    $productStmt = mysqli_prepare($conn, $fetchProductSql);
-    for ()
+    // Cập nhật số lượng vào bảng product
+    
 } else {
     echo json_encode(['status' => 'error', 'message' => 'Phương thức không được hỗ trợ']);
 }
-
-
-// DELIMITER //
-// CREATE TRIGGER after_price_update
-// AFTER UPDATE ON product
-// FOR EACH ROW
-// BEGIN
-//     IF NEW.price != OLD.price THEN
-//         INSERT INTO price_history (
-//             product_id,
-//             old_price,
-//             new_price,
-//             changed_by,
-//             reason
-//         ) VALUES (
-//             NEW.product_id,
-//             OLD.price,
-//             NEW.price,
-//             -- Giả sử có biến @current_user_id từ ứng dụng
-//             IFNULL(@current_user_id, NULL), 
-//             CONCAT('Tự động cập nhật. Giá thay đổi từ ', 
-//                   OLD.price, ' → ', NEW.price)
-//         );
-//     END IF;
-// END //
-// DELIMITER ;
 ?>

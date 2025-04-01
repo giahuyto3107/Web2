@@ -406,3 +406,60 @@ BEGIN
     END IF;
 END //
 DELIMITER ;
+
+DELIMITER //
+CREATE DEFINER=`root`@`localhost` PROCEDURE `UpdateProductPriceWithMaxProfit`(
+    IN p_product_id INT,
+    IN p_new_cost_price DECIMAL(10,2),
+    IN p_profit_margin DECIMAL(10,2) -- Ví dụ: 0.3 cho 30%
+)
+BEGIN
+    DECLARE v_old_cost_price DECIMAL(10,2);
+    DECLARE v_old_selling_price DECIMAL(10,2);
+    DECLARE v_old_profit DECIMAL(10,2);
+    DECLARE v_new_profit DECIMAL(10,2);
+    DECLARE v_new_selling_price DECIMAL(10,2);
+    
+    -- Lấy giá nhập cũ (từ bảng purchase_order_items)
+    SELECT price INTO v_old_cost_price 
+    FROM purchase_order_items 
+    WHERE product_id = p_product_id 
+    ORDER BY purchase_order_item_id DESC LIMIT 1;
+    
+    -- Lấy giá bán hiện tại
+    SELECT price INTO v_old_selling_price 
+    FROM product 
+    WHERE product_id = p_product_id;
+    
+    -- Tính lợi nhuận cũ
+    SET v_old_profit = v_old_selling_price - v_old_cost_price;
+    
+    -- Tính lợi nhuận mới theo tỷ lệ
+    SET v_new_profit = p_new_cost_price * p_profit_margin;
+    
+    -- Xác định giá bán mới
+    IF v_old_profit  > v_new_profit THEN
+        -- Giữ giá bán cũ nếu lợi nhuận cao hơn
+        SET v_new_selling_price = v_old_selling_price;
+    ELSE
+        -- Áp dụng giá bán mới theo tỷ lệ lợi nhuận
+        SET v_new_selling_price = p_new_cost_price * (1 + p_profit_margin);
+    END IF;
+    
+    
+    -- Cập nhật giá bán trong bảng product
+    UPDATE product 
+    SET price = v_new_selling_price, 
+        updated_at = CURRENT_TIMESTAMP
+    WHERE product_id = p_product_id;
+    
+    -- Trả kết quả
+    SELECT 
+        p_product_id AS product_id,
+        v_old_cost_price AS old_cost_price,
+        p_new_cost_price AS new_cost_price,
+        v_old_selling_price AS old_selling_price,
+        v_new_selling_price AS new_selling_price,
+        (v_new_selling_price - p_new_cost_price) AS actual_profit;
+END //
+DELIMITER ;
