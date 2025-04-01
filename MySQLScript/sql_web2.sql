@@ -353,3 +353,18 @@ VALUES
 	(4, 2),
 	(4, 4);
 
+CREATE TABLE IF NOT EXISTS price_history (
+    history_id INT AUTO_INCREMENT PRIMARY KEY,
+    product_id INT NOT NULL,
+    old_price DECIMAL(10, 2) NOT NULL,
+    new_price DECIMAL(10, 2) NOT NULL,
+    change_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    changed_by INT, -- user_id của người thay đổi
+    reason TEXT,
+    FOREIGN KEY (product_id) REFERENCES product(product_id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+    FOREIGN KEY (changed_by) REFERENCES user(user_id)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE
+);
