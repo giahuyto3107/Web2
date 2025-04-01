@@ -1,9 +1,10 @@
+
 <body>
 <div class="header"></div>
 <div class="data-table">
     <div class="success-message" id="success-message" style="display: none">
         <div class="success-text">
-            <p>Đơn hàng đã được xóa</p>
+            <p>Đơn hàng đã được cập nhật</p>
             <a id="success-message-cross" style="cursor: pointer">
                 <i class="fa fa-times" style="font-size: 1.5rem; height: 1.5rem"></i>
             </a>
@@ -71,8 +72,10 @@
         // Hàm chuyển status_id thành văn bản
         function getStatusText(statusId) {
             switch (statusId) {
-                case "3": return 'Pending';
-                case "4": return 'Delivered';
+                case "3": return 'Chờ duyệt';
+                case "4": return 'Đã duyệt';
+                case "5": return 'Đã giao';
+                case "7": return 'Đã hủy';
                 default: return 'N/A';
             }
         }
@@ -129,6 +132,19 @@
                 noProductsEl.style.display = 'none';
                 activeOrders.forEach((order, index) => {
                     const row = document.createElement('tr');
+                    let actionButtons = '';
+                    if (order.status_id === "3") {
+                        actionButtons = `
+                            <a href="#" class="updateStatus" data-order-id="${order.order_id}" data-status="4">Duyệt đơn <i class="fa fa-check"></i></a>
+                            <a href="#" class="cancelOrder" data-order-id="${order.order_id}" data-status="7">Hủy đơn <i class="fa fa-times"></i></a>
+                        `;
+                    } else if (order.status_id === "4") {
+                        actionButtons = `
+                            <a href="#" class="updateStatus" data-order-id="${order.order_id}" data-status="5">Hoàn tất <i class="fa fa-check-circle"></i></a>
+                            <a href="#" class="cancelOrder" data-order-id="${order.order_id}" data-status="7">Hủy đơn <i class="fa fa-times"></i></a>
+                        `;
+                    }
+
                     row.innerHTML = `
                         <td>${order.order_id}</td>
                         <td>${order.user_name || 'N/A'}</td>
@@ -143,7 +159,7 @@
                                 <button class="dropdownButton"><i class="fa fa-ellipsis-v dropIcon"></i></button>
                                 <div class="dropdown-content">
                                     <a href="#" class="viewOrder" data-order-id="${order.order_id}">Xem <i class="fa fa-eye"></i></a>
-                                    <a href="#" class="deleteOrder" data-order-id="${order.order_id}">Xóa <i class="fa fa-trash"></i></a>
+                                    ${actionButtons}
                                 </div>
                             </div>
                         </td>
@@ -193,12 +209,64 @@
                 const viewModalEl = document.getElementById("view-modal");
                 loadOrderItems(orderId);
                 viewModalEl.showModal();
-            } else if (target.classList.contains('deleteOrder')) {
-                const deleteModalEl = document.getElementById("delete-modal");
-                deleteModalEl.setAttribute("data-order-id", orderId);
-                deleteModalEl.showModal();
+            } else if (target.classList.contains('updateStatus') || target.classList.contains('cancelOrder')) {
+                const newStatus = target.getAttribute('data-status');
+                const updateModalEl = document.getElementById("update-modal");
+                updateModalEl.setAttribute("data-order-id", orderId);
+                updateModalEl.setAttribute("data-status", newStatus);
+
+                // Nếu là "Duyệt đơn" (status từ 3 -> 4), kiểm tra số lượng sản phẩm
+                if (newStatus === "4") {
+                    checkProductStock(orderId, updateModalEl);
+                } else {
+                    updateModalEl.querySelector('#update-message').textContent = 
+                        newStatus === "5" ? "Bạn có chắc chắn muốn hoàn tất đơn hàng này?" :
+                        "Bạn có chắc chắn muốn hủy đơn hàng này?";
+                    updateModalEl.showModal();
+                }
             }
         });
+
+        // Hàm kiểm tra số lượng sản phẩm trước khi duyệt đơn
+        function checkProductStock(orderId, updateModalEl) {
+            fetch(`quanlidonhang/check_product_stock.php?order_id=${orderId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        updateModalEl.querySelector('#update-message').textContent = "Bạn có chắc chắn muốn duyệt đơn hàng này?";
+                        updateModalEl.showModal();
+                    } else {
+                        const successMessage = document.getElementById('success-message');
+                        successMessage.querySelector('.success-text p').textContent = data.message || 'Không đủ số lượng sản phẩm để duyệt đơn hàng';
+                        successMessage.style.display = 'block';
+                        successMessage.style.backgroundColor = 'var(--clr-error)';
+                        setTimeout(() => {
+                            successMessage.style.display = 'none';
+                            successMessage.style.backgroundColor = 'var(--clr-success)';
+                        }, 3000);
+                    }
+                })
+                .catch(error => {
+                    console.error('Lỗi khi kiểm tra số lượng sản phẩm:', error);
+                    const successMessage = document.getElementById('success-message');
+                    successMessage.querySelector('.success-text p').textContent = 'Lỗi khi kiểm tra số lượng sản phẩm';
+                    successMessage.style.display = 'block';
+                    successMessage.style.backgroundColor = 'var(--clr-error)';
+                    setTimeout(() => {
+                        successMessage.style.display = 'none';
+                        successMessage.style.backgroundColor = 'var(--clr-success)';
+                    }, 3000);
+                });
+        }
+
+        // Hàm lấy và hiển thị chi tiết đơn hàng
+        function loadOrderItems(orderId) {
+            fetch(`quanlidonhang/fetch_donhang_items.php?order_id=${orderId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status !== 'success') {
+                        console.error('Lỗi khi tải chi tiết đơn hàng:', data.message);
+                        return;
                     }
 
                     const orderInfo = data.data.order_info;
@@ -242,11 +310,12 @@
                 });
         }
 
-        // Hàm xóa đơn hàng
-        function deleteOrder(orderId) {
+        // Hàm cập nhật trạng thái đơn hàng
+        function updateOrderStatus(orderId, newStatus) {
             const formData = new FormData();
             formData.append('order_id', orderId);
-            formData.append('action', 'delete');
+            formData.append('status_id', newStatus);
+            formData.append('action', 'update_status');
 
             fetch('../../BackEnd/Model/quanlidonhang/xulidonhang.php', {
                 method: 'POST',
@@ -260,10 +329,10 @@
                         .then(data => {
                             orders = data.data;
                             renderTable(orders);
-                            const deleteModalEl = document.getElementById('delete-modal');
-                            deleteModalEl.close();
+                            const updateModalEl = document.getElementById('update-modal');
+                            updateModalEl.close();
                             const successMessage = document.getElementById('success-message');
-                            successMessage.querySelector('.success-text p').textContent = result.message || 'Đơn hàng đã được xóa';
+                            successMessage.querySelector('.success-text p').textContent = result.message || 'Đơn hàng đã được cập nhật';
                             successMessage.style.display = 'block';
                             setTimeout(() => {
                                 successMessage.style.display = 'none';
@@ -272,7 +341,7 @@
                         .catch(error => console.error('Có lỗi khi lấy dữ liệu đơn hàng:', error));
                 } else {
                     const successMessage = document.getElementById('success-message');
-                    successMessage.querySelector('.success-text p').textContent = result.message || 'Xóa thất bại';
+                    successMessage.querySelector('.success-text p').textContent = result.message || 'Cập nhật thất bại';
                     successMessage.style.display = 'block';
                     successMessage.style.backgroundColor = 'var(--clr-error)';
                     setTimeout(() => {
@@ -282,9 +351,9 @@
                 }
             })
             .catch(error => {
-                console.error('Lỗi khi gửi yêu cầu xóa:', error);
+                console.error('Lỗi khi gửi yêu cầu cập nhật:', error);
                 const successMessage = document.getElementById('success-message');
-                successMessage.querySelector('.success-text p').textContent = 'Lỗi khi gửi yêu cầu xóa';
+                successMessage.querySelector('.success-text p').textContent = 'Lỗi khi gửi yêu cầu cập nhật';
                 successMessage.style.display = 'block';
                 successMessage.style.backgroundColor = 'var(--clr-error)';
                 setTimeout(() => {
@@ -294,12 +363,13 @@
             });
         }
 
-        // Event listener cho nút xóa trong delete-modal
-        const deleteModalEl = document.getElementById('delete-modal');
-        const deleteDeleteButton = deleteModalEl.querySelector('#delete-delete-button');
-        deleteDeleteButton.addEventListener('click', () => {
-            const orderId = parseInt(deleteModalEl.getAttribute('data-order-id'));
-            deleteOrder(orderId);
+        // Event listener cho nút cập nhật trạng thái trong update-modal
+        const updateModalEl = document.getElementById('update-modal');
+        const updateButton = updateModalEl.querySelector('#update-button');
+        updateButton.addEventListener('click', () => {
+            const orderId = parseInt(updateModalEl.getAttribute('data-order-id'));
+            const newStatus = updateModalEl.getAttribute('data-status');
+            updateOrderStatus(orderId, newStatus);
         });
 
         // Hàm xử lý modal
@@ -334,9 +404,9 @@
         if (viewModal) {
             addModalCancelButtonEventListener(viewModal);
         }
-        const deleteModal = document.getElementById('delete-modal');
-        if (deleteModal) {
-            addModalCancelButtonEventListener(deleteModal);
+        const updateModal = document.getElementById('update-modal');
+        if (updateModal) {
+            addModalCancelButtonEventListener(updateModal);
         }
     });
     </script>
@@ -344,7 +414,7 @@
 
 <?php
     include 'quanlidonhang/xemchitietdonhang.php'; // View Modal
-    include 'quanlidonhang/xoadonhang.php'; // Delete Modal
+    include 'quanlidonhang/xoadonhang.php'; // Update Status Modal
 ?>
 
 </body>
