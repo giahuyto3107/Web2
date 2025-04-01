@@ -17,9 +17,10 @@ INSERT INTO status (id, status_name, status_description) VALUES
 	(1, 'Active', 'The record is currently active and operational'),
 	(2, 'Inactive', 'The record is currently inactive and not in use'),
 	(3, 'Pending', 'The record is awaiting further processing or approval'),
-	(4, 'Completed', 'The record has been successfully completed'),
-	(5, 'Failed', 'The record has encountered an error or was unsuccessful'),
-    (6, 'Deleted', 'The record has been deleted');
+	(4, 'Shipping', 'The record is shipping and in transit'),
+	(5, 'Completed', 'The record has been successfully completed'),
+    (6, 'Deleted', 'The record has been deleted'),
+    (7,'Cancelled','The record has been cancelled');
 
 
 CREATE TABLE IF NOT EXISTS role (
