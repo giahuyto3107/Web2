@@ -125,7 +125,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             mysqli_stmt_close($stmtSellingPrice);
 
             if ($sellingPriceRow) {
-                $current_selling_price = $sellingPriceRow['price'];
+                $current_selling_price = $sellingPriceRow['price']; 
                 
                 // Tính lợi nhuận theo công thức (profit_margin = (Giá bán / Giá nhập) - 1)
                 if ($new_cost_price > 0) {
