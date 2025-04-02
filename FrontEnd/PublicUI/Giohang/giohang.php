@@ -6,7 +6,6 @@ if (!$conn) {
     die("Kết nối thất bại: " . mysqli_connect_error());
 }
 
-// Giả sử user_id là 1
 $user_id = $_SESSION['user_id'];
 
 // Lấy dữ liệu giỏ hàng

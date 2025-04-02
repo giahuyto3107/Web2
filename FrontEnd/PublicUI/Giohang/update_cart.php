@@ -2,7 +2,7 @@
 session_start();
 include ('../../../BackEnd/Config/config.php');
 
-$user_id = 1;
+$user_id = $_SESSION['user_id'];
 $product_id = $_POST['product_id'];
 $action = $_POST['action'];
 
