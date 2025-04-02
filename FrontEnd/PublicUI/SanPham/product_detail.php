@@ -10,7 +10,7 @@ $product_id = intval($_GET['id']);
 $sql = "SELECT product_id, product_name, product_description, price, stock_quantity, 
                status_id, image_url, created_at, updated_at 
         FROM product 
-        WHERE product_id = ?";
+        WHERE product_id = ? and product.stock_quantity>0 and product.status_id=1";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $product_id);
 $stmt->execute();
@@ -465,7 +465,7 @@ $avg_rating = $result_avg_rating->fetch_assoc()['avg_rating'];
                                                 FROM product p 
                                                 INNER JOIN product_category pc ON p.product_id = pc.product_id 
                                                 WHERE pc.category_id IN ($placeholders) 
-                                                AND p.product_id != ? 
+                                                AND p.product_id != ? and p.stock_quantity>0 and p.status_id=1
                                                 ORDER BY RAND()";
                                 $stmt_suggested = $conn->prepare($sqlSuggested);
                                 $params = array_merge($category_ids, [$product_id]);
