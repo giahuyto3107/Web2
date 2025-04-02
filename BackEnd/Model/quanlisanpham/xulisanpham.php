@@ -1,137 +1,192 @@
 <?php
-include('../../Config/config.php');
 header('Content-Type: application/json');
+include('../../../BackEnd/Config/config.php');
 
-// Hàm trả về lỗi JSON
-function sendError($message) {
-    echo json_encode(['status' => 'error', 'message' => $message]);
-    exit;
-}
+try {
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        throw new Exception('Invalid request method');
+    }
 
-// Xử lý yêu cầu dựa trên method
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    sendError('Invalid request method. Only POST is allowed.');
-}
+    $action = isset($_POST['action']) ? $_POST['action'] : '';
 
-// --- THÊM SẢN PHẨM ---
-$product_name = trim($_POST['product_name'] ?? '');
-$product_description = trim($_POST['product_description'] ?? '');
-$price = floatval($_POST['price'] ?? 0);
-$stock_quantity = intval($_POST['stock_quantity'] ?? 0);
-$status_id = intval($_POST['status_id'] ?? 0);
-$category_ids = isset($_POST['category_ids']) && is_array($_POST['category_ids']) ? $_POST['category_ids'] : [];
-
-// Kiểm tra dữ liệu đầu vào
-if (empty($product_name)) {
-    sendError('Product name is required.');
-}
-if ($price <= 0) {
-    sendError('Price must be greater than 0.');
-}
-if ($stock_quantity < 0) {
-    sendError('Stock quantity cannot be negative.');
-}
-if ($status_id <= 0 || $status_id > 6) { // Giả sử status_id từ 1-6
-    sendError('Invalid status.');
-}
-if (empty($category_ids)) {
-    sendError('At least one category must be selected.');
-}
-
-// Xử lý upload file ảnh
-$image_url = '';
-if (isset($_FILES['image_url']) && $_FILES['image_url']['error'] === UPLOAD_ERR_OK) {
-    $uploadDir = '../../Uploads/Product Picture/';
-    if (!is_dir($uploadDir)) {
+    // Đường dẫn lưu hình ảnh
+    $uploadDir = '../../../BackEnd/Uploads/Product Picture/';
+    if (!file_exists($uploadDir)) {
         mkdir($uploadDir, 0777, true);
     }
 
-    $fileName = basename($_FILES['image_url']['name']);
-    $fileType = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
-    $allowedTypes = ['jpg', 'jpeg', 'png', 'gif'];
-    $maxFileSize = 5 * 1024 * 1024; // 5MB
+    if ($action === 'add') {
+        // Thêm sản phẩm mới
+        $product_name = isset($_POST['product_name']) ? trim($_POST['product_name']) : '';
+        $product_description = isset($_POST['product_description']) ? trim($_POST['product_description']) : '';
+        $price = 0;
+        $stock_quantity = 0;
+        $status_id = isset($_POST['status_id']) ? intval($_POST['status_id']) : 1;
+        $categories = isset($_POST['categories']) ? $_POST['categories'] : [];
 
-    // Kiểm tra loại file và kích thước
-    if (!in_array($fileType, $allowedTypes)) {
-        sendError('Only JPG, JPEG, PNG, and GIF files are allowed.');
-    }
-    if ($_FILES['image_url']['size'] > $maxFileSize) {
-        sendError('File size must be less than 5MB.');
-    }
-
-    $targetPath = $uploadDir . time() . '_' . $fileName;
-    if (!move_uploaded_file($_FILES['image_url']['tmp_name'], $targetPath)) {
-        sendError('Failed to upload image.');
-    }
-    $image_url = time() . '_' . $fileName;
-}
-
-// Bắt đầu transaction để đảm bảo tính toàn vẹn dữ liệu
-$conn->begin_transaction();
-
-try {
-    // Thêm sản phẩm vào bảng product
-    $sql = "INSERT INTO product (product_name, product_description, price, stock_quantity, status_id, image_url, created_at, updated_at) 
-            VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())";
-    $stmt = $conn->prepare($sql);
-    if (!$stmt) {
-        throw new Exception('Database error: ' . $conn->error);
-    }
-
-    $stmt->bind_param("ssdiiis", $product_name, $product_description, $price, $stock_quantity, $status_id, $image_url);
-    if (!$stmt->execute()) {
-        throw new Exception('Failed to add product: ' . $stmt->error);
-    }
-
-    $product_id = $conn->insert_id; // Lấy ID của sản phẩm vừa thêm
-    $stmt->close();
-
-    // Thêm danh mục vào bảng product_category
-    if (!empty($category_ids)) {
-        $sql_category = "INSERT INTO product_category (product_id, category_id) VALUES (?, ?)";
-        $stmt_category = $conn->prepare($sql_category);
-        if (!$stmt_category) {
-            throw new Exception('Failed to prepare statement for product_category: ' . $conn->error);
+        if (empty($product_name) || empty($product_description)) {
+            throw new Exception('Dữ liệu không hợp lệ');
         }
 
-        foreach ($category_ids as $category_id) {
-            $category_id = intval($category_id);
-            if ($category_id <= 0) {
-                continue; // Bỏ qua category_id không hợp lệ
+        // Xử lý upload hình ảnh
+        $image_url = '';
+        if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+            $image_name = uniqid() . '-' . basename($_FILES['image']['name']);
+            $image_path = $uploadDir . $image_name;
+            if (!move_uploaded_file($_FILES['image']['tmp_name'], $image_path)) {
+                throw new Exception('Lỗi khi upload hình ảnh');
             }
-
-            // Kiểm tra category_id có tồn tại trong bảng category
-            $sql_check = "SELECT category_id FROM category WHERE category_id = ? AND status_id = 1";
-            $stmt_check = $conn->prepare($sql_check);
-            $stmt_check->bind_param("i", $category_id);
-            $stmt_check->execute();
-            $result = $stmt_check->get_result();
-            if ($result->num_rows === 0) {
-                $stmt_check->close();
-                continue; // Bỏ qua nếu category không tồn tại hoặc không active
-            }
-            $stmt_check->close();
-
-            $stmt_category->bind_param("ii", $product_id, $category_id);
-            if (!$stmt_category->execute()) {
-                throw new Exception('Failed to add product category: ' . $stmt_category->error);
-            }
+            $image_url = $image_name;
         }
-        $stmt_category->close();
+
+        // Thêm sản phẩm vào bảng product
+        $sql = "INSERT INTO product (product_name, product_description, price, stock_quantity, status_id, image_url) 
+                VALUES (?, ?, ?, ?, ?, ?)";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ssdiss", $product_name, $product_description, $price, $stock_quantity, $status_id, $image_url);
+        $stmt->execute();
+
+        $product_id = $conn->insert_id;
+        $stmt->close();
+
+        // Thêm thể loại vào bảng product_category
+        if (!empty($categories)) {
+            $sql = "INSERT INTO product_category (product_id, category_id) VALUES (?, ?)";
+            $stmt = $conn->prepare($sql);
+            foreach ($categories as $category_id) {
+                $stmt->bind_param("ii", $product_id, $category_id);
+                $stmt->execute();
+            }
+            $stmt->close();
+        }
+
+        echo json_encode([
+            'status' => 'success',
+            'message' => 'Sản phẩm đã được thêm thành công'
+        ]);
+    } elseif ($action === 'edit') {
+        // Sửa sản phẩm
+        $product_id = isset($_POST['product_id']) ? intval($_POST['product_id']) : 0;
+        $product_name = isset($_POST['product_name']) ? trim($_POST['product_name']) : '';
+        $product_description = isset($_POST['product_description']) ? trim($_POST['product_description']) : '';
+        $status_id = isset($_POST['status_id']) ? intval($_POST['status_id']) : 1;
+        $categories = isset($_POST['categories']) ? $_POST['categories'] : [];
+
+        if ($product_id <= 0 || empty($product_name) || empty($product_description)) {
+            throw new Exception('Dữ liệu không hợp lệ');
+        }
+
+        // Lấy thông tin sản phẩm hiện tại để giữ nguyên price, stock_quantity và kiểm tra hình ảnh cũ
+        $sql = "SELECT price, stock_quantity, image_url FROM product WHERE product_id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $product_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $current_product = $result->fetch_assoc();
+        $stmt->close();
+
+        if (!$current_product) {
+            throw new Exception('Sản phẩm không tồn tại');
+        }
+
+        // Giữ nguyên price và stock_quantity từ cơ sở dữ liệu
+        $price = $current_product['price'];
+        $stock_quantity = $current_product['stock_quantity'];
+        $image_url = $current_product['image_url'];
+
+        // Xử lý upload hình ảnh mới (nếu có)
+        if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+            // Xóa hình ảnh cũ nếu có
+            if ($image_url && file_exists('../../../' . $image_url)) {
+                unlink('../../../' . $image_url);
+            }
+
+            $image_name = uniqid() . '-' . basename($_FILES['image']['name']);
+            $image_path = $uploadDir . $image_name;
+            if (!move_uploaded_file($_FILES['image']['tmp_name'], $image_path)) {
+                throw new Exception('Lỗi khi upload hình ảnh');
+            }
+            $image_url = 'BackEnd/Uploads/Product Picture/' . $image_name;
+        }
+
+        // Cập nhật sản phẩm mà không thay đổi price và stock_quantity
+        $sql = "UPDATE product SET product_name = ?, product_description = ?, status_id = ?, image_url = ? 
+                WHERE product_id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ssisi", $product_name, $product_description, $status_id, $image_url, $product_id);
+        $stmt->execute();
+        $stmt->close();
+
+        // Xóa các thể loại cũ
+        $sql = "DELETE FROM product_category WHERE product_id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $product_id);
+        $stmt->execute();
+        $stmt->close();
+
+        // Thêm thể loại mới
+        if (!empty($categories)) {
+            $sql = "INSERT INTO product_category (product_id, category_id) VALUES (?, ?)";
+            $stmt = $conn->prepare($sql);
+            foreach ($categories as $category_id) {
+                $stmt->bind_param("ii", $product_id, $category_id);
+                $stmt->execute();
+            }
+            $stmt->close();
+        }
+
+        echo json_encode([
+            'status' => 'success',
+            'message' => 'Sản phẩm đã được cập nhật'
+        ]);
+    } elseif ($action === 'delete') {
+        // Xóa sản phẩm (cập nhật status_id thành 6)
+        $product_id = isset($_POST['product_id']) ? intval($_POST['product_id']) : 0;
+        $status_id = 6;
+
+        if ($product_id <= 0) {
+            throw new Exception('Invalid product ID');
+        }
+        // Kiểm tra stock_quantity
+        $sql = "SELECT stock_quantity FROM product WHERE product_id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $product_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $product = $result->fetch_assoc();
+        $stmt->close();
+
+        if ($product['stock_quantity'] > 0) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Không thể xóa sản phẩm khi số lượng tồn kho lớn hơn 0'
+            ]);
+            exit;
+        }
+        
+        $sql = "UPDATE product SET status_id = ? WHERE product_id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ii", $status_id, $product_id);
+        $stmt->execute();
+
+        if ($stmt->affected_rows > 0) {
+            echo json_encode([
+                'status' => 'success',
+                'message' => 'Sản phẩm đã được đánh dấu xóa'
+            ]);
+        } else {
+            throw new Exception('Không thể xóa sản phẩm');
+        }
+
+        $stmt->close();
+    } else {
+        throw new Exception('Invalid action');
     }
-
-    // Commit transaction
-    $conn->commit();
-    echo json_encode(['status' => 'success', 'message' => 'Product added successfully']);
-
 } catch (Exception $e) {
-    // Rollback nếu có lỗi
-    $conn->rollback();
-    // Xóa ảnh nếu đã upload
-    if (!empty($image_url) && file_exists($uploadDir . $image_url)) {
-        unlink($uploadDir . $image_url);
-    }
-    sendError($e->getMessage());
+    echo json_encode([
+        'status' => 'error',
+        'message' => $e->getMessage()
+    ]);
 }
 
 $conn->close();

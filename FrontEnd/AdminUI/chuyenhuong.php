@@ -5,7 +5,7 @@
 
     // Điều hướng nội dung dựa trên action
     if ($action === 'quanlisanpham') {
-        include "quanlisanpham/lietkesanphamtest.php";
+        include "quanlisanpham/lietkesanpham.php";
     } elseif ($action === 'quanliloaisp') {
         include "quanliloaisp/lietkeloaisp.php";
     } elseif ($action === 'quanlibinhluan') {

@@ -1,60 +1,93 @@
-
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thêm sản phẩm</title>
-</head>
-<body>
-    <div class="container">
-        <h2>Thêm sản phẩm mới</h2>
-        <form method="POST" action="../../BackEnd/Model/quanlisanpham/xulisanpham.php" enctype="multipart/form-data">
-            <div class="form-group">
-                <label for="tensanpham">Tên sản phẩm</label>
-                <input type="text" id="tensanpham" name="tensanpham" required>
+<dialog data-modal id="add-modal">
+    <div class="modal-header">
+        <h2>Thêm Sản Phẩm</h2>
+        <button class="modal-close" data-id="add-modal">
+            <i class="fa fa-times" style="font-size: 1.5rem; height: 1.5rem"></i>
+        </button>
+    </div>
+    <div class="modal-content">
+        <form class="modal-form" id="modal-add-form">
+            <input type="hidden" name="action" value="add">
+            <div class="modal-input-wrapper">
+                <label for="modal-add-name">Tên Sản Phẩm</label>
+                <input type="text" id="modal-add-name" name="product_name" required>
+                <p class="modal-error"></p>
             </div>
-            <div class="form-group">
-                <label for="motasp">Mô tả sản phẩm</label>
-                <textarea id="motasp" name="motasp" rows="4" required></textarea>
+            <div class="modal-input-wrapper">
+                <label for="modal-add-description">Mô Tả</label>
+                <textarea id="modal-add-description" name="product_description" required></textarea>
+                <p class="modal-error"></p>
             </div>
-            <div class="form-group">
-                <label for="giasp">Giá sản phẩm</label>
-                <input type="number" id="giasp" name="giasp" step="0.01" required>
-            </div>
-            <div class="form-group">
-                <label for="stock_quantity">Số lượng tồn kho</label>
-                <input type="number" id="stock_quantity" name="stock_quantity" required>
-            </div>
-            <div class="form-group">
-                <label for="loaisp">Loại sản phẩm</label>
-                <select id="loaisp" name="loaisp" required>
-                                <?php
-                                $sql_danhmucsp = "SELECT DISTINCT category_id, category_name FROM category WHERE status_id = 1";
-                                $query_danhmucsp = mysqli_query($conn, $sql_danhmucsp);
-                                while ($row_danhmucsp = mysqli_fetch_array($query_danhmucsp)) {
-                                ?>
-                                    <option value="<?php echo $row_danhmucsp['category_id'] ?>"><?php echo $row_danhmucsp['category_name'] ?></option>
-                                <?php
-                                } 
-                                ?>
+            <div class="modal-input-wrapper">
+                <label for="modal-add-categories">Thể Loại</label>
+                <p style="font-style: italic; font-size: 0.7rem;">Nhấn và giữ nút "Ctrl" để chọn nhiều thể loại</p>
+                <select id="modal-add-categories" name="categories[]" multiple required>
+                    <!-- Tải danh sách thể loại bằng JavaScript -->
                 </select>
+                <p class="modal-error"></p>
             </div>
-            <div class="form-group">
-                <label for="tinhtrang">Trạng thái</label>
-                <select id="tinhtrang" name="tinhtrang" required>
-                    <option value="1">Hoạt động</option>
-                    <option value="2">Không hoạt động</option>
+            <div class="modal-input-wrapper">
+                <label for="modal-add-status">Trạng Thái</label>
+                <select id="modal-add-status" name="status_id" required>
+                    <option value="1">Active</option>
+                    <option value="2">Inactive</option>
                 </select>
+                <p class="modal-error"></p>
             </div>
-            <div class="form-group">
-                <label for="hinhanh">Hình ảnh sản phẩm</label>
-                <input type="file" id="hinhanh" name="hinhanh" required>
+            <div class="modal-input-wrapper">
+                <label for="modal-add-image">Hình Ảnh</label>
+                <input type="file" id="modal-add-image" name="image" accept="image/*">
+                <p class="modal-error"></p>
+                <!-- Thêm phần preview ảnh -->
+                <div class="image-preview" style="margin-top: 10px;">
+                    <img id="add-image-preview" src="" alt="Preview" style="max-width: 200px; display: none;">
+                </div>
             </div>
-            <div class="form-group">
-                <button type="submit" name="themsanpham">Thêm sản phẩm</button>
+            <div class="modal-buttons">
+                <button type="button" class="close" id="add-close-button">Hủy</button>
+                <button type="submit" class="add">Thêm</button>
             </div>
         </form>
     </div>
-</body>
-</html>
+</dialog>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Tải danh sách thể loại vào select
+    fetch('quanlisanpham/fetch_loaisp_sp.php')
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                const categorySelect = document.getElementById('modal-add-categories');
+                data.data.forEach(category => {
+                    const option = document.createElement('option');
+                    option.value = category.category_id;
+                    option.textContent = category.category_name;
+                    categorySelect.appendChild(option);
+                });
+            } else {
+                console.error('Lỗi khi tải danh sách thể loại:', data.message);
+            }
+        })
+        .catch(error => console.error('Lỗi khi tải danh sách thể loại:', error));
+
+    // Preview ảnh khi chọn file
+    const imageInput = document.getElementById('modal-add-image');
+    const imagePreview = document.getElementById('add-image-preview');
+
+    imageInput.addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                imagePreview.src = e.target.result;
+                imagePreview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        } else {
+            imagePreview.src = '';
+            imagePreview.style.display = 'none';
+        }
+    });
+});
+</script>

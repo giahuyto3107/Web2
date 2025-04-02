@@ -1,121 +1,101 @@
-<?php
-
-// Lấy ID sản phẩm từ URL
-if (isset($_GET['idsanpham'])) {
-    $idsanpham = $_GET['idsanpham'];
-
-    // Truy vấn để lấy thông tin sản phẩm cần sửa
-    $sql_sua = "SELECT * FROM product WHERE product_id = '$idsanpham'";
-    $query_sua = mysqli_query($conn, $sql_sua);
-    $row = mysqli_fetch_assoc($query_sua);
-
-    if (!$row) {
-        echo "Không tìm thấy sản phẩm!";
-        exit;
-    }
-} else {
-    echo "Không có ID sản phẩm!";
-    exit;
-}
-?>
-
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sửa sản phẩm</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            max-width: 600px;
-            margin: 50px auto;
-            padding: 20px;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        h2 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        .form-group input,
-        .form-group textarea,
-        .form-group select {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        .form-group input[type="file"] {
-            padding: 5px;
-        }
-        .form-group button {
-            padding: 10px 15px;
-            background-color: #28a745;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .form-group button:hover {
-            background-color: #218838;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h2>Sửa sản phẩm</h2>
-        <form method="POST" action="../../BackEnd/Model/quanlisanpham/xulisanpham.php?idsanpham=<?php echo $idsanpham; ?>" enctype="multipart/form-data">
-            <div class="form-group">
-                <label for="tensanpham">Tên sản phẩm</label>
-                <input type="text" id="tensanpham" name="tensanpham" value="<?php echo $row['product_name']; ?>" required>
+<dialog data-modal id="edit-modal">
+    <div class="modal-header">
+        <h2>Chỉnh Sửa Sản Phẩm</h2>
+        <button class="modal-close" data-id="edit-modal">
+            <i class="fa fa-times" style="font-size: 1.5rem; height: 1.5rem"></i>
+        </button>
+    </div>
+    <div class="modal-content">
+        <form class="modal-form" id="modal-edit-form">
+            <input type="hidden" name="action" value="edit">
+            <input type="hidden" id="modal-edit-product-id" name="product_id">
+            <div class="modal-input-wrapper">
+                <label for="modal-edit-name">Tên Sản Phẩm</label>
+                <input type="text" id="modal-edit-name" name="product_name" required>
+                <p class="modal-error"></p>
             </div>
-            <div class="form-group">
-                <label for="motasp">Mô tả sản phẩm</label>
-                <textarea id="motasp" name="motasp" rows="4" required><?php echo $row['product_description']; ?></textarea>
+            <div class="modal-input-wrapper">
+                <label for="modal-edit-description">Mô Tả</label>
+                <textarea id="modal-edit-description" name="product_description" required></textarea>
+                <p class="modal-error"></p>
             </div>
-            <div class="form-group">
-                <label for="giasp">Giá sản phẩm</label>
-                <input type="number" id="giasp" name="giasp" step="0.01" value="<?php echo $row['price']; ?>" required>
-            </div>
-            <div class="form-group">
-                <label for="loaisp">Loại sản phẩm</label>
-                <select id="loaisp" name="loaisp" required>
-                    <option value="1" <?php echo ($row['category_id'] == 1) ? 'selected' : ''; ?>>Loại 1</option>
-                    <option value="2" <?php echo ($row['category_id'] == 2) ? 'selected' : ''; ?>>Loại 2</option>
-                    <!-- Thêm các loại sản phẩm khác nếu cần -->
+            <div class="modal-input-wrapper">
+                <label for="modal-edit-categories">Thể Loại</label>
+                <p style="font-style: italic; font-size: 0.7rem;">Nhấn và giữ nút "Ctrl" để chọn nhiều thể loại</p>
+                <select id="modal-edit-categories" name="categories[]" multiple required>
+                    <!-- Tải danh sách thể loại bằng JavaScript -->
                 </select>
+                <p class="modal-error"></p>
             </div>
-            <div class="form-group">
-                <label for="tinhtrang">Trạng thái</label>
-                <select id="tinhtrang" name="tinhtrang" required>
-                    <option value="1" <?php echo ($row['status_id'] == 1) ? 'selected' : ''; ?>>Active</option>
-                    <option value="2" <?php echo ($row['status_id'] == 2) ? 'selected' : ''; ?>>Inactive</option>
+            <div class="modal-input-wrapper">
+                <label for="modal-edit-status">Trạng Thái</label>
+                <select id="modal-edit-status" name="status_id" required>
+                    <option value="1">Active</option>
+                    <option value="2">Inactive</option>
                 </select>
+                <p class="modal-error"></p>
             </div>
-            <div class="form-group">
-                <label for="hinhanh">Hình ảnh sản phẩm</label>
-                <input type="file" id="hinhanh" name="hinhanh">
-                <p>Hình ảnh hiện tại: <img src="../../BackEnd/Uploads/Product Picture/<?php echo $row['image_url']; ?>" alt="Hình ảnh sản phẩm" width="100"></p>
+            <div class="modal-input-wrapper">
+                <label for="modal-edit-image">Hình Ảnh</label>
+                <input type="file" id="modal-edit-image" name="image" accept="image/*">
+                <p class="modal-error"></p>
+                <!-- Thêm phần preview ảnh -->
+                <div class="image-preview" style="margin-top: 10px;">
+                    <img id="edit-image-preview" src="" alt="Preview" style="max-width: 200px; display: none;">
+                </div>
             </div>
-            <div class="form-group">
-                <button type="submit" name="suasanpham">Lưu thay đổi</button>
+            <div class="modal-buttons">
+                <button type="button" class="close" id="edit-close-button">Hủy</button>
+                <button type="submit" class="edit">Cập Nhật</button>
             </div>
         </form>
     </div>
-</body>
-</html>
+</dialog>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Tải danh sách thể loại vào select
+    fetch('quanlisanpham/fetch_loaisp_sp.php')
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                const categorySelect = document.getElementById('modal-edit-categories');
+                data.data.forEach(category => {
+                    const option = document.createElement('option');
+                    option.value = category.category_id;
+                    option.textContent = category.category_name;
+                    categorySelect.appendChild(option);
+                });
+            } else {
+                console.error('Lỗi khi tải danh sách thể loại:', data.message);
+            }
+        })
+        .catch(error => console.error('Lỗi khi tải danh sách thể loại:', error));
+
+    // Preview ảnh khi chọn file mới
+    const imageInput = document.getElementById('modal-edit-image');
+    const imagePreview = document.getElementById('edit-image-preview');
+
+    imageInput.addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                imagePreview.src = e.target.result;
+                imagePreview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        } else {
+            // Nếu không chọn file mới, giữ nguyên ảnh cũ (sẽ được xử lý trong openEditModal)
+            const currentSrc = imagePreview.getAttribute('data-current-src');
+            if (currentSrc) {
+                imagePreview.src = currentSrc;
+                imagePreview.style.display = 'block';
+            } else {
+                imagePreview.src = '';
+                imagePreview.style.display = 'none';
+            }
+        }
+    });
+});
+</script>
