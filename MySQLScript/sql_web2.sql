@@ -274,6 +274,7 @@ CREATE TABLE IF NOT EXISTS purchase_order_items (
     price DECIMAL(10, 2) NOT NULL,
     profit DECIMAL(10, 2) NOT NULL,
     import_status TINYINT(1) DEFAULT 0,
+    approve_date TIMESTAMP,
     FOREIGN KEY (purchase_order_id) REFERENCES purchase_order(purchase_order_id)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
