@@ -246,7 +246,7 @@ CREATE TABLE IF NOT EXISTS purchase_order (
     supplier_id INT,
     user_id INT,
     order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    approve_date TIMESTAMP,
+    approve_date TIMESTAMP default null,
     total_amount int NOT NULL,
     total_price decimal(10, 2), 
     status_id INT,
@@ -274,7 +274,7 @@ CREATE TABLE IF NOT EXISTS purchase_order_items (
     price DECIMAL(10, 2) NOT NULL,
     profit DECIMAL(10, 2) NOT NULL,
     import_status TINYINT(1) DEFAULT 0,
-    approve_date TIMESTAMP,
+    approve_date TIMESTAMP default null,
     FOREIGN KEY (purchase_order_id) REFERENCES purchase_order(purchase_order_id)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
@@ -372,6 +372,7 @@ CREATE TABLE IF NOT EXISTS price_history (
         ON UPDATE CASCADE
 );
 
+-- After updating table price will insert data into table price_history for later statistics
 DELIMITER //
 CREATE TRIGGER after_price_update
 AFTER UPDATE ON product
@@ -409,6 +410,8 @@ BEGIN
 END //
 DELIMITER ;
 
+-- Procedure for update product price with max profit
+-- UpdateProductPriceWithMaxProfit(5, 13000, 0.35)
 DELIMITER //
 CREATE DEFINER=`root`@`localhost` PROCEDURE `UpdateProductPriceWithMaxProfit`(
     IN p_product_id INT,
@@ -425,8 +428,8 @@ BEGIN
     -- Lấy giá nhập cũ (từ bảng purchase_order_items)
     SELECT price INTO v_old_cost_price 
     FROM purchase_order_items 
-    WHERE product_id = p_product_id 
-    ORDER BY purchase_order_item_id DESC LIMIT 1;
+    WHERE product_id = p_product_id  and approve_date is not null and import_status = 1
+    ORDER BY approve_date DESC LIMIT 1;
     
     -- Lấy giá bán hiện tại
     SELECT price INTO v_old_selling_price 
