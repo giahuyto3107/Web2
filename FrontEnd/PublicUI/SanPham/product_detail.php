@@ -364,7 +364,7 @@ $avg_rating = $result_avg_rating->fetch_assoc()['avg_rating'];
     <div class="container-fluid my-5">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="http://localhost/Web2/FrontEnd/PublicUI/SanPham/danhsachSP.php">Trang chủ</a></li>
+                <li class="breadcrumb-item"><a href="http://localhost/Web2/FrontEnd/PublicUI/SanPham/danhsachSP.php">Quay lại</a></li>
                 <li class="breadcrumb-item active" aria-current="page"><?php echo htmlspecialchars($product['product_name']); ?></li>
             </ol>
         </nav>
