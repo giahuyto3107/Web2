@@ -5,7 +5,7 @@ include('../../../BackEnd/Config/config.php');
 error_log("User address: " . $_SESSION['user_address']);
 error_log("Total amount: " . $_SESSION['selectedTotal']);
 
-$user_id = 1; 
+$user_id = $_SESSION['user_id'];
 $total_amount = $_SESSION['selectedTotal'];
 $status_id = 3; 
 $payment_method = "Online";
