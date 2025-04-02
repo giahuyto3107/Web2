@@ -17,9 +17,10 @@ INSERT INTO status (id, status_name, status_description) VALUES
 	(1, 'Active', 'The record is currently active and operational'),
 	(2, 'Inactive', 'The record is currently inactive and not in use'),
 	(3, 'Pending', 'The record is awaiting further processing or approval'),
-	(4, 'Completed', 'The record has been successfully completed'),
-	(5, 'Failed', 'The record has encountered an error or was unsuccessful'),
-    (6, 'Deleted', 'The record has been deleted');
+	(4, 'Shipping', 'The record is shipping and in transit'),
+	(5, 'Completed', 'The record has been successfully completed'),
+    (6, 'Deleted', 'The record has been deleted'),
+    (7,'Cancelled','The record has been cancelled');
 
 
 CREATE TABLE IF NOT EXISTS role (
@@ -245,6 +246,7 @@ CREATE TABLE IF NOT EXISTS purchase_order (
     supplier_id INT,
     user_id INT,
     order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    approve_date TIMESTAMP,
     total_amount int NOT NULL,
     total_price decimal(10, 2), 
     status_id INT,
@@ -272,6 +274,7 @@ CREATE TABLE IF NOT EXISTS purchase_order_items (
     price DECIMAL(10, 2) NOT NULL,
     profit DECIMAL(10, 2) NOT NULL,
     import_status TINYINT(1) DEFAULT 0,
+    approve_date TIMESTAMP,
     FOREIGN KEY (purchase_order_id) REFERENCES purchase_order(purchase_order_id)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
@@ -353,3 +356,112 @@ VALUES
 	(4, 2),
 	(4, 4);
 
+CREATE TABLE IF NOT EXISTS price_history (
+    history_id INT AUTO_INCREMENT PRIMARY KEY,
+    product_id INT NOT NULL,
+    old_price DECIMAL(10, 2) NOT NULL,
+    new_price DECIMAL(10, 2) NOT NULL,
+    change_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    changed_by INT, -- user_id của người thay đổi
+    reason TEXT,
+    FOREIGN KEY (product_id) REFERENCES product(product_id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+    FOREIGN KEY (changed_by) REFERENCES user(user_id)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE
+);
+
+DELIMITER //
+CREATE TRIGGER after_price_update
+AFTER UPDATE ON product
+FOR EACH ROW
+BEGIN
+    DECLARE v_latest_user_id INT;
+    
+    IF NEW.price != OLD.price THEN
+        -- Lấy user_id từ đơn nhập hàng gần nhất chứa sản phẩm này
+        SELECT po.user_id INTO v_latest_user_id
+        FROM purchase_order po
+        JOIN purchase_order_items poi ON po.purchase_order_id = poi.purchase_order_id
+        WHERE poi.product_id = NEW.product_id
+        ORDER BY po.order_date DESC
+        LIMIT 1;
+        
+        INSERT INTO price_history (
+            product_id,
+            old_price,
+            new_price,
+            changed_by,
+            reason
+        ) VALUES (
+            NEW.product_id,
+            OLD.price,
+            NEW.price,
+            IFNULL(v_latest_user_id, NULL), 
+            CONCAT('Tự động cập nhật. Giá thay đổi từ ', 
+                  OLD.price, ' → ', NEW.price,
+                  IF(v_latest_user_id IS NOT NULL, 
+                     CONCAT('. Người nhập hàng gần nhất: ', v_latest_user_id),
+                     ''))
+        );
+    END IF;
+END //
+DELIMITER ;
+
+DELIMITER //
+CREATE DEFINER=`root`@`localhost` PROCEDURE `UpdateProductPriceWithMaxProfit`(
+    IN p_product_id INT,
+    IN p_new_cost_price DECIMAL(10,2),
+    IN p_profit_margin DECIMAL(10,2) -- Ví dụ: 0.3 cho 30%
+)
+BEGIN
+    DECLARE v_old_cost_price DECIMAL(10,2);
+    DECLARE v_old_selling_price DECIMAL(10,2);
+    DECLARE v_old_profit DECIMAL(10,2);
+    DECLARE v_new_profit DECIMAL(10,2);
+    DECLARE v_new_selling_price DECIMAL(10,2);
+    
+    -- Lấy giá nhập cũ (từ bảng purchase_order_items)
+    SELECT price INTO v_old_cost_price 
+    FROM purchase_order_items 
+    WHERE product_id = p_product_id 
+    ORDER BY purchase_order_item_id DESC LIMIT 1;
+    
+    -- Lấy giá bán hiện tại
+    SELECT price INTO v_old_selling_price 
+    FROM product 
+    WHERE product_id = p_product_id;
+    
+    -- Tính lợi nhuận cũ
+    SET v_old_profit = v_old_selling_price - v_old_cost_price;
+    
+    -- Tính lợi nhuận mới theo tỷ lệ
+    SET v_new_profit = p_new_cost_price * p_profit_margin;
+    
+    -- Xác định giá bán mới
+    IF v_old_profit  > v_new_profit THEN
+        -- Giữ giá bán cũ nếu lợi nhuận cao hơn
+        SET v_new_selling_price = v_old_selling_price;
+    ELSE
+        -- Áp dụng giá bán mới theo tỷ lệ lợi nhuận
+        SET v_new_selling_price = p_new_cost_price * (1 + p_profit_margin);
+    END IF;
+    
+    
+    -- Cập nhật giá bán trong bảng product
+    UPDATE product 
+    SET price = v_new_selling_price, 
+        updated_at = CURRENT_TIMESTAMP
+    WHERE product_id = p_product_id;
+    
+    -- Trả kết quả
+    SELECT 
+        p_product_id AS product_id,
+        v_old_cost_price AS old_cost_price,
+        p_new_cost_price AS new_cost_price,
+        v_old_selling_price AS old_selling_price,
+        v_new_selling_price AS new_selling_price,
+        (v_new_selling_price - p_new_cost_price) AS actual_profit;
+END //
+DELIMITER ;
