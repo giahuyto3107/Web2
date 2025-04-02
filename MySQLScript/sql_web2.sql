@@ -246,6 +246,7 @@ CREATE TABLE IF NOT EXISTS purchase_order (
     supplier_id INT,
     user_id INT,
     order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    approve_date TIMESTAMP,
     total_amount int NOT NULL,
     total_price decimal(10, 2), 
     status_id INT,
