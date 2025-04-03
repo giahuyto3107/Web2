@@ -1,9 +1,8 @@
 <?php
 $sql_product_invoice = 
-        "SELECT p.image_url, p.product_name, 
-        p.product_description, pot.quantity, pot.price, p.product_id
+        "SELECT image_url, product_name, 
+        product_description, stock_quantity, price, product_id
         FROM product p
-        join purchase_order_items pot on pot.product_id = p.product_id
         ORDER BY p.product_name ASC;";
 
 $query_product_invoice = mysqli_query($conn, $sql_product_invoice);
@@ -29,7 +28,7 @@ if (!$query_product_invoice) {
                 <div class="product-info">
                     <h4><?= $row['product_name'] ?></h4>
                     <h6><?= $row['product_description'] ?></h6>
-                    <p>SL: <?= $row['quantity'] ?></p>
+                    <p>SL: <?= $row['stock_quantity'] ?></p>
                     <h2><?= $row['price'] ?> VND</h2>
                 </div>
             </div>
