@@ -21,25 +21,29 @@ if ($role_id <= 0) {
     exit;
 }
 
-// Bắt đầu transaction để đảm bảo tính toàn vẹn dữ liệu
+// Start transaction for data integrity
 $conn->begin_transaction();
 
 try {
-    // Xóa tất cả quyền hiện tại của chức vụ
+    // Delete existing permissions for the role
     $sql_delete = "DELETE FROM role_permission WHERE role_id = ?";
     $stmt_delete = $conn->prepare($sql_delete);
     $stmt_delete->bind_param("i", $role_id);
     $stmt_delete->execute();
     $stmt_delete->close();
 
-    // Thêm các quyền mới được chọn
+    // Insert new permissions
     if (!empty($permissions)) {
-        $sql_insert = "INSERT INTO role_permission (role_id, permission_id) VALUES (?, ?)";
+        $sql_insert = "INSERT INTO role_permission (role_id, permission_id, action) VALUES (?, ?, ?)";
         $stmt_insert = $conn->prepare($sql_insert);
-        foreach ($permissions as $permission_id) {
+        foreach ($permissions as $permission_id => $actions) {
             $permission_id = intval($permission_id);
-            $stmt_insert->bind_param("ii", $role_id, $permission_id);
-            $stmt_insert->execute();
+            foreach ($actions as $action => $value) {
+                if ($value === 'on') { // Checkbox checked
+                    $stmt_insert->bind_param("iis", $role_id, $permission_id, $action);
+                    $stmt_insert->execute();
+                }
+            }
         }
         $stmt_insert->close();
     }
@@ -52,7 +56,7 @@ try {
         'message' => 'Phân quyền thành công'
     ]);
 } catch (Exception $e) {
-    // Rollback transaction nếu có lỗi
+    // Rollback on error
     $conn->rollback();
     echo json_encode([
         'status' => 'error',

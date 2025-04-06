@@ -492,13 +492,14 @@ CREATE TABLE if not exists permission (
 INSERT INTO `permission` (`permission_name`, `permission_description`, `status_id`) 
 VALUES
     ('Quản lý sản phẩm', 'Cho phép thêm, sửa, xóa sản phẩm và danh mục sản phẩm', 1),
-    ('Quản lý đơn hàng', 'Cho phép xem, xử lý và hủy đơn hàng của khách hàng', 1),
-    ('Quản lý nhập hàng', 'Cho phép tạo, phê duyệt và quản lý các đơn nhập hàng', 1),
-    ('Quản lý tài khoản', 'Cho phép quản lý tài khoản người dùng và phân quyền', 1),
-    ('Quản lý đánh giá', 'Cho phép xem và kiểm duyệt các đánh giá sản phẩm', 1),
-    ('Xem thống kê', 'Cho phép xem các báo cáo và thống kê doanh thu', 1),
-    ('Quản lý nhà cung cấp', 'Cho phép thêm, sửa, xóa thông tin nhà cung cấp', 1),
-    ('Đặt hàng', 'Cho phép khách hàng đặt hàng và xem lịch sử đơn hàng', 1);
+    ('Quản lý thể loại', 'Cho phép thêm, sửa, xóa thể loại sản phẩm', 1),
+    ('Quản lý nhà cung cấp', 'Cho phép thêm, sửa, xóa nhà cung cấp', 1),
+    ('Quản lý bình luận', 'Cho phép xem và quản lý bình luận', 1),
+    ('Quản lý đơn hàng', 'Cho phép xem, hoàn tất và hủy đơn hàng của khách hàng', 1),
+    ('Quản lý phiếu nhập', 'Cho phép phê duyệt phiếu nhập', 1),
+    ('Quản lý tài khoản', 'Cho phép quản lý tài khoản người dùng', 1),
+    ('Quản lý chức vụ', 'Cho phép xem và phân quyền cho chức vụ', 1),
+    ('Đặt hàng', 'Cho phép đặt hàng', 1);
 
 
 CREATE TABLE IF NOT EXISTS role_permission (
