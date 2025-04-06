@@ -501,110 +501,43 @@ VALUES
     ('Đặt hàng', 'Cho phép khách hàng đặt hàng và xem lịch sử đơn hàng', 1);
 
 
-CREATE TABLE if not exists role_permission (
+CREATE TABLE IF NOT EXISTS role_permission (
     role_id INT,
     permission_id INT,
-    PRIMARY KEY (role_id, permission_id),
+    action varchar(255) NOT NULL,
+    PRIMARY KEY (role_id, permission_id, action),
     FOREIGN KEY (role_id) REFERENCES role(id) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (permission_id) REFERENCES permission(permission_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-INSERT INTO `role_permission` (`role_id`, `permission_id`) 
+INSERT INTO `role_permission` (`role_id`, `permission_id`, `action`) 
 VALUES
     -- Quản trị viên (role_id = 1) có toàn quyền
-    (1, 1), -- Quản lý sản phẩm
-    (1, 2), -- Quản lý đơn hàng
-    (1, 3), -- Quản lý nhập hàng
-    (1, 4), -- Quản lý tài khoản
-    (1, 5), -- Quản lý đánh giá
-    (1, 6), -- Xem thống kê
-    (1, 7), -- Quản lý nhà cung cấp
-    (1, 8), -- Đặt hàng
+    (1, 1, 'Xem'), (1, 1, 'Thêm'), (1, 1, 'Xóa'), (1, 1, 'Sửa'),
+    (1, 2, 'Xem'), (1, 2, 'Thêm'), (1, 2, 'Xóa'), (1, 2, 'Sửa'),
+    (1, 3, 'Xem'), (1, 3, 'Thêm'), (1, 3, 'Xóa'), (1, 3, 'Sửa'),
+    (1, 4, 'Xem'), (1, 4, 'Thêm'), (1, 4, 'Xóa'), (1, 4, 'Sửa'),
+    (1, 5, 'Xem'), (1, 5, 'Thêm'), (1, 5, 'Xóa'), (1, 5, 'Sửa'),
+    (1, 6, 'Xem'), (1, 6, 'Thêm'), (1, 6, 'Xóa'), (1, 6, 'Sửa'),
+    (1, 7, 'Xem'), (1, 7, 'Thêm'), (1, 7, 'Xóa'), (1, 7, 'Sửa'),
+    (1, 8, 'Xem'), (1, 8, 'Thêm'), (1, 8, 'Xóa'), (1, 8, 'Sửa');
 
-    -- Quản lý (role_id = 4) có quyền hạn chế
-    (4, 1), -- Quản lý sản phẩm
-    (4, 2), -- Quản lý đơn hàng
-    (4, 3), -- Quản lý nhập hàng
-    (4, 5), -- Quản lý đánh giá
-    (4, 6), -- Xem thống kê
 
-    -- Nhà cung cấp (role_id = 3) chỉ có quyền liên quan đến nhập hàng
-    (3, 3), -- Quản lý nhập hàng
-    (3, 7), -- Quản lý nhà cung cấp
+		-- Quản lý (role_id = 4) có quyền hạn chế
+    -- (4, 1), -- Quản lý sản phẩm
+--     (4, 2), -- Quản lý đơn hàng
+--     (4, 3), -- Quản lý nhập hàng
+--     (4, 5), -- Quản lý đánh giá
+--     (4, 6), -- Xem thống kê
 
-    -- Khách hàng (role_id = 2) chỉ có quyền đặt hàng
-    (2, 8); -- Đặt hàng
+		-- Nhà cung cấp (role_id = 3) chỉ có quyền liên quan đến nhập hàng
+    -- (3, 3), -- Quản lý nhập hàng
+--     (3, 7), -- Quản lý nhà cung cấp
 
-CREATE TABLE IF NOT EXISTS price_history (
-    history_id INT AUTO_INCREMENT PRIMARY KEY,
-    product_id INT NOT NULL,
-    old_price DECIMAL(10, 2) NOT NULL,
-    new_price DECIMAL(10, 2) NOT NULL,
-    change_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    changed_by INT, -- user_id của người thay đổi
-    reason TEXT,
-    FOREIGN KEY (product_id) REFERENCES product(product_id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE,
-    FOREIGN KEY (changed_by) REFERENCES user(user_id)
-        ON DELETE SET NULL
-        ON UPDATE CASCADE
-);
+		-- Khách hàng (role_id = 2) chỉ có quyền đặt hàng
+    -- (2, 8); -- Đặt hàng
 
-INSERT INTO `price_history` (`product_id`, `old_price`, `new_price`, `change_date`, `changed_by`, `reason`) 
-VALUES
-    (1, 120000, 110000, '2025-02-06 10:00:00', 1, 'Giảm giá khuyến mãi đầu năm'),
-    (2, 150000, 140000, '2025-02-07 10:00:00', 4, 'Điều chỉnh giá do nhập hàng mới'),
-    (3, 80000, 85000, '2025-02-08 10:00:00', 7, 'Tăng giá do chi phí in ấn tăng'),
-    (4, 90000, 95000, '2025-02-09 10:00:00', 10, 'Tăng giá do nhu cầu thị trường'),
-    (5, 110000, 100000, '2025-02-10 10:00:00', 1, 'Giảm giá để thanh lý hàng tồn'),
-    (6, 95000, 90000, '2025-02-11 10:00:00', 4, 'Giảm giá nhân dịp lễ'),
-    (7, 85000, 80000, '2025-02-12 10:00:00', 7, 'Giảm giá để cạnh tranh thị trường'),
-    (8, 130000, 125000, '2025-02-13 10:00:00', 10, 'Điều chỉnh giá do nhập hàng mới'),
-    (9, 140000, 135000, '2025-02-14 10:00:00', 1, 'Giảm giá khuyến mãi'),
-    (10, 180000, 170000, '2025-02-15 10:00:00', 4, 'Giảm giá nhân dịp lễ hội sách'),
-    (11, 110000, 105000, '2025-02-16 10:00:00', 7, 'Giảm giá để thanh lý hàng tồn'),
-    (12, 95000, 90000, '2025-02-17 10:00:00', 10, 'Giảm giá khuyến mãi'),
-    (13, 35000, 30000, '2025-02-18 10:00:00', 1, 'Giảm giá để tăng doanh số'),
-    (14, 45000, 40000, '2025-02-19 10:00:00', 4, 'Giảm giá cho học sinh'),
-    (15, 125000, 120000, '2025-02-20 10:00:00', 7, 'Giảm giá nhân dịp lễ hội sách');
--- After updating table price will insert data into table price_history for later statistics
-DELIMITER //
-CREATE TRIGGER after_price_update
-AFTER UPDATE ON product
-FOR EACH ROW
-BEGIN
-    DECLARE v_latest_user_id INT;
-    
-    IF NEW.price != OLD.price THEN
-        -- Lấy user_id từ đơn nhập hàng gần nhất chứa sản phẩm này
-        SELECT po.user_id INTO v_latest_user_id
-        FROM purchase_order po
-        JOIN purchase_order_items poi ON po.purchase_order_id = poi.purchase_order_id
-        WHERE poi.product_id = NEW.product_id
-        ORDER BY po.order_date DESC
-        LIMIT 1;
-        
-        INSERT INTO price_history (
-            product_id,
-            old_price,
-            new_price,
-            changed_by,
-            reason
-        ) VALUES (
-            NEW.product_id,
-            OLD.price,
-            NEW.price,
-            IFNULL(v_latest_user_id, NULL), 
-            CONCAT('Tự động cập nhật. Giá thay đổi từ ', 
-                  OLD.price, ' → ', NEW.price,
-                  IF(v_latest_user_id IS NOT NULL, 
-                     CONCAT('. Người nhập hàng gần nhất: ', v_latest_user_id),
-                     ''))
-        );
-    END IF;
-END //
-DELIMITER ;
+
 
 -- Procedure for update product price with max profit
 -- UpdateProductPriceWithMaxProfit(5, 13000, 0.35)
