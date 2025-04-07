@@ -8,6 +8,8 @@
         include "quanlisanpham/lietkesanpham.php";
     } elseif ($action === 'quanliloaisp') {
         include "quanliloaisp/lietkeloaisp.php";
+    }elseif ($action === 'thongke') {
+        include "thongke/thongke.php";
     } elseif ($action === 'quanlibinhluan') {
         include "quanlibinhluan/lietkebinhluan.php";
     } elseif ($action === 'quanlidonhang') {

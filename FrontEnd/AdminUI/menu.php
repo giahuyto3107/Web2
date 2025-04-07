@@ -13,6 +13,13 @@
         </div>
     </div>
     <ul>
+    <li>
+            <a href="index.php?action=thongke">
+                <i class="bx bxs-shopping-bag"></i>
+                <span class="nav-item">Thống kê</span>
+            </a>
+            <span class="tooltip">Thống kê</span>
+        </li>
         <li>
             <a href="index.php?action=quanlisanpham">
                 <i class="bx bxs-shopping-bag"></i>

@@ -1,27 +1,17 @@
 <?php
-// database.php
-
-require_once 'pdo.php'; // Include file kết nối PDO
-
+require_once 'pdo.php';
 class Database {
     private $conn;
-
     public function __construct() {
         global $pdo; // Sử dụng biến $pdo từ pdo.php
         $this->conn = $pdo;
     }
-
-    // Trả về kết nối
     public function getConnection() {
         return $this->conn;
     }
-
-    // Đóng kết nối (tùy chọn, PDO tự động đóng khi script kết thúc)
     public function closeConnection() {
         $this->conn = null;
     }
-
-    // Phương thức lấy doanh thu theo tháng
     public function getMonthlyRevenue() {
         try {
             $query = "
@@ -47,8 +37,30 @@ class Database {
             return [];
         }
     }
-
-    // Phương thức lấy top sản phẩm bán chạy
+public function getDailyRevenue() {
+    try {
+        $query = "
+            SELECT 
+                sale_date,
+                SUM(total_amount) AS daily_revenue,
+                COUNT(order_id) AS total_orders
+            FROM 
+                sales_report
+            WHERE 
+                status_category = 'Completed'
+            GROUP BY 
+                sale_date
+            ORDER BY 
+                sale_date DESC
+        ";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    } catch (PDOException $e) {
+        error_log("Lỗi truy vấn getDailyRevenue: " . $e->getMessage());
+        return [];
+    }
+}
     public function getTopProducts($limit = 10) {
         try {
             $query = "
@@ -80,21 +92,15 @@ class Database {
                     }
                 }
             }
-
-            // Sắp xếp theo số lượng bán được
             uasort($productSales, function($a, $b) {
                 return $b['total_sold'] - $a['total_sold'];
             });
-
-            // Lấy top $limit sản phẩm
             return array_slice($productSales, 0, $limit);
         } catch (PDOException $e) {
             error_log("Lỗi truy vấn getTopProducts: " . $e->getMessage());
             return [];
         }
     }
-
-    // Phương thức phân tích phương thức thanh toán
     public function getPaymentMethodStats() {
         try {
             $query = "
@@ -119,8 +125,6 @@ class Database {
         }
     }
 }
-
-// Khởi tạo đối tượng Database
 $db = new Database();
 $conn = $db->getConnection();
 ?>
