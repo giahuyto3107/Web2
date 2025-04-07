@@ -45,7 +45,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             }
             $checkProduct->close();
 
-            $profit = ($item['price'] * $profit_percent) / 100; // Calculate profit per item
+            $profit = $profit_percent; // Calculate profit per item
             $stmtDetail->bind_param("iiidd", $purchase_order_id, $item['product_id'], $item['quantity'], $item['price'], $profit);
             if (!$stmtDetail->execute()) {
                 die(json_encode(["success" => false, "message" => "Lỗi khi chèn chi tiết đơn hàng: " . $stmtDetail->error]));
