@@ -203,9 +203,18 @@
             }
         });
 
-        // Hàm fetchPermissions để lấy danh sách quyền và hiển thị trong modal
         function fetchPermissions(roleId, permissionModal) {
-            // Lấy tất cả quyền từ server
+            // Define permission-specific actions
+            const permissionActions = {
+                "Đặt hàng": ["Đặt hàng"],
+                "Quản lý đơn hàng": ["Xem", "Hoàn tất", "Hủy"],
+                "Quản lý phiếu nhập": ["Xem"],
+                "Quản lý bình luận": ["Xem", "Xóa", "Sửa"]
+            };
+            const defaultActions = ["Xem", "Thêm", "Xóa", "Sửa"];
+            const allActions = ["Xem", "Thêm", "Xóa", "Sửa", "Hoàn tất", "Hủy", "Đặt hàng"];
+
+            // Fetch all permissions from the server
             fetch('../../BackEnd/Model/quanlichucvu/fetch_quyen.php')
                 .then(response => {
                     if (!response.ok) {
@@ -220,7 +229,7 @@
                         return;
                     }
 
-                    // Lấy danh sách quyền đã gán cho chức vụ
+                    // Fetch assigned permissions for the role
                     fetch(`quanlichucvu/fetch_chucvu_phanquyen.php?role_id=${roleId}`)
                         .then(response => {
                             if (!response.ok) {
@@ -238,17 +247,76 @@
                             const permissionsList = document.getElementById('permissions-list');
                             permissionsList.innerHTML = '';
 
-                            const assignedSet = new Set(assignedPermissions.data.map(item => item.permission_id));
-                            allPermissions.data.forEach(permission => {
-                                const isChecked = assignedSet.has(Number(permission.id)) ? 'checked' : '';
-                                const checkbox = `
-                                    <label>
-                                        <input type="checkbox" name="permissions[]" value="${permission.id}" ${isChecked}>
-                                        ${permission.name} 
-                                    </label><br>
-                                `;
-                                permissionsList.innerHTML += checkbox;
+                            // Create a Set of assigned permission-action pairs (e.g., "1-Đặt hàng")
+                            const assignedSet = new Set(
+                                assignedPermissions.data.map(item => `${item.permission_id}-${item.action}`)
+                            );
+
+                            // Create the table
+                            const table = document.createElement('table');
+                            table.style.width = '100%';
+
+                            // Create table header
+                            const thead = document.createElement('thead');
+                            const trHead = document.createElement('tr');
+                            const thPermission = document.createElement('th');
+                            thPermission.textContent = 'Quyền';
+                            trHead.appendChild(thPermission);
+
+                            allActions.forEach(action => {
+                                const th = document.createElement('th');
+                                th.textContent = action;
+                                trHead.appendChild(th);
                             });
+
+                            const thSelectAll = document.createElement('th');
+                            thSelectAll.textContent = 'Select All';
+                            trHead.appendChild(thSelectAll);
+                            thead.appendChild(trHead);
+                            table.appendChild(thead);
+
+                            // Create table body
+                            const tbody = document.createElement('tbody');
+
+                            allPermissions.data.forEach(permission => {
+                                const allowedActions = permissionActions[permission.name] || defaultActions;
+                                const tr = document.createElement('tr');
+                                const tdPermission = document.createElement('td');
+                                tdPermission.textContent = permission.name;
+                                tr.appendChild(tdPermission);
+
+                                allActions.forEach(action => {
+                                    const td = document.createElement('td');
+                                    if (allowedActions.includes(action)) {
+                                        const checkbox = document.createElement('input');
+                                        checkbox.type = 'checkbox';
+                                        checkbox.name = `permissions[${permission.id}][${action}]`;
+                                        if (assignedSet.has(`${permission.id}-${action}`)) {
+                                            checkbox.checked = true;
+                                        }
+                                        td.appendChild(checkbox);
+                                    }
+                                    // Leave cell empty if action is not allowed
+                                    tr.appendChild(td);
+                                });
+
+                                // Add Select All button
+                                const tdSelectAll = document.createElement('td');
+                                const selectAllButton = document.createElement('button');
+                                selectAllButton.type = 'button';
+                                selectAllButton.textContent = 'Select All';
+                                selectAllButton.addEventListener('click', () => {
+                                    const checkboxes = tr.querySelectorAll('input[type="checkbox"]');
+                                    checkboxes.forEach(cb => cb.checked = true);
+                                });
+                                tdSelectAll.appendChild(selectAllButton);
+                                tr.appendChild(tdSelectAll);
+
+                                tbody.appendChild(tr);
+                            });
+
+                            table.appendChild(tbody);
+                            permissionsList.appendChild(table);
                         })
                         .catch(error => {
                             console.error('Lỗi khi lấy quyền đã gán:', error);

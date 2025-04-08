@@ -1,9 +1,8 @@
 <?php
 $sql_product_invoice = 
-        "SELECT p.image_url, p.product_name, 
-        p.product_description, pot.quantity, pot.price, p.product_id
+        "SELECT image_url, product_name, 
+        product_description, stock_quantity, price, product_id
         FROM product p
-        join purchase_order_items pot on pot.product_id = p.product_id
         ORDER BY p.product_name ASC;";
 
 $query_product_invoice = mysqli_query($conn, $sql_product_invoice);
@@ -29,8 +28,9 @@ if (!$query_product_invoice) {
                 <div class="product-info">
                     <h4><?= $row['product_name'] ?></h4>
                     <h6><?= $row['product_description'] ?></h6>
-                    <p>SL: <?= $row['quantity'] ?></p>
-                    <h2><?= $row['price'] ?> VND</h2>
+                    <p>SL: <?= $row['stock_quantity'] ?></p>
+                    <h1 style="display: none"><?= $row['product_id'] ?></h1>
+                    <!-- Sử dụng h2 để hiển thị giá SP nếu có -->
                 </div>
             </div>
 
@@ -69,7 +69,6 @@ if (!$query_product_invoice) {
         </div>
     </div>
  
-
 </div>
 
 <script>
@@ -125,13 +124,17 @@ if (!$query_product_invoice) {
     document.addEventListener("DOMContentLoaded", function () {
         const productBlocks = document.querySelectorAll(".product-block");
         const invoiceContent = document.querySelector(".invoice-content");
-        const totalPriceElement = document.querySelector("price");
+        const totalPriceElement = document.querySelector(".price");
 
         productBlocks.forEach(product => {
             product.addEventListener("click", function () {
+                const productId = parseInt(this.querySelector("h1").innerText);
                 const productName = this.querySelector("h4").innerText;
                 const productDesc = this.querySelector("h6").innerText;
-                const productPrice = parseInt(this.querySelector("h2").innerText.replace(" VND", ""));
+
+            // Bỏ vì ko sử dụng giá của sản phẩm để render nữa mà thay vào đó là giá nhập của SP
+                // const productPrice = parseInt(this.querySelector("h2").innerText.replace(" VND", ""));
+
                 const productImage = this.querySelector(".product-image").src;
 
                 // Check if the product already exists in the invoice
@@ -151,7 +154,14 @@ if (!$query_product_invoice) {
                         <div class="product-info-invoice">
                             <h2>${productName}</h2>
                             <h6>${productDesc}</h6>
-                            <h6 class="bill-product-price">${productPrice} VND</h6>
+                            <div class="inline-container">
+                                <label for="${productId}">Giá nhập: </label>
+                                <input 
+                                    type="text" class="bill-product-price" id="${productId}"
+                                    style="width: 100px;" oninput="updatePrice(this)" value="0">
+                                
+                                <label for="${productId}">VNĐ</label>
+                            </div>
                             <div class="single-invoice-btns">
                                 <div class="quantity-container">
                                     <button class="quantity-btn" onclick="decreaseQuantity(this)">-</button>
@@ -171,7 +181,7 @@ if (!$query_product_invoice) {
                 // totalPrice += productPrice;
                 // totalPriceElement.innerText = `${totalPrice} VND`;
 
-                updatePrice();
+                updateTotalPrice();
 
                 // Check cart status
                 checkCartIsEmptyOrNot();
@@ -183,7 +193,7 @@ if (!$query_product_invoice) {
     function increaseQuantity(button) {
         let quantityInput = button.parentElement.querySelector(".quantity-input");
         quantityInput.value = parseInt(quantityInput.value) + 1;
-        updatePrice();
+        updateTotalPrice();
     }
 
     // Function to decrease quantity dynamically
@@ -193,18 +203,37 @@ if (!$query_product_invoice) {
         if (currentValue > 1) {
             quantityInput.value = currentValue - 1;
         }
-        updatePrice();
+        updateTotalPrice();
     }
 
     function removeItem(button) {
         let invoiceItem = button.closest(".single-invoice-content");
         if (invoiceItem) {
             invoiceItem.remove();
-            updatePrice(); // Recalculate total price after removal
+            updateTotalPrice(); // Recalculate total price after removal
             checkCartIsEmptyOrNot();
         }
     }
 
+    function updatePrice(input){
+        if (!input.value.match(/^\d+$/)) { 
+            alert("Vui lòng nhập số");
+            input.value = 0;
+            updateTotalPrice();
+            return;
+        }
+
+        inputValue = parseFloat(input.value);
+        if (inputValue <= 0) { 
+            alert("Vui lòng nhập giá hợp lệ");
+            input.value = 0;
+            updateTotalPrice();
+            return;
+        }
+
+        updateTotalPrice();
+    }
+    
     function updateQuantity(input){
         if (!input.value.match(/^\d+$/)) { 
             alert("Vui lòng nhập số lượng là số nguyên");
@@ -212,7 +241,7 @@ if (!$query_product_invoice) {
             return;
         }
         else {
-            updatePrice();
+            updateTotalPrice();
         }
     }
 
@@ -220,7 +249,7 @@ if (!$query_product_invoice) {
         if (!input.value.match(/^\d+$/)) { 
             alert("Vui lòng nhập số");
             input.value = 0;
-            updatePrice();
+            updateTotalPrice();
             return;
         }
 
@@ -228,14 +257,14 @@ if (!$query_product_invoice) {
         if (inputValue < 0 || inputValue > 100) { 
             alert("Vui lòng nhập từ 0-100");
             input.value = 0;
-            updatePrice();
+            updateTotalPrice();
             return;
         }
 
-        updatePrice();
+        updateTotalPrice();
     }
 
-    function updatePrice() {
+    function updateTotalPrice() {
         let totalPrice = 0;
         const totalPriceElement = document.querySelector(".price");
         const percentageElement = document.getElementById("percent");
@@ -246,7 +275,7 @@ if (!$query_product_invoice) {
             let quantityElement = single.querySelector(".quantity-input");
 
             if (priceElement && quantityElement) {
-                let priceValue = parseFloat(priceElement.innerText.replace(" VND", "")) || 0;
+                let priceValue = parseFloat(priceElement.value);
                 let quantityValue = parseInt(quantityElement.value) || 1;
 
                 totalPrice += priceValue * quantityValue;
@@ -266,17 +295,26 @@ if (!$query_product_invoice) {
         let userId = 1; // Replace with actual logged-in user ID
         let orderDate = new Date().toISOString().slice(0, 19).replace("T", " "); // Format: YYYY-MM-DD HH:MM:SS
         let statusId = 1; // Assuming 1 = Pending, adjust as needed
+        let isValid = true;
 
         // Get purchase items
         let purchaseItems = [];
         document.querySelectorAll(".single-invoice-content").forEach(item => {
+            singlePrice = item.querySelector(".bill-product-price").value;
+            if (singlePrice == "0") {
+                alert("Vui lòng kiểm tra lại giá nhập của hóa đơn");
+                isValid = false;
+                return;
+            }
             purchaseItems.push({
                 product_id: item.dataset.productId, // Assuming you store product ID in data attribute
                 quantity: parseInt(item.querySelector(".quantity-input").value.trim()),
-                price: parseFloat(item.querySelector(".bill-product-price").innerText.replace(" VND", "").trim())
+                price: parseFloat(item.querySelector(".bill-product-price").value)
             });
             
         });
+
+        if (!isValid) return;
 
         JSON.stringify(purchaseItems);
 
@@ -545,4 +583,9 @@ if (!$query_product_invoice) {
         gap: 5px;
     }
 
+    .inline-container {
+        display: flex;
+        align-items: center; /* Aligns input and label */
+        gap: 5px; /* Adjust spacing */
+    }
 </style>
