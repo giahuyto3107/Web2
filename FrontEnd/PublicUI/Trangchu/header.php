@@ -204,11 +204,7 @@ $featured_collection = $conn->query("SELECT p.* FROM product p JOIN product_cate
 <body>
 <header class="site-header">
         <div class="logo">
-<<<<<<< HEAD
             <a href="?page=home"><h1>Góc Sách Nhỏ</h1></a>
-=======
-            <a href="#" id="home-link"><h1>Góc Sách Nhỏ</h1></a>
->>>>>>> 32db2651e5d82082f06dbe003d74db03ae93e2f4
         </div>
         <div class="search-bar">
             <input type="text" id="search-input" placeholder="Tìm kiếm sách...">

@@ -8,12 +8,12 @@ $page = isset($_GET['page']) ? $_GET['page'] : 'home';
 $allowed_pages = ['home', 'login', 'signup', 'about', 'contact', 'profile', 'orders', 'cart', 'product', 'product_details', 'order_details'];
 
 $custom_paths = [
-    'cart' => 'D:/xampp/htdocs/Web2/FrontEnd/PublicUI/Giohang/giohang.php',
-    'profile' => 'D:/xampp/htdocs/Web2/FrontEnd/PublicUI/User/user.php',
-    'orders' => 'D:/xampp/htdocs/Web2/FrontEnd/PublicUI/Lichsumuahang/listmuahang.php',
-    'order_details' => 'D:/xampp/htdocs/Web2/FrontEnd/PublicUI/Lichsumuahang/chitietdonhang.php',
-    'product' => 'D:/xampp/htdocs/Web2/FrontEnd/PublicUI/SanPham/danhsachSP.php',
-    'product_details' => 'D:/xampp/htdocs/Web2/FrontEnd/PublicUI/SanPham/product_detail.php',
+    'cart' => '../../PublicUI/Giohang/giohang.php',
+    'profile' => '../../PublicUI/User/user.php',
+    'orders' => '../../PublicUI/Lichsumuahang/listmuahang.php',
+    'order_details' => '../../PublicUI/Lichsumuahang/chitietdonhang.php',
+    'product' => '../../PublicUI/SanPham/danhsachSP.php',
+    'product_details' => '../../PublicUI/SanPham/product_detail.php',
     
 ];
 
