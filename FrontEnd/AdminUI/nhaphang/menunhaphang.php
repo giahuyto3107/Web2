@@ -3,7 +3,7 @@ $sql_product_invoice =
         "SELECT image_url, product_name, 
         product_description, stock_quantity, price, product_id
         FROM product p
-        ORDER BY p.product_name ASC;";
+        ORDER BY p.product_id ASC;";
 
 $query_product_invoice = mysqli_query($conn, $sql_product_invoice);
 if (!$query_product_invoice) {
@@ -19,25 +19,32 @@ if (!$query_product_invoice) {
         </div>
         
         <div class="form-content">
+            <table>
+                <tr>
+                    <td>Mã SP</td>
+                    <td>Tên</td>
+                    <td>Mô tả</td>
+                    <td>SL</td>
+                    <td>Thao tác</td>
+                    
+                </tr>
             <?php
                 while($row = mysqli_fetch_array($query_product_invoice)) {
             ?>
 
-            <div class="product-block" data-product-id="<?= $row['product_id'] ?>">
-                <img class="product-image" src="../../BackEnd/Uploads/Product Picture/<?= $row['image_url'] ?>">
-                <div class="product-info">
-                    <h4><?= $row['product_name'] ?></h4>
-                    <h6><?= $row['product_description'] ?></h6>
-                    <p>SL: <?= $row['stock_quantity'] ?></p>
-                    <h1 style="display: none"><?= $row['product_id'] ?></h1>
-                    <!-- Sử dụng h2 để hiển thị giá SP nếu có -->
-                </div>
-            </div>
-
+                <tr>
+                    <td><?= $row['product_id'] ?></td>
+                    <td><?= $row['product_name'] ?></td>
+                    <td><?= $row['product_description'] ?></td>
+                    <td><?= $row['stock_quantity'] ?></td>
+                    <td><button class="select-button">Chọn</button></td>
+                </tr>
+                
             <?php
                 }
             ?>
 
+            </table>
         </div>
     </div>
 
@@ -63,6 +70,7 @@ if (!$query_product_invoice) {
                     <div class="percentContainer">
                         <input type="text" id="percent" name="percent" placeholder="Lợi nhuận bán ra" oninput="updatePercentage(this)" value="0">
                         <label for="percent">%</label>
+                        <button type="button" id="applyAllBtn">Apply All</button>
                     </div>
                 <button type="button" id="confirmBtn">In phieu nhap hang</button>
             </div>
@@ -79,8 +87,7 @@ if (!$query_product_invoice) {
             .then(response => response.json())
             .then(result => {
                 if (result.status === 'success') {
-                    selectElement.innerHTML = '<option value="default">Chọn nhà xuất bản</option>'; // Keep default option
-
+                    selectElement.innerHTML = '<option value="default">Chọn nhà xuất bản</option>';
                     result.data.forEach(supplier => {
                         const option = document.createElement('option');
                         option.value = supplier.supplier_id;
@@ -98,7 +105,6 @@ if (!$query_product_invoice) {
 
     document.getElementById('supplier').addEventListener('change', function() {
         const supplierValueOption = this.value;
-
         if (supplierValueOption !== "default") {
             // Handle supplier change event (optional future logic)
         }
@@ -108,58 +114,53 @@ if (!$query_product_invoice) {
         const cartItems = document.querySelectorAll(".single-invoice-content");
         const confirmBtn = document.getElementById("confirmBtn");
         if (cartItems.length <= 0) {
-            confirmBtn.style.backgroundColor = "#c0c0c0"; //grey
+            confirmBtn.style.backgroundColor = "#c0c0c0";
             confirmBtn.setAttribute("disabled", "true");
-            confirmBtn.style.cursor = "default"; // Remove cursor
+            confirmBtn.style.cursor = "default";
         } else {
-            confirmBtn.style.backgroundColor = "#2dd2c0"; //blue
-            confirmBtn.removeAttribute("disabled"); // Correct way to enable the button
-            confirmBtn.style.cursor = "pointer"; // Remove cursor
+            confirmBtn.style.backgroundColor = "#2dd2c0";
+            confirmBtn.removeAttribute("disabled");
+            confirmBtn.style.cursor = "pointer";
         }
     }
 
     document.addEventListener('DOMContentLoaded', checkCartIsEmptyOrNot);
 
-    // Handle product selection
     document.addEventListener("DOMContentLoaded", function () {
-        const productBlocks = document.querySelectorAll(".product-block");
+        const selectButtons = document.querySelectorAll(".select-button");
         const invoiceContent = document.querySelector(".invoice-content");
         const totalPriceElement = document.querySelector(".price");
 
-        productBlocks.forEach(product => {
-            product.addEventListener("click", function () {
-                const productId = parseInt(this.querySelector("h1").innerText);
-                const productName = this.querySelector("h4").innerText;
-                const productDesc = this.querySelector("h6").innerText;
-
-            // Bỏ vì ko sử dụng giá của sản phẩm để render nữa mà thay vào đó là giá nhập của SP
-                // const productPrice = parseInt(this.querySelector("h2").innerText.replace(" VND", ""));
-
-                const productImage = this.querySelector(".product-image").src;
-
-                // Check if the product already exists in the invoice
-                const existingProduct = invoiceContent.querySelector(`[data-name="${productName}"]`);
+        selectButtons.forEach(button => {
+            button.addEventListener("click", function () {
+                const row = this.closest("tr");
+                const productId = row.querySelector("td:nth-child(1)").innerText;
+                const productName = row.querySelector("td:nth-child(2)").innerText;
+                const productDesc = row.querySelector("td:nth-child(3)").innerText;
+                
+                const existingProduct = invoiceContent.querySelector(`[data-product-id="${productId}"]`);
                 let totalPrice = 0;
 
                 if (existingProduct) {
                     let quantityInput = existingProduct.querySelector(".quantity-input");
                     quantityInput.value = parseInt(quantityInput.value) + 1;
                 } else {
-                    // Create a new invoice item
                     const invoiceItem = document.createElement("div");
                     invoiceItem.classList.add("single-invoice-content");
-                    invoiceItem.setAttribute("data-product-id", this.getAttribute("data-product-id")); // Ensure product ID is stored
+                    invoiceItem.setAttribute("data-product-id", productId);
                     invoiceItem.innerHTML = `
-                        <img class="product-image-invoice" src="${productImage}">
                         <div class="product-info-invoice">
                             <h2>${productName}</h2>
                             <h6>${productDesc}</h6>
                             <div class="inline-container">
                                 <label for="${productId}">Giá nhập: </label>
                                 <input 
-                                    type="text" class="bill-product-price" id="${productId}"
-                                    style="width: 100px;" oninput="updatePrice(this)" value="0">
-                                
+                                    type="text" 
+                                    class="bill-product-price" 
+                                    id="${productId}"
+                                    style="width: 100px;" 
+                                    oninput="updatePrice(this)" 
+                                    value="0">
                                 <label for="${productId}">VNĐ</label>
                             </div>
                             <div class="single-invoice-btns">
@@ -170,33 +171,48 @@ if (!$query_product_invoice) {
                                 </div>
                                 <button class="remove" onclick="removeItem(this)">Remove</button>
                             </div>
-                            
+                            <div class="percent-container">
+                                <label for="percent-${productId}">Phần trăm: </label>
+                                <input 
+                                    type="text" 
+                                    id="percent-${productId}" 
+                                    class="percent-input" 
+                                    value="0" 
+                                    oninput="updatePrice(this)">
+                                <label for="percent-${productId}">%</label>
+                            </div>
                         </div>
                     `;
-
                     invoiceContent.appendChild(invoiceItem);
                 }
 
-                // Update total price
-                // totalPrice += productPrice;
-                // totalPriceElement.innerText = `${totalPrice} VND`;
-
                 updateTotalPrice();
-
-                // Check cart status
                 checkCartIsEmptyOrNot();
             });
         });
+
+        // Add event listener for "Apply All" button
+        document.getElementById("applyAllBtn").addEventListener("click", function() {
+            const globalPercent = document.getElementById("percent").value;
+            if (!globalPercent.match(/^\d+$/) || parseFloat(globalPercent) < 0 || parseFloat(globalPercent) > 100) {
+                alert("Vui lòng nhập phần trăm hợp lệ (0-100)");
+                return;
+            }
+
+            const percentInputs = document.querySelectorAll(".percent-input");
+            percentInputs.forEach(input => {
+                input.value = globalPercent;
+            });
+            updateTotalPrice();
+        });
     });
 
-    // Function to increase quantity dynamically
     function increaseQuantity(button) {
         let quantityInput = button.parentElement.querySelector(".quantity-input");
         quantityInput.value = parseInt(quantityInput.value) + 1;
         updateTotalPrice();
     }
 
-    // Function to decrease quantity dynamically
     function decreaseQuantity(button) {
         let quantityInput = button.parentElement.querySelector(".quantity-input");
         let currentValue = parseInt(quantityInput.value);
@@ -210,12 +226,12 @@ if (!$query_product_invoice) {
         let invoiceItem = button.closest(".single-invoice-content");
         if (invoiceItem) {
             invoiceItem.remove();
-            updateTotalPrice(); // Recalculate total price after removal
+            updateTotalPrice();
             checkCartIsEmptyOrNot();
         }
     }
 
-    function updatePrice(input){
+    function updatePrice(input) {
         if (!input.value.match(/^\d+$/)) { 
             alert("Vui lòng nhập số");
             input.value = 0;
@@ -223,9 +239,9 @@ if (!$query_product_invoice) {
             return;
         }
 
-        inputValue = parseFloat(input.value);
-        if (inputValue <= 0) { 
-            alert("Vui lòng nhập giá hợp lệ");
+        let inputValue = parseFloat(input.value);
+        if (inputValue < 0 || (input.classList.contains("percent-input") && inputValue > 100)) { 
+            alert(input.classList.contains("percent-input") ? "Vui lòng nhập từ 0-100" : "Vui lòng nhập giá hợp lệ");
             input.value = 0;
             updateTotalPrice();
             return;
@@ -234,18 +250,17 @@ if (!$query_product_invoice) {
         updateTotalPrice();
     }
     
-    function updateQuantity(input){
+    function updateQuantity(input) {
         if (!input.value.match(/^\d+$/)) { 
             alert("Vui lòng nhập số lượng là số nguyên");
             input.value = 1;
+            updateTotalPrice();
             return;
         }
-        else {
-            updateTotalPrice();
-        }
+        updateTotalPrice();
     }
 
-    function updatePercentage(input){
+    function updatePercentage(input) {
         if (!input.value.match(/^\d+$/)) { 
             alert("Vui lòng nhập số");
             input.value = 0;
@@ -253,7 +268,7 @@ if (!$query_product_invoice) {
             return;
         }
 
-        inputValue = parseFloat(input.value);
+        let inputValue = parseFloat(input.value);
         if (inputValue < 0 || inputValue > 100) { 
             alert("Vui lòng nhập từ 0-100");
             input.value = 0;
@@ -267,58 +282,54 @@ if (!$query_product_invoice) {
     function updateTotalPrice() {
         let totalPrice = 0;
         const totalPriceElement = document.querySelector(".price");
-        const percentageElement = document.getElementById("percent");
         const singleInvoiceContent = document.querySelectorAll(".single-invoice-content");
 
         singleInvoiceContent.forEach(single => {
             let priceElement = single.querySelector(".bill-product-price");
             let quantityElement = single.querySelector(".quantity-input");
+            let percentElement = single.querySelector(".percent-input");
 
-            if (priceElement && quantityElement) {
-                let priceValue = parseFloat(priceElement.value);
+            if (priceElement && quantityElement && percentElement) {
+                let priceValue = parseFloat(priceElement.value) || 0;
                 let quantityValue = parseInt(quantityElement.value) || 1;
+                let percentValue = parseFloat(percentElement.value) || 0;
 
-                totalPrice += priceValue * quantityValue;
+                totalPrice += priceValue * quantityValue * (1 + percentValue / 100);
             }
         });
-        totalPrice = (1 + percentageElement.value/100) * totalPrice;
 
-        totalPriceElement.innerText = `${totalPrice} VND`;
+        totalPriceElement.innerText = `${totalPrice.toLocaleString()} VND`;
     }
 
     document.getElementById("confirmBtn").addEventListener("click", function(event) {
-        event.preventDefault(); // Prevent default button action
+        event.preventDefault();
 
         let supplierId = document.getElementById("supplier").value;
         let totalPrice = document.querySelector(".price").innerText.trim();
         let profitPercent = document.getElementById("percent").value;
-        let userId = 1; // Replace with actual logged-in user ID
-        let orderDate = new Date().toISOString().slice(0, 19).replace("T", " "); // Format: YYYY-MM-DD HH:MM:SS
-        let statusId = 1; // Assuming 1 = Pending, adjust as needed
+        let userId = 1;
+        let orderDate = new Date().toISOString().slice(0, 19).replace("T", " ");
+        let statusId = 1;
         let isValid = true;
 
-        // Get purchase items
         let purchaseItems = [];
         document.querySelectorAll(".single-invoice-content").forEach(item => {
-            singlePrice = item.querySelector(".bill-product-price").value;
+            let singlePrice = item.querySelector(".bill-product-price").value;
             if (singlePrice == "0") {
                 alert("Vui lòng kiểm tra lại giá nhập của hóa đơn");
                 isValid = false;
                 return;
             }
             purchaseItems.push({
-                product_id: item.dataset.productId, // Assuming you store product ID in data attribute
+                product_id: item.dataset.productId,
                 quantity: parseInt(item.querySelector(".quantity-input").value.trim()),
-                price: parseFloat(item.querySelector(".bill-product-price").value)
+                price: parseFloat(item.querySelector(".bill-product-price").value),
+                profit_percent: parseFloat(item.querySelector(".percent-input").value) // Include individual profit percent
             });
-            
         });
 
         if (!isValid) return;
 
-        JSON.stringify(purchaseItems);
-
-        // Validate supplier selection
         if (supplierId == "default") {
             alert("Vui lòng chọn nhà xuất bản!");
             return;
@@ -329,21 +340,18 @@ if (!$query_product_invoice) {
             return;
         }
 
-        // Calculate total amount (sum of all quantities)
         let totalAmount = purchaseItems.reduce((sum, item) => sum + item.quantity, 0);
 
-        // Prepare FormData for AJAX
         let formData = new FormData();
         formData.append("supplier_id", supplierId);
         formData.append("user_id", userId);
         formData.append("order_date", orderDate);
         formData.append("total_price", totalPrice);
         formData.append("total_amount", totalAmount);
-        formData.append("profit_percent", profitPercent);
+        formData.append("profit_percent", profitPercent); // Global profit percent (optional)
         formData.append("status_id", statusId);
-        formData.append("purchase_items", JSON.stringify(purchaseItems)); // Convert array to JSON string
+        formData.append("purchase_items", JSON.stringify(purchaseItems));
 
-        // AJAX Request
         fetch("../../BackEnd/Model/nhaphang/xulinhaphang.php", {
             method: "POST",
             body: formData
@@ -352,7 +360,7 @@ if (!$query_product_invoice) {
         .then(data => {
             if (data.success) {
                 alert("Đơn hàng đã được gửi thành công!");
-                window.location.reload(); // Reload after success
+                window.location.reload();
             } else {
                 alert("Lỗi khi gửi đơn hàng: " + data.message);
             }
@@ -527,12 +535,8 @@ if (!$query_product_invoice) {
         border: 1px solid black;
     }
 
-    .percentContainer {
-        /* width: 100%; */
-    }
-    
-    .priceContainer {
-        /* width: 100%; */
+    table tr td{
+        text-align: center;
     }
     
     #percent {
@@ -576,6 +580,34 @@ if (!$query_product_invoice) {
         font-size: 16px;
         border: none;
         outline: none;
+    }
+
+    .percent-container {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        margin-top: 10px; /* Adds spacing between quantity buttons and percentage input */
+    }
+
+    #applyAllBtn {
+        padding: 5px 10px;
+        background-color: #4CAF50; /* Green color, adjust as needed */
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    #applyAllBtn:hover {
+        background-color: #45a049; /* Darker green on hover */
+    }
+
+    .percent-input {
+        width: 40px;
+        text-align: center;
+        border: 1px solid #000;
+        border-radius: 3px;
+        padding: 2px;
     }
 
     .single-invoice-btns {
