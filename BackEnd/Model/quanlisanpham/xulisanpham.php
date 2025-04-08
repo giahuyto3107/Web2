@@ -140,15 +140,61 @@ try {
             'message' => 'Sản phẩm đã được cập nhật'
         ]);
     } elseif ($action === 'delete') {
-        // Xóa sản phẩm (cập nhật status_id thành 6)
+        // Xóa sản phẩm
         $product_id = isset($_POST['product_id']) ? intval($_POST['product_id']) : 0;
-        $status_id = 6;
 
         if ($product_id <= 0) {
             throw new Exception('Invalid product ID');
         }
-        // Kiểm tra stock_quantity
-        $sql = "SELECT stock_quantity FROM product WHERE product_id = ?";
+        // Kiểm tra xem sản phẩm đã được bán ra chưa (có trong bảng order_items không)
+        $sql = "SELECT COUNT(*) as count FROM order_items WHERE product_id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $product_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        $stmt->close();
+
+        if ($row['count'] > 0) {
+            // Sản phẩm đã được bán ra, chỉ cập nhật status_id thành 2
+            $status_id = 2;
+            $sql = "UPDATE product SET status_id = ? WHERE product_id = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("ii", $status_id, $product_id);
+            $stmt->execute();
+
+            if ($stmt->affected_rows > 0) {
+                echo json_encode([
+                    'status' => 'success',
+                    'message' => 'Sản phẩm đã được đánh dấu không hoạt động (status_id = 2)'
+                ]);
+            } else {
+                throw new Exception('Không thể cập nhật trạng thái sản phẩm');
+            }
+            $stmt->close();
+        } else {
+            // Xóa hoàn toàn sản phẩm
+        $product_id = isset($_POST['product_id']) ? intval($_POST['product_id']) : 0;
+
+        if ($product_id <= 0) {
+            throw new Exception('Invalid product ID');
+        }
+
+        // Kiểm tra lại xem sản phẩm có trong order_items không (để đảm bảo an toàn)
+        $sql = "SELECT COUNT(*) as count FROM order_items WHERE product_id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $product_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        $stmt->close();
+
+        if ($row['count'] > 0) {
+            throw new Exception('Sản phẩm đã được bán ra, không thể xóa hoàn toàn');
+        }
+
+        // Lấy thông tin sản phẩm để xóa hình ảnh (nếu có)
+        $sql = "SELECT image_url FROM product WHERE product_id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $product_id);
         $stmt->execute();
@@ -156,29 +202,26 @@ try {
         $product = $result->fetch_assoc();
         $stmt->close();
 
-        if ($product['stock_quantity'] > 0) {
-            echo json_encode([
-                'status' => 'error',
-                'message' => 'Không thể xóa sản phẩm khi số lượng tồn kho lớn hơn 0'
-            ]);
-            exit;
+        if ($product && $product['image_url'] && file_exists('../../../' . $product['image_url'])) {
+            unlink('../../../' . $product['image_url']);
         }
-        
-        $sql = "UPDATE product SET status_id = ? WHERE product_id = ?";
+
+        // Xóa sản phẩm khỏi bảng product
+        $sql = "DELETE FROM product WHERE product_id = ?";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ii", $status_id, $product_id);
+        $stmt->bind_param("i", $product_id);
         $stmt->execute();
 
         if ($stmt->affected_rows > 0) {
             echo json_encode([
                 'status' => 'success',
-                'message' => 'Sản phẩm đã được đánh dấu xóa'
+                'message' => 'Sản phẩm đã được xóa hoàn toàn'
             ]);
         } else {
             throw new Exception('Không thể xóa sản phẩm');
         }
-
         $stmt->close();
+        }
     } else {
         throw new Exception('Invalid action');
     }

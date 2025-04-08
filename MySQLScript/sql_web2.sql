@@ -664,3 +664,4 @@ BEGIN
         (v_new_selling_price - p_new_cost_price) AS actual_profit;
 END //
 DELIMITER ;
+k
