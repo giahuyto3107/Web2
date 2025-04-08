@@ -35,7 +35,7 @@ $featured_collection = $conn->query("SELECT p.* FROM product p JOIN product_cate
         display: flex;
         align-items: center;
         padding: 0 120px;
-        margin-top: 80px; /* Để tránh header fixed */
+        
     }
 
     .hero-background {
