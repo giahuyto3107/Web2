@@ -45,6 +45,7 @@ CREATE TABLE IF NOT EXISTS account (
     account_name VARCHAR(100) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
+    address VARCHAR(255),
     status_id INT,
     last_login TIMESTAMP NULL,
     role_id INT,
@@ -58,23 +59,25 @@ CREATE TABLE IF NOT EXISTS account (
         ON UPDATE CASCADE    
 );
 
-INSERT INTO `account` (`account_name`, `email`, `password_hash`, `status_id`, `last_login`, `role_id`, `created_at`, `updated_at`) 
+INSERT INTO `account` 
+(`account_name`, `email`, `password_hash`, `address`, `status_id`, `last_login`, `role_id`, `created_at`, `updated_at`) 
 VALUES
-    ('nguyen_van_a', 'nguyenvana@gmail.com', '123', 1, NULL, 1, '2025-02-05 03:00:08', '2025-02-08 09:32:04'), -- Quản trị viên
-    ('tran_thi_b', 'tranthib@gmail.com', '123', 1, NULL, 2, '2025-02-05 03:00:08', '2025-02-08 09:32:07'), -- Khách hàng
-    ('le_van_c', 'levanc@gmail.com', '123', 1, NULL, 3, '2025-02-05 03:00:08', '2025-02-08 09:32:09'), -- Nhà cung cấp
-    ('pham_thi_d', 'phamthid@gmail.com', '123', 1, NULL, 4, '2025-02-05 03:00:08', '2025-02-08 09:32:12'), -- Quản lý
-    ('hoang_van_e', 'hoangvane@gmail.com', '123', 1, NULL, 2, '2025-02-05 03:00:08', '2025-02-08 09:32:15'), -- Khách hàng
-    ('ngo_thi_f', 'ngothif@gmail.com', '123', 1, NULL, 2, '2025-02-05 03:00:08', '2025-02-08 09:32:18'), -- Khách hàng
-    ('vu_van_g', 'vuvang@gmail.com', '123', 1, NULL, 3, '2025-02-05 03:00:08', '2025-02-08 09:32:21'), -- Nhà cung cấp
-    ('do_thi_h', 'dothih@gmail.com', '123', 1, NULL, 2, '2025-02-05 03:00:08', '2025-02-08 09:32:24'), -- Khách hàng
-    ('bui_van_i', 'buivani@gmail.com', '123', 1, NULL, 2, '2025-02-05 03:00:08', '2025-02-08 09:32:27'), -- Khách hàng
-    ('dang_thi_k', 'dangthik@gmail.com', '123', 1, NULL, 4, '2025-02-05 03:00:08', '2025-02-08 09:32:30'), -- Quản lý
-    ('tran_van_l', 'tranvanl@gmail.com', '123', 1, NULL, 2, '2025-02-05 03:00:08', '2025-02-08 09:32:33'), -- Khách hàng
-    ('le_thi_m', 'lethim@gmail.com', '123', 1, NULL, 2, '2025-02-05 03:00:08', '2025-02-08 09:32:36'), -- Khách hàng
-    ('pham_van_n', 'phamvann@gmail.com', '123', 1, NULL, 3, '2025-02-05 03:00:08', '2025-02-08 09:32:39'), -- Nhà cung cấp
-    ('nguyen_thi_p', 'nguyenthip@gmail.com', '123', 1, NULL, 2, '2025-02-05 03:00:08', '2025-02-08 09:32:42'), -- Khách hàng
-    ('hoang_thi_q', 'hoangthiq@gmail.com', '123', 1, NULL, 2, '2025-02-05 03:00:08', '2025-02-08 09:32:45'); -- Khách hàng
+('nguyen_van_a', 'nguyenvana@gmail.com', '123', '123 Lê Lợi, Quận 1, TP.HCM', 1, NULL, 1, '2025-02-05 03:00:08', '2025-02-08 09:32:04'), -- Quản trị viên
+('tran_thi_b', 'tranthib@gmail.com', '123', '45 Nguyễn Trãi, Quận 5, TP.HCM', 1, NULL, 2, '2025-02-05 03:00:08', '2025-02-08 09:32:07'), -- Khách hàng
+('le_van_c', 'levanc@gmail.com', '123', '78 Hai Bà Trưng, Quận 3, TP.HCM', 1, NULL, 3, '2025-02-05 03:00:08', '2025-02-08 09:32:09'), -- Nhà cung cấp
+('pham_thi_d', 'phamthid@gmail.com', '123', '12 Phan Đình Phùng, TP. Huế', 1, NULL, 4, '2025-02-05 03:00:08', '2025-02-08 09:32:12'), -- Quản lý
+('hoang_van_e', 'hoangvane@gmail.com', '123', '56 Trần Hưng Đạo, Hoàn Kiếm, Hà Nội', 1, NULL, 2, '2025-02-05 03:00:08', '2025-02-08 09:32:15'), -- Khách hàng
+('ngo_thi_f', 'ngothif@gmail.com', '123', '89 Lê Duẩn, TP. Đà Nẵng', 1, NULL, 2, '2025-02-05 03:00:08', '2025-02-08 09:32:18'), -- Khách hàng
+('vu_van_g', 'vuvang@gmail.com', '123', '67 Nguyễn Huệ, TP. Tuy Hòa', 1, NULL, 3, '2025-02-05 03:00:08', '2025-02-08 09:32:21'), -- Nhà cung cấp
+('do_thi_h', 'dothih@gmail.com', '123', '34 Hùng Vương, TP. Nha Trang', 1, NULL, 2, '2025-02-05 03:00:08', '2025-02-08 09:32:24'), -- Khách hàng
+('bui_van_i', 'buivani@gmail.com', '123', '90 Điện Biên Phủ, TP. Cần Thơ', 1, NULL, 2, '2025-02-05 03:00:08', '2025-02-08 09:32:27'), -- Khách hàng
+('dang_thi_k', 'dangthik@gmail.com', '123', '21 Lý Thường Kiệt, TP. Biên Hòa', 1, NULL, 4, '2025-02-05 03:00:08', '2025-02-08 09:32:30'), -- Quản lý
+('tran_van_l', 'tranvanl@gmail.com', '123', '100 Trường Chinh, TP. Vinh', 1, NULL, 2, '2025-02-05 03:00:08', '2025-02-08 09:32:33'), -- Khách hàng
+('le_thi_m', 'lethim@gmail.com', '123', '23 Nguyễn Văn Cừ, TP. Thái Nguyên', 1, NULL, 2, '2025-02-05 03:00:08', '2025-02-08 09:32:36'), -- Khách hàng
+('pham_van_n', 'phamvann@gmail.com', '123', '10 Trần Phú, TP. Long Xuyên', 1, NULL, 3, '2025-02-05 03:00:08', '2025-02-08 09:32:39'), -- Nhà cung cấp
+('nguyen_thi_p', 'nguyenthip@gmail.com', '123', '15 Hoàng Hoa Thám, TP. Thanh Hóa', 1, NULL, 2, '2025-02-05 03:00:08', '2025-02-08 09:32:42'), -- Khách hàng
+('hoang_thi_q', 'hoangthiq@gmail.com', '123', '33 Tôn Đức Thắng, TP. Buôn Ma Thuột', 1, NULL, 2, '2025-02-05 03:00:08', '2025-02-08 09:32:45'); -- Khách hàng
+
 
 CREATE TABLE IF NOT EXISTS category (
     category_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -171,9 +174,10 @@ VALUES
 CREATE TABLE IF NOT EXISTS user (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
     full_name VARCHAR(100) NOT NULL,
-    account_id INT unique,
+    account_id INT UNIQUE,
     profile_picture VARCHAR(255),
     date_of_birth DATE,
+    address VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (account_id) REFERENCES account(account_id)
@@ -181,23 +185,23 @@ CREATE TABLE IF NOT EXISTS user (
         ON UPDATE CASCADE
 );
 
-INSERT INTO `user` (`full_name`, `account_id`, `profile_picture`, `date_of_birth`) 
+INSERT INTO `user` (`full_name`, `account_id`, `profile_picture`, `date_of_birth`, `address`) 
 VALUES
-    ('Nguyễn Văn A', 1, 'avatar1.png', '1990-01-01'),
-    ('Trần Thị B', 2, 'avatar2.png', '1992-02-02'),
-    ('Lê Văn C', 3, 'avatar3.png', '1985-03-03'),
-    ('Phạm Thị D', 4, 'avatar4.png', '1978-04-04'),
-    ('Hoàng Văn E', 5, 'avatar5.png', '1995-05-05'),
-    ('Ngô Thị F', 6, 'avatar6.png', '1993-06-06'),
-    ('Vũ Văn G', 7, 'avatar7.png', '1988-07-07'),
-    ('Đỗ Thị H', 8, 'avatar8.png', '1991-08-08'),
-    ('Bùi Văn I', 9, 'avatar9.png', '1994-09-09'),
-    ('Đặng Thị K', 10, 'avatar10.png', '1980-10-10'),
-    ('Trần Văn L', 11, 'avatar11.png', '1996-11-11'),
-    ('Lê Thị M', 12, 'avatar12.png', '1997-12-12'),
-    ('Phạm Văn N', 13, 'avatar13.png', '1982-01-13'),
-    ('Nguyễn Thị P', 14, 'avatar14.png', '1998-02-14'),
-    ('Hoàng Thị Q', 15, 'avatar15.png', '1999-03-15');
+    ('Nguyễn Văn A', 1, 'avatar1.png', '1990-01-01', '123 Đường Lê Lợi, Quận 1, TP.HCM'),
+    ('Trần Thị B', 2, 'avatar2.png', '1992-02-02', '45 Nguyễn Trãi, Quận 5, TP.HCM'),
+    ('Lê Văn C', 3, 'avatar3.png', '1985-03-03', '78 Hai Bà Trưng, Quận 3, TP.HCM'),
+    ('Phạm Thị D', 4, 'avatar4.png', '1978-04-04', '12 Phan Đình Phùng, TP. Huế'),
+    ('Hoàng Văn E', 5, 'avatar5.png', '1995-05-05', '56 Trần Hưng Đạo, Quận Hoàn Kiếm, Hà Nội'),
+    ('Ngô Thị F', 6, 'avatar6.png', '1993-06-06', '89 Lê Duẩn, TP. Đà Nẵng'),
+    ('Vũ Văn G', 7, 'avatar7.png', '1988-07-07', '67 Nguyễn Huệ, TP. Tuy Hòa'),
+    ('Đỗ Thị H', 8, 'avatar8.png', '1991-08-08', '34 Hùng Vương, TP. Nha Trang'),
+    ('Bùi Văn I', 9, 'avatar9.png', '1994-09-09', '90 Điện Biên Phủ, TP. Cần Thơ'),
+    ('Đặng Thị K', 10, 'avatar10.png', '1980-10-10', '21 Lý Thường Kiệt, TP. Biên Hòa'),
+    ('Trần Văn L', 11, 'avatar11.png', '1996-11-11', '100 Trường Chinh, TP. Vinh'),
+    ('Lê Thị M', 12, 'avatar12.png', '1997-12-12', '23 Nguyễn Văn Cừ, TP. Thái Nguyên'),
+    ('Phạm Văn N', 13, 'avatar13.png', '1982-01-13', '10 Trần Phú, TP. Long Xuyên'),
+    ('Nguyễn Thị P', 14, 'avatar14.png', '1998-02-14', '15 Hoàng Hoa Thám, TP. Thanh Hóa'),
+    ('Hoàng Thị Q', 15, 'avatar15.png', '1999-03-15', '33 Tôn Đức Thắng, TP. Buôn Ma Thuột');
     
 CREATE TABLE IF NOT EXISTS cart_items (
     user_id INT, 

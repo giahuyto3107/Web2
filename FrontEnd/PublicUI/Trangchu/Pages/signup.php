@@ -151,6 +151,7 @@ include ('../../../BackEnd/Config/config.php');
             <form id="signup-form">
                 <input type="text" id="name" name="name" placeholder="Tên tài khoản" required>
                 <input type="email" id="email" name="email" placeholder="Email" required>
+                <input type="text" id="address" name="address" placeholder="Địa chỉ" required>
                 <input type="password" id="password" name="password" placeholder="Mật khẩu" required>
                 <input type="password" id="confirm_password" name="confirm_password" placeholder="Xác nhận mật khẩu" required>
                 <button type="submit">Đăng ký</button>
@@ -194,7 +195,7 @@ include ('../../../BackEnd/Config/config.php');
 
                     setTimeout(function() {
                         console.log("Chuyển hướng...");
-                        window.location.href = "index.php";
+                        window.location.href = "?page=login";
                     }, 2000);
                 } else {
                     messageBox.classList.remove("text-green-500", "bg-green-100");
