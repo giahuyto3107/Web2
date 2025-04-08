@@ -682,7 +682,7 @@ body {
             e.preventDefault();
 
             $.ajax({
-                url: "update_profile.php",
+                url: "http://localhost/Web2/FrontEnd/PublicUI/User/update_profile.php",
                 type: "POST",
                 data: { 
                     fullName: fullName.val().trim(),

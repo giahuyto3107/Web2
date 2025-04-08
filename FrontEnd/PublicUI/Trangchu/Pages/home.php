@@ -1,3 +1,32 @@
+<?php
+// session_start();
+include ('../../../BackEnd/Config/config.php');
+$user_name = isset($_SESSION['dangky']) ? $_SESSION['dangky'] : (isset($_SESSION['user_name']) ? $_SESSION['user_name'] : null);
+if (isset($_GET['page']) && $_GET['page'] === 'logout') {
+    session_destroy();
+    header("Location: http://localhost/Web2/FrontEnd/PublicUI/Trangchu/index.php?page=home");
+    exit();
+}
+
+$cart_count = 0;
+if (isset($_SESSION['user_id'])) {
+    $user_id = $_SESSION['user_id'];
+    $query = "SELECT SUM(quantity) as total FROM cart_items WHERE user_id = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+    $cart_count = $row['total'] ?? 0;
+    $stmt->close();
+}
+
+$categories = $conn->query("SELECT * FROM category WHERE status_id = 1 LIMIT 4");
+$best_sellers = $conn->query("SELECT * FROM product WHERE status_id = 1 ORDER BY stock_quantity ASC LIMIT 5");
+$new_releases = $conn->query("SELECT * FROM product WHERE status_id = 1 ORDER BY created_at DESC LIMIT 5");
+$featured_collection = $conn->query("SELECT p.* FROM product p JOIN product_category pc ON p.product_id = pc.product_id WHERE pc.category_id = 1 AND p.status_id = 1 LIMIT 3");
+?>
+
 <style>
     /* Hero Section */
     .hero {
@@ -401,7 +430,7 @@
     <div class="hero-content">
         <h1>Góc Sách Nhỏ</h1>
         <p>Khám phá thế giới tri thức</p>
-        <a href="#" class="cta-btn">Khám phá ngay</a>
+        <a href="?page=product" data-page="product" class="cta-btn">Khám phá ngay</a>
     </div>
 </section>
 
@@ -411,26 +440,36 @@
     </div>
     <h2>Danh mục phổ biến</h2>
     <div class="categories-list">
-        <?php while ($category = $categories->fetch_assoc()): ?>
-            <a href="#" class="category-item"><?php echo htmlspecialchars($category['category_name']); ?></a>
-        <?php endwhile; ?>
+        <?php 
+        if ($categories && $categories->num_rows > 0) {
+            while ($category = $categories->fetch_assoc()): ?>
+                <a href="#" class="category-item"><?php echo htmlspecialchars($category['category_name']); ?></a>
+            <?php endwhile; 
+        } else {
+            echo "<p>Không có danh mục nào.</p>";
+        } ?>
     </div>
 </section>
 
 <section class="products-section">
     <h2>Sách bán chạy</h2>
     <div class="products-grid">
-        <?php while ($product = $best_sellers->fetch_assoc()): ?>
-            <div class="product-card">
-                <div class="product-image">
-                    <img src="../../../BackEnd/Uploads/Product Picture/<?php echo htmlspecialchars($product['image_url'] ?: 'placeholder.jpg'); ?>" alt="<?php echo htmlspecialchars($product['product_name']); ?>">
-                    <div class="bookmark"></div>
+        <?php 
+        if ($best_sellers && $best_sellers->num_rows > 0) {
+            while ($product = $best_sellers->fetch_assoc()): ?>
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="../../../BackEnd/Uploads/Product Picture/<?php echo htmlspecialchars($product['image_url'] ?: 'placeholder.jpg'); ?>" alt="<?php echo htmlspecialchars($product['product_name']); ?>">
+                        <div class="bookmark"></div>
+                    </div>
+                    <h3><?php echo htmlspecialchars($product['product_name']); ?></h3>
+                    <p class="price"><?php echo number_format($product['price'], 0, ',', '.') . ' VNĐ'; ?></p>
+                    <a href="#" class="add-to-cart"><i class="fa-solid fa-cart-plus"></i></a>
                 </div>
-                <h3><?php echo htmlspecialchars($product['product_name']); ?></h3>
-                <p class="price"><?php echo number_format($product['price'], 0, ',', '.') . ' VNĐ'; ?></p>
-                <a href="#" class="add-to-cart"><i class="fa-solid fa-cart-plus"></i></a>
-            </div>
-        <?php endwhile; ?>
+            <?php endwhile; 
+        } else {
+            echo "<p>Không có sách bán chạy.</p>";
+        } ?>
     </div>
 </section>
 
@@ -440,32 +479,42 @@
     </div>
     <h2>Bộ sưu tập nổi bật</h2>
     <div class="collections-carousel">
-        <?php while ($product = $featured_collection->fetch_assoc()): ?>
-            <div class="collection-card">
-                <img src="../../../BackEnd/Uploads/Product Picture/<?php echo htmlspecialchars($product['image_url'] ?: 'placeholder.jpg'); ?>" alt="<?php echo htmlspecialchars($product['product_name']); ?>">
-                <div class="collection-info">
-                    <h3><?php echo htmlspecialchars($product['product_name']); ?></h3>
-                    <p><?php echo number_format($product['price'], 0, ',', '.') . ' VNĐ'; ?></p>
+        <?php 
+        if ($featured_collection && $featured_collection->num_rows > 0) {
+            while ($product = $featured_collection->fetch_assoc()): ?>
+                <div class="collection-card">
+                    <img src="../../../BackEnd/Uploads/Product Picture/<?php echo htmlspecialchars($product['image_url'] ?: 'placeholder.jpg'); ?>" alt="<?php echo htmlspecialchars($product['product_name']); ?>">
+                    <div class="collection-info">
+                        <h3><?php echo htmlspecialchars($product['product_name']); ?></h3>
+                        <p><?php echo number_format($product['price'], 0, ',', '.') . ' VNĐ'; ?></p>
+                    </div>
                 </div>
-            </div>
-        <?php endwhile; ?>
+            <?php endwhile; 
+        } else {
+            echo "<p>Không có bộ sưu tập nổi bật.</p>";
+        } ?>
     </div>
 </section>
 
 <section class="products-section">
     <h2>Sách mới phát hành</h2>
     <div class="products-grid">
-        <?php while ($product = $new_releases->fetch_assoc()): ?>
-            <div class="product-card">
-                <div class="product-image">
-                    <img src="../../../BackEnd/Uploads/Product Picture/<?php echo htmlspecialchars($product['image_url'] ?: 'placeholder.jpg'); ?>" alt="<?php echo htmlspecialchars($product['product_name']); ?>">
-                    <span class="new-badge">Mới</span>
-                    <div class="bookmark"></div>
+        <?php 
+        if ($new_releases && $new_releases->num_rows > 0) {
+            while ($product = $new_releases->fetch_assoc()): ?>
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="../../../BackEnd/Uploads/Product Picture/<?php echo htmlspecialchars($product['image_url'] ?: 'placeholder.jpg'); ?>" alt="<?php echo htmlspecialchars($product['product_name']); ?>">
+                        <span class="new-badge">Mới</span>
+                        <div class="bookmark"></div>
+                    </div>
+                    <h3><?php echo htmlspecialchars($product['product_name']); ?></h3>
+                    <p class="price"><?php echo number_format($product['price'], 0, ',', '.') . ' VNĐ'; ?></p>
                 </div>
-                <h3><?php echo htmlspecialchars($product['product_name']); ?></h3>
-                <p class="price"><?php echo number_format($product['price'], 0, ',', '.') . ' VNĐ'; ?></p>
-            </div>
-        <?php endwhile; ?>
+            <?php endwhile; 
+        } else {
+            echo "<p>Không có sách mới phát hành.</p>";
+        } ?>
     </div>
 </section>
 
@@ -489,3 +538,8 @@
         </div>
     </div>
 </section>
+
+<?php
+// Đóng kết nối
+$conn->close();
+?>

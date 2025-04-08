@@ -77,7 +77,7 @@ $avg_rating = $result_avg_rating->fetch_assoc()['avg_rating'];
 
         body {
             background: #ffffff;
-            padding: 50px;
+            /* padding: 50px; */
             min-height: 100vh;
             color: #1a1a1a;
         }
@@ -302,6 +302,7 @@ $avg_rating = $result_avg_rating->fetch_assoc()['avg_rating'];
         .marquee-vertical {
             height: calc(100vh - 100px);
             overflow: hidden;
+            /* display: flex; */
         }
 
         .marquee-content {
@@ -315,6 +316,7 @@ $avg_rating = $result_avg_rating->fetch_assoc()['avg_rating'];
         .product-item {
             margin-bottom: 20px;
             text-align: center;
+            
         }
 
         .marquee-vertical img {
@@ -322,6 +324,8 @@ $avg_rating = $result_avg_rating->fetch_assoc()['avg_rating'];
             height: 150px;
             object-fit: cover;
             border: 1px solid #e0e0e0;
+            display: block;
+            margin: 0 auto;
         }
 
         .marquee-vertical .product-name {
@@ -364,7 +368,7 @@ $avg_rating = $result_avg_rating->fetch_assoc()['avg_rating'];
     <div class="container-fluid my-5">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="http://localhost/Web2/FrontEnd/PublicUI/SanPham/danhsachSP.php">Quay lại</a></li>
+                <li class="breadcrumb-item"><a href="?page=product" data-page="product" class="back-btn">Quay lại</a></li>
                 <li class="breadcrumb-item active" aria-current="page"><?php echo htmlspecialchars($product['product_name']); ?></li>
             </ol>
         </nav>
@@ -476,7 +480,7 @@ $avg_rating = $result_avg_rating->fetch_assoc()['avg_rating'];
 
                                 while ($suggested = $result_suggested->fetch_assoc()) {
                                     echo '<div class="product-item">';
-                                    echo '<a href="product_detail.php?id=' . htmlspecialchars($suggested['product_id']) . '">';
+                                    echo '<a href="?page=product_details&id=' . htmlspecialchars($suggested['product_id']) . ' " data-page="product_details&id=' . htmlspecialchars($suggested['product_id']) . '">';
                                     echo '<img src="../../../BackEnd/Uploads/Product Picture/' . htmlspecialchars($suggested['image_url']) . '" alt="' . htmlspecialchars($suggested['product_name']) . '">';
                                     echo '<span class="product-name">' . htmlspecialchars($suggested['product_name']) . '</span>';
                                     echo '</a>';

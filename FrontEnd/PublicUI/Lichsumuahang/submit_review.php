@@ -2,8 +2,8 @@
 session_start();
 include ('../../../BackEnd/Config/config.php'); // Kết nối database
 
-// $user_id = $_SESSION['user_id'];
-$user_id = 1;
+$user_id = $_SESSION['user_id'];
+// $user_id = 1;
 $product_id = isset($_POST['product_id']) ? intval($_POST['product_id']) : 0;
 $rating = isset($_POST['rating']) ? intval($_POST['rating']) : 0;
 $review_text = isset($_POST['review_text']) ? trim($_POST['review_text']) : "";

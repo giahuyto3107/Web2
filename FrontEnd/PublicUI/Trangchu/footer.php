@@ -74,6 +74,7 @@
 <style>
     /* Footer Styles */
     footer {
+        margin-top:20px;
         background: #111111; /* Nền đen đồng bộ với header */
         color: #ffffff; /* Chữ trắng */
         padding: 40px 0 20px;

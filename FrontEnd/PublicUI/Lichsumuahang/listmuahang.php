@@ -1,7 +1,6 @@
 <?php
 session_start();
-// $user_id = $_SESSION['account_id'];
-$user_id = 1;
+$user_id = $_SESSION['user_id'];
 ?>
 
 <html lang="vi">
@@ -23,12 +22,12 @@ $user_id = 1;
             font-family: 'Poppins', sans-serif;
         }
 
-        body {
+        /* body {
             background: #ffffff;
             padding: 50px;
             min-height: 100vh;
             color: #1a1a1a;
-        }
+        } */
 
         .container {
             max-width: 1100px;
@@ -175,6 +174,18 @@ $user_id = 1;
             color: #fff;
             border-color: #1a1a1a;
         }
+
+        .btn btn-primary {
+            background-color: #d4af37 !important;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
     </style>
 </head>
 <body>
@@ -219,11 +230,11 @@ $user_id = 1;
                         </div>
                     </div>
                     <div class="order-details">
-                        <div class="total">Tổng giá trị: <?= htmlspecialchars($row['total_amount']) ?> đ</div>
-                        <a href="chitietdonhang.php?order_id=<?= urlencode($row['order_id']) ?>" class="btn btn-outline-primary">
-                            <i class="fas fa-eye"></i> Xem chi tiết
-                        </a>
-                    </div>
+                    <div class="total">Tổng giá trị: <?= htmlspecialchars($row['total_amount']) ?> đ</div>
+                    <a href="?page=order_details&order_id=<?= $row['order_id'] ?>" 
+                           data-page="order_details&order_id=<?= $row['order_id'] ?>" 
+                           class="btn btn-primary">Xem chi tiết</a>
+                </div>
                 </div>
             <?php
                 }
@@ -241,91 +252,94 @@ $user_id = 1;
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
     <script>
-        $(document).ready(function(){
-            let currentPage = 1;
-            let totalPages = 1;
+$(document).ready(function(){
+    let currentPage = 1;
+    let totalPages = 1;
 
-            function loadPage(page){
-                let search = $('#search-input').val();
-                let status = $('#status-filter').val();
+    function loadPage(page){
+        let search = $('#search-input').val();
+        let status = $('#status-filter').val();
 
-                $.ajax({
-                    url: "fetch_history.php",
-                    type: "GET",
-                    data: {page: page, search: search, status: status},
-                    dataType: "json",
-                    success: function(response){
-                        let orders = response.orders;
-                        totalPages = response.total_pages;
-                        let html = "";
+        $.ajax({
+            url: "http://localhost/Web2/FrontEnd/PublicUI/Lichsumuahang/fetch_history.php",
+            type: "GET",
+            data: {page: page, search: search, status: status},
+            dataType: "json",
+            success: function(response){
+                let orders = response.orders;
+                totalPages = response.total_pages;
+                let html = "";
 
-                        if (orders.length > 0) {
-                            $.each(orders, function(index, order) {
-                                let status_class = "";
-                                if (order.status_name == "Đã duyệt") {
-                                    status_class = "approved";
-                                } else if (order.status_name == "Đã hủy") {
-                                    status_class = "cancelled";
-                                } else if (order.status_name == "Chờ duyệt") {
-                                    status_class = "pending";
-                                }
-
-                                html += `
-                                <div class="order-card">
-                                    <div class="order-header">
-                                        <div>
-                                            <h5>Mã đơn hàng: ${order.order_id}</h5>
-                                            <div class="date">Ngày mua: ${order.order_date}</div>
-                                        </div>
-                                        <div class="status ${status_class}">
-                                            ${order.status_name}
-                                        </div>
-                                    </div>
-                                    <div class="order-details">
-                                        <div class="total">Tổng giá trị: ${order.total_amount} đ</div>
-                                        <a href="chitietdonhang.php?order_id=${order.order_id}" class="btn btn-outline-primary">
-                                            <i class="fas fa-eye"></i> Xem chi tiết
-                                        </a>
-                                    </div>
-                                </div>`;
-                            });
-                        } else {
-                            html = `<div class="text-center py-4" style="font-weight: 300; color: #666;">Không có đơn hàng nào</div>`;
+                if (orders.length > 0) {
+                    $.each(orders, function(index, order) {
+                        let status_class = "";
+                        if (order.status_name == "Đã duyệt") {
+                            status_class = "approved";
+                        } else if (order.status_name == "Đã hủy") {
+                            status_class = "cancelled";
+                        } else if (order.status_name == "Chờ duyệt") {
+                            status_class = "pending";
                         }
 
-                        $("#order-list").html(html);
-                        loadPagination();
-                    }
-                });
-            }
-
-            function loadPagination() {
-                let paginationHtml = "";
-                for (let i = 1; i <= totalPages; i++) {
-                    paginationHtml += `
-                    <li class="page-item ${i === currentPage ? 'active' : ''}">
-                        <a class="page-link" href="#" data-page="${i}">${i}</a>
-                    </li>`;
+                        html += `
+                        <div class="order-card">
+                            <div class="order-header">
+                                <div>
+                                    <h5>Mã đơn hàng: ${order.order_id}</h5>
+                                    <div class="date">Ngày mua: ${order.order_date}</div>
+                                </div>
+                                <div class="status ${status_class}">
+                                    ${order.status_name}
+                                </div>
+                            </div>
+                            <div class="order-details">
+                                <div class="total">Tổng giá trị: ${order.total_amount} đ</div>
+                                <a href="?page=order_details&order_id=${order.order_id}" 
+                                   data-page="order_details&order_id=${order.order_id}" 
+                                   class="btn btn-primary">Xem chi tiết</a>
+                            </div>
+                        </div>`;
+                    });
+                } else {
+                    html = `<div class="text-center py-4" style="font-weight: 300; color: #666;">Không có đơn hàng nào</div>`;
                 }
-                $("#pagination").html(paginationHtml);
 
-                $(".page-link").click(function(e) {
-                    e.preventDefault();
-                    let page = $(this).data("page");
-                    if (page !== currentPage) {
-                        currentPage = page;
-                        loadPage(currentPage);
-                    }
-                });
+                $("#order-list").html(html);
+                loadPagination();
+            },
+            error: function(xhr, status, error) {
+                console.error("Error:", error);
             }
-
-            $("#search-input, #status-filter").on("change keyup", function() {
-                currentPage = 1;
-                loadPage(currentPage);
-            });
-
-            loadPage(currentPage);
         });
-    </script>
+    }
+
+    function loadPagination() {
+        let paginationHtml = "";
+        for (let i = 1; i <= totalPages; i++) {
+            paginationHtml += `
+            <li class="page-item ${i === currentPage ? 'active' : ''}">
+                <a class="page-link" href="#" data-page-number="${i}">${i}</a>
+            </li>`;
+        }
+        $("#pagination").html(paginationHtml);
+
+        $(".page-link[data-page-number]").click(function(e) {
+            e.preventDefault();
+            let page = $(this).data("page-number");
+            if (page !== currentPage) {
+                currentPage = page;
+                loadPage(currentPage);
+            }
+        });
+    }
+
+    $("#search-input, #status-filter").on("change keyup", function() {
+        currentPage = 1;
+        loadPage(currentPage);
+    });
+
+    loadPage(currentPage);
+});
+</script>
 </body>
 </html>

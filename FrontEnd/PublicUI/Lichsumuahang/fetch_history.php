@@ -28,7 +28,7 @@ while ($row = mysqli_fetch_assoc($result)) {
     $orders[] = $row;
 }
 
-$pagination = new Pagination(5); 
+$pagination = new Pagination(2); 
 $paginated_result = $pagination->paginate($orders);
 
 echo json_encode([

@@ -1,33 +1,36 @@
 <?php
 include ('../../../BackEnd/Config/config.php');
 
-if (isset($_GET['order_id'])) {
-    $order_id = mysqli_real_escape_string($conn, $_GET['order_id']);
-    
-    // Lấy thông tin đơn hàng
-    $query = "SELECT orders.order_id, orders.order_date, orders.status_id, orders.total_amount
-              FROM orders 
-              WHERE orders.order_id = '$order_id'";
-    $result = mysqli_query($conn, $query);
-    $order = mysqli_fetch_assoc($result);
-
-    if (!$order) {
-        echo "Không tìm thấy đơn hàng!";
-        exit;
-    }
-
-    // Lấy chi tiết đơn hàng
-    $query_items = "SELECT product.product_id, product.product_name, order_items.quantity, 
-                           product.image_url, order_items.price, order_items.review
-                    FROM order_items 
-                    JOIN product ON order_items.product_id = product.product_id 
-                    WHERE order_items.order_id = '$order_id'";
-    
-    $result_items = mysqli_query($conn, $query_items);
-    $order_status = $order['status_id'];
+if (!isset($_GET['order_id'])) {
+    echo "<section><h2>Không có ID đơn hàng!</h2></section>";
+    exit;
 }
 
-mysqli_close($conn);
+$order_id = mysqli_real_escape_string($conn, $_GET['order_id']);
+$query = "SELECT orders.order_id, orders.order_date, orders.status_id, orders.total_amount
+          FROM orders 
+          WHERE orders.order_id = '$order_id'";
+$result = mysqli_query($conn, $query);
+
+if (!$result || mysqli_num_rows($result) == 0) {
+    echo "<section><h2>Không tìm thấy đơn hàng!</h2></section>";
+    exit;
+}
+
+$order = mysqli_fetch_assoc($result);
+$order_status = $order['status_id'];
+
+$query_items = "SELECT product.product_id, product.product_name, order_items.quantity, 
+                       product.image_url, order_items.price, order_items.review
+                FROM order_items 
+                JOIN product ON order_items.product_id = product.product_id 
+                WHERE order_items.order_id = '$order_id'";
+$result_items = mysqli_query($conn, $query_items);
+
+if (!$result_items) {
+    echo "<section><h2>Lỗi khi lấy chi tiết đơn hàng!</h2></section>";
+    exit;
+}
 ?>
 
 <!DOCTYPE html>
@@ -48,12 +51,12 @@ mysqli_close($conn);
             font-family: 'Poppins', sans-serif;
         }
 
-        body {
+        /* body {
             background: #ffffff;
             padding: 50px;
             min-height: 100vh;
             color: #1a1a1a;
-        }
+        } */
 
         .container {
             max-width: 1100px;
@@ -174,7 +177,7 @@ mysqli_close($conn);
         }
 
         .status-tracker .bg-secondary {
-            background: #fff !important;
+            background: #1a1a1a !important;
             color: #666;
         }
 
@@ -404,7 +407,7 @@ mysqli_close($conn);
         Tổng tiền: <span><?= number_format($order['total_amount'], 0, ',', '.') ?> đ</span>
     </div>
 
-    <a href="http://localhost/Web2/FrontEnd/PublicUI/Lichsumuahang/listmuahang.php" class="back-btn">Quay lại</a>
+    <a href="?page=orders" data-page="orders" class="back-btn">Quay lại</a>
 </div>
 
 <div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
@@ -417,7 +420,7 @@ mysqli_close($conn);
                 </button>
             </div>
             <div class="modal-body">
-                <form action="submit_review.php" method="POST">
+                <form action="http://localhost/Web2/FrontEnd/PublicUI/Lichsumuahang/submit_review.php" method="POST">
                     <input type="hidden" name="product_id" id="product_id">
                     <input type="hidden" name="order_id" value="<?= $order_id ?>">
                     
@@ -469,7 +472,7 @@ mysqli_close($conn);
 
         let formData = new FormData(this);
 
-        fetch("submit_review.php", {
+        fetch("http://localhost/Web2/FrontEnd/PublicUI/Lichsumuahang/submit_review.php", {
             method: "POST",
             body: formData
         })

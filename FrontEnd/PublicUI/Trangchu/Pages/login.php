@@ -147,7 +147,7 @@
                 <button id="submit-login" type="submit">Đăng nhập</button>
                 <p id="login-message"></p>
             </form>
-            <p class="text-sm mt-4">Chưa có tài khoản? <a href="index.php?page=signup">Đăng ký ngay</a></p>
+            <p class="text-sm mt-4">Chưa có tài khoản? <a href="?page=signup" data-page="signup">Đăng ký ngay</a></p>
         </div>
     </div>
 
@@ -188,7 +188,7 @@
                     messageBox.style.display = "block";
                     setTimeout(() => {
                         window.location.href = data.redirect;
-                    }, 2000);
+                    }, 0);
                 } else {
                     messageBox.textContent = data.message;
                     messageBox.classList.remove("success");

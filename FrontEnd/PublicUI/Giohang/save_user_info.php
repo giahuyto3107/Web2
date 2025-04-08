@@ -3,23 +3,21 @@ session_start();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $response = ["success" => false, "message" => ""];
+    $allowed_keys = ['address', 'phone'];
 
-    if (!empty($_POST['address'])) {
-        $_SESSION['user_address'] = $_POST['address'];
-        $response["success"] = true;
-        $response["message"] .= "ok";
-    }
-
-    if (!empty($_POST['phone'])) {
-        $_SESSION['user_phone'] = $_POST['phone'];
-        $response["success"] = true;
-        $response["message"] .= "ok";
+    foreach ($_POST as $key => $value) {
+        if (in_array($key, $allowed_keys) && !empty($value) && $value !== 'undefined') {
+            $_SESSION["user_" . $key] = $value;
+            $response["success"] = true;
+            $response["message"] .= "Đã lưu $key: $value. ";
+        }
     }
 
     if (!$response["success"]) {
-        $response["message"] = "not ok";
+        $response["message"] = "Không có dữ liệu hợp lệ để lưu";
     }
 
+    $response["session"] = $_SESSION;
     echo json_encode($response);
 } else {
     echo json_encode(["success" => false, "message" => "Yêu cầu không hợp lệ!"]);

@@ -36,7 +36,7 @@ include ('../../../BackEnd/Config/config.php');
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 60px 0; 
+            padding: 10px 0; 
             width: 100%;
         }
 
@@ -157,7 +157,7 @@ include ('../../../BackEnd/Config/config.php');
             </form>
 
             <p class="text-sm mt-4 text-center">Đã có tài khoản? 
-                <a href="index.php?page=login">Đăng nhập</a>
+                <a href="?page=login" data-page="login">Đăng nhập</a>
             </p>
         </div>
     </div>

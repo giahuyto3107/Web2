@@ -57,7 +57,7 @@ $featured_collection = $conn->query("SELECT p.* FROM product p JOIN product_cate
         header {
             background: #ffffff;
             padding: 20px 60px;
-            display: flex;
+            display: flex !important;
             justify-content: space-between;
             align-items: center;
             width: 100%;
@@ -177,7 +177,7 @@ $featured_collection = $conn->query("SELECT p.* FROM product p JOIN product_cate
         .dropdown-menu a {
             display: flex;
             align-items: center;
-            padding: 10px 0;
+            padding: 10px 30px;
             color: #333333;
             font-size: 0.9rem;
             font-weight: 400;
@@ -201,15 +201,16 @@ $featured_collection = $conn->query("SELECT p.* FROM product p JOIN product_cate
     </style>
 </head>
 <body>
-    <header>
+<header class="site-header">
         <div class="logo">
-            <h1>Góc Sách Nhỏ</h1>
+            <a href="?page=home"><h1>Góc Sách Nhỏ</h1></a>
         </div>
         <div class="search-bar">
             <input type="text" placeholder="Tìm kiếm sách...">
         </div>
         <div class="user-actions">
-            <a href="/Web2/FrontEnd/PublicUI/Giohang/giohang.php" class="icon-link">
+            <!-- <a href="?page=home" data-page="home">Trang chủ</a> -->
+            <a href="?page=cart" class="icon-link" data-page="cart">
                 <i class="fa-solid fa-cart-shopping"></i>
                 <?php if ($cart_count > 0): ?>
                     <span class="cart-badge"><?php echo $cart_count; ?></span>
@@ -220,13 +221,13 @@ $featured_collection = $conn->query("SELECT p.* FROM product p JOIN product_cate
                     <i class="fa-solid fa-user"></i>
                 </div>
                 <div class="dropdown-menu">
-                    <a href="/Web2/FrontEnd/PublicUI/User/user.php"><i class="fa-solid fa-user"></i> Hồ sơ</a>
-                    <a href="/Web2/FrontEnd/PublicUI/Lichsumuahang/listmuahang.php"><i class="fa-solid fa-box"></i> Đơn hàng</a>
-                    <a href="?page=logout"><i class="fa-solid fa-sign-out-alt"></i> Đăng xuất</a>
+                    <a href="?page=profile" data-page="profile"><i class="fa-solid fa-user"></i> Hồ sơ</a>
+                    <a href="?page=orders" data-page="orders"><i class="fa-solid fa-box"></i> Đơn hàng</a>
+                    <a href="http://localhost/Web2/FrontEnd/PublicUI/Trangchu/Pages/logout.php"><i class="fa-solid fa-sign-out-alt"></i> Đăng xuất</a>
                 </div>
             <?php else: ?>
-                <a href="?page=login">Đăng nhập</a>
-                <a href="?page=signup">Đăng ký</a>
+                <a href="?page=login" data-page="login">Đăng nhập</a>
+                <a href="?page=signup" data-page="signup">Đăng ký</a>
             <?php endif; ?>
         </div>
     </header>
@@ -254,3 +255,4 @@ $featured_collection = $conn->query("SELECT p.* FROM product p JOIN product_cate
             }
         });
     </script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

@@ -82,7 +82,7 @@ try {
     unset($_SESSION['user_address']);
 
     $conn->commit();
-    header("Location: http://localhost/Web2/FrontEnd/PublicUI/Giohang/giohang.php");
+    header("Location: http://localhost/Web2/FrontEnd/PublicUI/Trangchu/index.php?page=cart");
     exit();
 } catch (Exception $e) {
     $conn->rollback();

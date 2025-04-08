@@ -51,7 +51,12 @@ mysqli_close($conn);
             box-sizing: border-box;
             font-family: 'Poppins', sans-serif;
         }
-        .cart-container { max-width: 900px; margin: auto; padding: 20px; background: #fff; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); }
+        h4{
+            color:black !important;
+            /* font-weight: 600 !important; */
+            font-size: 20px !important;
+        }
+        .cart-container { max-width: 900px; margin-top:10px; margin-bottom:10px; margin: auto; padding: 20px; background: #fff; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); }
         .product-details {
             padding: 10px;
             max-height: 400px;  
@@ -191,37 +196,54 @@ mysqli_close($conn);
 
                 <script>
                     function saveUserInfo(type, value) {
-                        var xhr = new XMLHttpRequest();
-                        xhr.open("POST", "http://localhost/Web2/FrontEnd/PublicUI/Giohang/save_user_info.php", true);
-                        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        if (typeof type === 'undefined' || type === null || type === '') {
+            console.error("Lỗi: type không hợp lệ:", type);
+            return;
+        }
+        if (typeof value === 'undefined' || value === null) {
+            value = '';
+        }
 
-                        xhr.onreadystatechange = function () {
-                            if (xhr.readyState === 4 && xhr.status === 200) {
-                                let response = JSON.parse(xhr.responseText);
-                                console.log(response.message); 
-                            }
-                        };
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "http://localhost/Web2/FrontEnd/PublicUI/Giohang/save_user_info.php", true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 
-                        let data = type + "=" + encodeURIComponent(value);
-                        xhr.send(data);
-                    }
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    let response = JSON.parse(xhr.responseText);
+                    console.log("Response:", response);
+                    console.log("Session hiện tại:", response.session);
+                } else {
+                    console.error("Lỗi server:", xhr.status, xhr.statusText);
+                }
+            }
+        };
 
-                    document.addEventListener("DOMContentLoaded", function () {
-                        var addressInput = document.getElementById("address");
-                        var phoneInput = document.getElementById("phone");
+        let data = type + "=" + encodeURIComponent(value);
+        console.log("Sending:", data);
+        xhr.send(data);
+    }
 
-                        if (addressInput) {
-                            addressInput.addEventListener("input", function () {
-                                saveUserInfo("address", this.value);
-                            });
-                        }
+    // Gắn sự kiện input sau khi DOM sẵn sàng
+    var addressInput = document.getElementById("address");
+    var phoneInput = document.getElementById("phone");
 
-                        if (phoneInput) {
-                            phoneInput.addEventListener("input", function () {
-                                saveUserInfo("phone", this.value);
-                            });
-                        }
-                    });
+    if (addressInput) {
+        addressInput.addEventListener("input", function () {
+            saveUserInfo("address", this.value);
+        });
+    } else {
+        console.error("Không tìm thấy #address trong DOM");
+    }
+
+    if (phoneInput) {
+        phoneInput.addEventListener("input", function () {
+            saveUserInfo("phone", this.value);
+        });
+    } else {
+        console.error("Không tìm thấy #phone trong DOM");
+    }
                 </script>
 
                 <div class="payment-method mb-3">
@@ -238,10 +260,10 @@ mysqli_close($conn);
                     <label id="QR-label" class="disabled-radio">
                         <input type="radio" name="payment" value="QR" id="QR-option" disabled>Quét mã
                     </label>
-                    <form id="momo-form" method="POST" action="thanhtoanmomo.php">
+                    <form id="momo-form" method="POST" action="http://localhost/Web2/FrontEnd/PublicUI/Giohang/thanhtoanmomo.php">
                         <input type="hidden" name="payment_method" value="momo">
                     </form>
-                    <form id="QR-form" method="POST" action="QRthanhtoan.php">
+                    <form id="QR-form" method="POST" action="http://localhost/Web2/FrontEnd/PublicUI/Giohang/QRthanhtoan.php">
                         <input type="hidden" name="payment_method" value="QR">
                     </form>
                 </div>
@@ -292,7 +314,7 @@ $(document).ready(function () {
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: "remove_item.php", 
+                    url: "http://localhost/Web2/FrontEnd/PublicUI/Giohang/remove_item.php", 
                     type: "POST",
                     data: { product_id: productId },
                     dataType: "json", 
@@ -351,7 +373,7 @@ $(document).ready(function () {
             var action = $(this).data("action");
 
             $.ajax({
-                url: "update_cart.php",
+                url: "http://localhost/Web2/FrontEnd/PublicUI/Giohang/update_cart.php",
                 type: "POST",
                 data: { product_id: productId, action: action },
                 success: function (response) {
@@ -380,7 +402,7 @@ $(document).ready(function () {
         });
 
         $.ajax({
-            url: "update_selected_products.php",
+            url: "http://localhost/Web2/FrontEnd/PublicUI/Giohang/update_selected_products.php",
             type: "POST",
             data: { selectedProducts: JSON.stringify(selectedProducts) },
             success: function (response) {
@@ -505,7 +527,7 @@ $(document).ready(function () {
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: "process_payment.php",
+                        url: "http://localhost/Web2/FrontEnd/PublicUI/Giohang/process_payment.php",
                         type: "POST",
                         data: { 
                             user_id: <?= $user_id ?>, 
