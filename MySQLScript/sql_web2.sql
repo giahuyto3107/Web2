@@ -45,7 +45,6 @@ CREATE TABLE IF NOT EXISTS account (
     account_name VARCHAR(100) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
-    address VARCHAR(255),
     status_id INT,
     last_login TIMESTAMP NULL,
     role_id INT,
@@ -59,24 +58,23 @@ CREATE TABLE IF NOT EXISTS account (
         ON UPDATE CASCADE    
 );
 
-INSERT INTO `account` 
-(`account_name`, `email`, `password_hash`, `address`, `status_id`, `last_login`, `role_id`, `created_at`, `updated_at`) 
+INSERT INTO account (account_name, email, password_hash, status_id, last_login, role_id, created_at, updated_at) 
 VALUES
-('nguyen_van_a', 'nguyenvana@gmail.com', '123', '123 Lê Lợi, Quận 1, TP.HCM', 1, NULL, 1, '2025-02-05 03:00:08', '2025-02-08 09:32:04'), -- Quản trị viên
-('tran_thi_b', 'tranthib@gmail.com', '123', '45 Nguyễn Trãi, Quận 5, TP.HCM', 1, NULL, 2, '2025-02-05 03:00:08', '2025-02-08 09:32:07'), -- Khách hàng
-('le_van_c', 'levanc@gmail.com', '123', '78 Hai Bà Trưng, Quận 3, TP.HCM', 1, NULL, 3, '2025-02-05 03:00:08', '2025-02-08 09:32:09'), -- Nhà cung cấp
-('pham_thi_d', 'phamthid@gmail.com', '123', '12 Phan Đình Phùng, TP. Huế', 1, NULL, 4, '2025-02-05 03:00:08', '2025-02-08 09:32:12'), -- Quản lý
-('hoang_van_e', 'hoangvane@gmail.com', '123', '56 Trần Hưng Đạo, Hoàn Kiếm, Hà Nội', 1, NULL, 2, '2025-02-05 03:00:08', '2025-02-08 09:32:15'), -- Khách hàng
-('ngo_thi_f', 'ngothif@gmail.com', '123', '89 Lê Duẩn, TP. Đà Nẵng', 1, NULL, 2, '2025-02-05 03:00:08', '2025-02-08 09:32:18'), -- Khách hàng
-('vu_van_g', 'vuvang@gmail.com', '123', '67 Nguyễn Huệ, TP. Tuy Hòa', 1, NULL, 3, '2025-02-05 03:00:08', '2025-02-08 09:32:21'), -- Nhà cung cấp
-('do_thi_h', 'dothih@gmail.com', '123', '34 Hùng Vương, TP. Nha Trang', 1, NULL, 2, '2025-02-05 03:00:08', '2025-02-08 09:32:24'), -- Khách hàng
-('bui_van_i', 'buivani@gmail.com', '123', '90 Điện Biên Phủ, TP. Cần Thơ', 1, NULL, 2, '2025-02-05 03:00:08', '2025-02-08 09:32:27'), -- Khách hàng
-('dang_thi_k', 'dangthik@gmail.com', '123', '21 Lý Thường Kiệt, TP. Biên Hòa', 1, NULL, 4, '2025-02-05 03:00:08', '2025-02-08 09:32:30'), -- Quản lý
-('tran_van_l', 'tranvanl@gmail.com', '123', '100 Trường Chinh, TP. Vinh', 1, NULL, 2, '2025-02-05 03:00:08', '2025-02-08 09:32:33'), -- Khách hàng
-('le_thi_m', 'lethim@gmail.com', '123', '23 Nguyễn Văn Cừ, TP. Thái Nguyên', 1, NULL, 2, '2025-02-05 03:00:08', '2025-02-08 09:32:36'), -- Khách hàng
-('pham_van_n', 'phamvann@gmail.com', '123', '10 Trần Phú, TP. Long Xuyên', 1, NULL, 3, '2025-02-05 03:00:08', '2025-02-08 09:32:39'), -- Nhà cung cấp
-('nguyen_thi_p', 'nguyenthip@gmail.com', '123', '15 Hoàng Hoa Thám, TP. Thanh Hóa', 1, NULL, 2, '2025-02-05 03:00:08', '2025-02-08 09:32:42'), -- Khách hàng
-('hoang_thi_q', 'hoangthiq@gmail.com', '123', '33 Tôn Đức Thắng, TP. Buôn Ma Thuột', 1, NULL, 2, '2025-02-05 03:00:08', '2025-02-08 09:32:45'); -- Khách hàng
+    ('nguyen_van_a', 'nguyenvana@gmail.com', '123', 1, NULL, 1, '2025-02-05 03:00:08', '2025-02-08 09:32:04'), -- Quản trị viên
+    ('tran_thi_b', 'tranthib@gmail.com', '123', 1, NULL, 2, '2025-02-05 03:00:08', '2025-02-08 09:32:07'), -- Khách hàng
+    ('le_van_c', 'levanc@gmail.com', '123', 1, NULL, 3, '2025-02-05 03:00:08', '2025-02-08 09:32:09'), -- Nhà cung cấp
+    ('pham_thi_d', 'phamthid@gmail.com', '123', 1, NULL, 4, '2025-02-05 03:00:08', '2025-02-08 09:32:12'), -- Quản lý
+    ('hoang_van_e', 'hoangvane@gmail.com', '123', 1, NULL, 2, '2025-02-05 03:00:08', '2025-02-08 09:32:15'), -- Khách hàng
+    ('ngo_thi_f', 'ngothif@gmail.com', '123', 1, NULL, 2, '2025-02-05 03:00:08', '2025-02-08 09:32:18'), -- Khách hàng
+    ('vu_van_g', 'vuvang@gmail.com', '123', 1, NULL, 3, '2025-02-05 03:00:08', '2025-02-08 09:32:21'), -- Nhà cung cấp
+    ('do_thi_h', 'dothih@gmail.com', '123', 1, NULL, 2, '2025-02-05 03:00:08', '2025-02-08 09:32:24'), -- Khách hàng
+    ('bui_van_i', 'buivani@gmail.com', '123', 1, NULL, 2, '2025-02-05 03:00:08', '2025-02-08 09:32:27'), -- Khách hàng
+    ('dang_thi_k', 'dangthik@gmail.com', '123', 1, NULL, 4, '2025-02-05 03:00:08', '2025-02-08 09:32:30'), -- Quản lý
+    ('tran_van_l', 'tranvanl@gmail.com', '123', 1, NULL, 2, '2025-02-05 03:00:08', '2025-02-08 09:32:33'), -- Khách hàng
+    ('le_thi_m', 'lethim@gmail.com', '123', 1, NULL, 2, '2025-02-05 03:00:08', '2025-02-08 09:32:36'), -- Khách hàng
+    ('pham_van_n', 'phamvann@gmail.com', '123', 1, NULL, 3, '2025-02-05 03:00:08', '2025-02-08 09:32:39'), -- Nhà cung cấp
+    ('nguyen_thi_p', 'nguyenthip@gmail.com', '123', 1, NULL, 2, '2025-02-05 03:00:08', '2025-02-08 09:32:42'), -- Khách hàng
+    ('hoang_thi_q', 'hoangthiq@gmail.com', '123', 1, NULL, 2, '2025-02-05 03:00:08', '2025-02-08 09:32:45'); -- Khách hàng
 
 
 CREATE TABLE IF NOT EXISTS category (
