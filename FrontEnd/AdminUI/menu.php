@@ -1,3 +1,6 @@
+<head>
+<link rel="stylesheet" href="css/sidebar.css" />
+</head>
 <div class="sidebar">
     <div class="top">
         <div class="logo">

@@ -8,7 +8,7 @@
         include "quanlisanpham/lietkesanpham.php";
     } elseif ($action === 'quanliloaisp') {
         include "quanliloaisp/lietkeloaisp.php";
-    }elseif ($action === 'thongke') {
+    } elseif ($action === 'thongke') {
         include "thongke/thongke.php";
     } elseif ($action === 'quanlibinhluan') {
         include "quanlibinhluan/lietkebinhluan.php";
@@ -26,10 +26,8 @@
         include "quanliphanquyen/lietkephanquyen.php";
     } elseif ($action === 'quanlinhaphang') {
         include "nhaphang/menunhaphang.php";
-    }
-     else {
-        echo "<h2>Chào mừng đến với Dashboard!</h2>";
-        echo "<p>Vui lòng chọn một chức năng từ sidebar.</p>";
+    } else {
+        include "thongke/thongke.php"; // Include thongke.php làm nội dung mặc định
     }
     ?>
 </main>
