@@ -199,14 +199,15 @@ $featured_collection = $conn->query("SELECT p.* FROM product p JOIN product_cate
             color: rgb(53, 53, 53);
         }
     </style>
+
 </head>
 <body>
     <header>
         <div class="logo">
-            <h1>Góc Sách Nhỏ</h1>
+            <a href="#" id="home-link"><h1>Góc Sách Nhỏ</h1></a>
         </div>
         <div class="search-bar">
-            <input type="text" placeholder="Tìm kiếm sách...">
+            <input type="text" id="search-input" placeholder="Tìm kiếm sách...">
         </div>
         <div class="user-actions">
             <a href="/Web2/FrontEnd/PublicUI/Giohang/giohang.php" class="icon-link">
@@ -230,27 +231,69 @@ $featured_collection = $conn->query("SELECT p.* FROM product p JOIN product_cate
             <?php endif; ?>
         </div>
     </header>
-    <main>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const profileIcon = document.querySelector('.profile-icon');
             const dropdown = document.querySelector('.dropdown-menu');
+            const homeLink = document.getElementById('home-link');
+            const searchInput = document.getElementById('search-input');
+            const mainContent = document.getElementById('main-content');
 
+            // Xử lý dropdown menu
             if (profileIcon && dropdown) {
                 profileIcon.addEventListener('click', (e) => {
                     e.preventDefault();
                     dropdown.classList.toggle('active');
                     e.stopPropagation();
                 });
-
                 document.addEventListener('click', (e) => {
                     if (!profileIcon.contains(e.target) && !dropdown.contains(e.target)) {
                         dropdown.classList.remove('active');
                     }
                 });
-            } else {
-                console.error('Profile icon or dropdown menu not found in DOM');
+            }
+
+            // Xử lý load trang chủ
+            if (homeLink) {
+                homeLink.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    console.log('Logo clicked!');
+                    loadPage('/Web2/FrontEnd/PublicUI/Trangchu/Pages/home.php');
+                });
+            }
+
+            // Xử lý tìm kiếm
+            if (searchInput) {
+                searchInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        const query = searchInput.value.trim();
+                        if (query) {
+                            console.log('Search query:', query);
+                            loadPage('/Web2/FrontEnd/PublicUI/Trangchu/Pages/search.php?query=' + encodeURIComponent(query));
+                        }
+                    }
+                });
+            }
+
+            // Hàm load nội dung bằng AJAX
+            function loadPage(url) {
+                console.log('Attempting to load:', url);
+                fetch(url)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok: ' + response.status);
+                        }
+                        return response.text();
+                    })
+                    .then(data => {
+                        console.log('Data received:', data);
+                        mainContent.innerHTML = data; // Chỉ load nội dung chính
+                    })
+                    .catch(error => {
+                        console.error('Error loading page:', error);
+                        mainContent.innerHTML = '<p>Có lỗi xảy ra khi tải trang. Vui lòng thử lại.</p>';
+                    });
             }
         });
     </script>
