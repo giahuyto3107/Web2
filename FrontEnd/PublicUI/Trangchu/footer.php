@@ -78,7 +78,7 @@
         background: #111111; /* Nền đen đồng bộ với header */
         color: #ffffff; /* Chữ trắng */
         padding: 40px 0 20px;
-        width: 1400px;
+        width: 100%;
     }
 
     .row1 {

@@ -53,7 +53,7 @@ if ($page_key === 'order_details' && isset($params['order_id'])) {
         echo "<section><h2>Lỗi: File " . htmlspecialchars($file) . " không tồn tại</h2></section>";
     }
 } elseif (in_array($page_key, $allowed_pages)) {
-    $page_file = "D:/xampp/htdocs/Web2/FrontEnd/PublicUI/Trangchu/Pages/$page_key.php";
+    $page_file = "../../PublicUI/Trangchu/Pages/$page_key.php";
     if (file_exists($page_file)) {
         include $page_file;
     } else {
