@@ -93,20 +93,20 @@ if ($role_id) {
     if ($stmt->execute()) {
         $new_role_id = $conn->insert_id;
 
-        // Xử lý quyền (nếu có)
-        if (isset($_POST['permissions']) && is_array($_POST['permissions'])) {
-            $insert_permission_sql = "INSERT INTO role_permission (role_id, permission_id) VALUES (?, ?)";
-            $stmt_permission = $conn->prepare($insert_permission_sql);
+        // // Xử lý quyền (nếu có)
+        // if (isset($_POST['permissions']) && is_array($_POST['permissions'])) {
+        //     $insert_permission_sql = "INSERT INTO role_permission (role_id, permission_id) VALUES (?, ?)";
+        //     $stmt_permission = $conn->prepare($insert_permission_sql);
 
-            foreach ($_POST['permissions'] as $permission_id) {
-                $permission_id = (int)$permission_id;
-                $stmt_permission->bind_param("ii", $new_role_id, $permission_id);
-                $stmt_permission->execute();
-            }
-            $stmt_permission->close();
-        }
+        //     foreach ($_POST['permissions'] as $permission_id) {
+        //         $permission_id = (int)$permission_id;
+        //         $stmt_permission->bind_param("ii", $new_role_id, $permission_id);
+        //         $stmt_permission->execute();
+        //     }
+        //     $stmt_permission->close();
+        // }
 
-        echo json_encode(['status' => 'success', 'message' => 'Chức vụ đã được thêm thành công!']);
+        // echo json_encode(['status' => 'success', 'message' => 'Chức vụ đã được thêm thành công!']);
     } else {
         echo json_encode(['status' => 'error', 'message' => 'Có lỗi khi thêm chức vụ: ' . $conn->error]);
     }

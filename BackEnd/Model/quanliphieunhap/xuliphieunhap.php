@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $isSuccess = true;
 
     // Cập nhật import_status thành 1
-    $purchaseOrderSql = "UPDATE purchase_order SET import_status = ? WHERE purchase_order_id = ?";
+    $purchaseOrderSql = "UPDATE purchase_order SET import_status = ?, approve_date = now() WHERE purchase_order_id = ?";
     $purchaseOrderStmt = mysqli_prepare($conn, $purchaseOrderSql);
     mysqli_stmt_bind_param($purchaseOrderStmt, "ii", $import_status, $purchase_order_id);
 
@@ -102,7 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($isSuccess == true) {
         // Lấy danh sách product_id từ purchase_order_items
         $queryProductIds = "
-            SELECT product_id, price AS new_cost_price 
+            SELECT product_id, price AS new_cost_price, profit
             FROM purchase_order_items 
             WHERE purchase_order_id = ? AND import_status = 1";
 
@@ -114,6 +114,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         while ($row = mysqli_fetch_assoc($resultProductIds)) {
             $product_id = $row['product_id'];
             $new_cost_price = $row['new_cost_price'];
+            $profit_margin = $row['profit'];
 
             // Lấy giá bán hiện tại
             $querySellingPrice = "SELECT price FROM product WHERE product_id = ?";
@@ -129,15 +130,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 // Tính lợi nhuận theo công thức (profit_margin = (Giá bán / Giá nhập) - 1)
                 if ($new_cost_price > 0) {
-                    $profit_margin = ($current_selling_price / $new_cost_price) - 1;
-
+                    $profit_margin_decimal = $profit_margin / 100.0; // Convert to decimal
                     // Gọi stored procedure để cập nhật giá bán
                     $callProcedure = "CALL UpdateProductPriceWithMaxProfit(?, ?, ?)";
                     $stmtProcedure = mysqli_prepare($conn, $callProcedure);
-                    mysqli_stmt_bind_param($stmtProcedure, "idd", $product_id, $new_cost_price, $profit_margin);
+                    mysqli_stmt_bind_param($stmtProcedure, "idd", $product_id, $new_cost_price, $profit_margin_decimal);
 
                     if (mysqli_stmt_execute($stmtProcedure)) {
-                        $response['messages'][] = "Đã cập nhật giá sản phẩm ID: $product_id với giá nhập: $new_cost_price và lợi nhuận: " . round($profit_margin * 100, 2) . "%";
+                        $response['messages'][] = "Đã cập nhật giá sản phẩm ID: $product_id với giá nhập: $new_cost_price và lợi nhuận: " . round($profit_margin_decimal * 100, 2) . "%";
                     } else {
                         $response['messages'][] = "Lỗi khi cập nhật giá sản phẩm ID: $product_id: " . mysqli_error($conn);
                     }

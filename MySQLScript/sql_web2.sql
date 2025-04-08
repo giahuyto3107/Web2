@@ -267,10 +267,10 @@ CREATE TABLE IF NOT EXISTS order_items (
 -- Thêm 15 đơn hàng
 INSERT INTO `orders` (`user_id`, `total_amount`, `status_id`, `payment_method`, `phone`, `address`) 
 VALUES
-    (1, 390000, 4, 'Tiền mặt', '0123456789', '123 Nguyễn Trãi, Quận 5, TP.HCM'),
-    (2, 230000, 4, 'Chuyển khoản', '0987654321', '456 Lê Lợi, Quận 1, TP.HCM'),
-    (3, 180000, 3, 'Tiền mặt', '0912345678', '789 Phạm Văn Đồng, Thủ Đức, TP.HCM'),
-    (4, 270000, 3, 'Chuyển khoản', '0934567890', '321 Trần Phú, Quận 7, TP.HCM'),
+    (1, 390000, 5, 'Tiền mặt', '0123456789', '123 Nguyễn Trãi, Quận 5, TP.HCM'),
+    (2, 230000, 5, 'Chuyển khoản', '0987654321', '456 Lê Lợi, Quận 1, TP.HCM'),
+    (3, 180000, 5, 'Tiền mặt', '0912345678', '789 Phạm Văn Đồng, Thủ Đức, TP.HCM'),
+    (4, 270000, 5, 'Chuyển khoản', '0934567890', '321 Trần Phú, Quận 7, TP.HCM'),
     (5, 360000, 4, 'Tiền mặt', '0945678901', '654 Nguyễn Huệ, Quận 1, TP.HCM'),
     (6, 195000, 3, 'Chuyển khoản', '0956789012', '987 Lê Đại Hành, Quận 11, TP.HCM'),
     (7, 220000, 4, 'Tiền mặt', '0967890123', '147 Lý Thường Kiệt, Quận 10, TP.HCM'),
@@ -664,3 +664,127 @@ BEGIN
         (v_new_selling_price - p_new_cost_price) AS actual_profit;
 END //
 DELIMITER ;
+
+
+
+CREATE OR REPLACE VIEW sales_report AS
+SELECT 
+    o.order_id,
+    o.order_date,
+    DATE(o.order_date) AS sale_date,
+    u.user_id,
+    u.full_name AS customer_name,
+    a.email AS customer_email,
+    o.total_amount,
+    o.payment_method,
+    o.phone,
+    o.address,
+    s.status_name AS order_status,
+    COUNT(oi.order_item_id) AS total_items,
+    SUM(oi.quantity) AS total_quantity,
+    -- Thông tin chi tiết sản phẩm (dạng JSON)
+    (
+        SELECT JSON_ARRAYAGG(
+            JSON_OBJECT(
+                'product_id', p.product_id,
+                'product_name', p.product_name,
+                'quantity', oi2.quantity,
+                'unit_price', oi2.price,
+                'subtotal', oi2.price * oi2.quantity,
+                'categories', (
+                    SELECT JSON_ARRAYAGG(c.category_name)
+                    FROM product_category pc
+                    JOIN category c ON pc.category_id = c.category_id
+                    WHERE pc.product_id = p.product_id
+                )
+            )
+        )
+        FROM order_items oi2
+        JOIN product p ON oi2.product_id = p.product_id
+        WHERE oi2.order_id = o.order_id
+    ) AS product_details,
+    -- Thông tin nhân viên xử lý (nếu có)
+    u_admin.full_name AS admin_handler,
+    -- Phân loại theo thời gian
+    YEAR(o.order_date) AS sale_year,
+    MONTH(o.order_date) AS sale_month,
+    DAY(o.order_date) AS sale_day,
+    QUARTER(o.order_date) AS sale_quarter,
+    -- Phân tích trạng thái
+    CASE 
+        WHEN o.status_id = 5 THEN 'Completed'
+        WHEN o.status_id = 4 THEN 'Shipping'
+        WHEN o.status_id = 3 THEN 'Pending'
+        WHEN o.status_id = 7 THEN 'Cancelled'
+        ELSE 'Other'
+    END AS status_category
+FROM 
+    orders o
+JOIN 
+    user u ON o.user_id = u.user_id
+JOIN 
+    account a ON u.account_id = a.account_id
+JOIN 
+    status s ON o.status_id = s.id
+LEFT JOIN 
+    user u_admin ON o.user_admin_id = u_admin.user_id
+LEFT JOIN 
+    order_items oi ON o.order_id = oi.order_id
+GROUP BY 
+    o.order_id, o.order_date, u.user_id, u.full_name, a.email, 
+    o.total_amount, o.payment_method, o.phone, o.address, 
+    s.status_name, u_admin.full_name;
+    
+    
+SELECT 
+    sale_year,
+    sale_month,
+    SUM(total_amount) AS monthly_revenue,
+    COUNT(order_id) AS total_orders
+FROM 
+    sales_report
+WHERE 
+    status_category = 'Completed'
+GROUP BY 
+    sale_year, sale_month
+ORDER BY 
+    sale_year DESC, sale_month DESC
+    
+    
+    
+UPDATE orders 
+SET status_id = 5 
+WHERE order_id IN (1, 2, 5, 7, 9, 11, 13, 15);
+
+UPDATE orders 
+SET order_date = '2025-03-15 10:00:00' 
+WHERE order_id IN (1, 5);
+
+UPDATE orders 
+SET order_date = '2025-04-01 12:00:00' 
+WHERE order_id IN (2, 7);
+
+UPDATE orders 
+SET order_date = '2025-04-06 14:00:00' 
+WHERE order_id IN (9, 11, 13, 15);
+
+SELECT * 
+FROM sales_report 
+WHERE status_category = 'Completed';
+
+
+SELECT 
+    sale_year,
+    sale_month,
+    sale_day,
+    SUM(total_amount) AS monthly_revenue,
+    COUNT(order_id) AS total_orders
+FROM 
+    sales_report
+WHERE 
+    status_category = 'Completed'
+    AND DATE(sale_date) = '2025-04-06'
+GROUP BY 
+    sale_year, sale_month, sale_day
+ORDER BY 
+    sale_year DESC, sale_month DESC, sale_day DESC;

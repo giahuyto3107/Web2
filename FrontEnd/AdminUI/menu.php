@@ -1,3 +1,6 @@
+<head>
+<link rel="stylesheet" href="css/sidebar.css" />
+</head>
 <div class="sidebar">
     <div class="top">
         <div class="logo">
@@ -13,6 +16,13 @@
         </div>
     </div>
     <ul>
+    <li>
+            <a href="index.php?action=thongke">
+                <i class="bx bxs-shopping-bag"></i>
+                <span class="nav-item">Thống kê</span>
+            </a>
+            <span class="tooltip">Thống kê</span>
+        </li>
         <li>
             <a href="index.php?action=quanlisanpham">
                 <i class="bx bxs-shopping-bag"></i>
