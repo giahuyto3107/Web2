@@ -79,17 +79,21 @@ VALUES
 CREATE TABLE IF NOT EXISTS category_type (
     category_type_id INT AUTO_INCREMENT PRIMARY KEY,
     type_name VARCHAR(100) NOT NULL UNIQUE,
-    type_description TEXT
+    type_description TEXT,
+    status_id INT,
+    FOREIGN KEY (status_id) REFERENCES status(id)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE
 );
 
 -- Chèn dữ liệu mẫu cho bảng category_type
-INSERT INTO `category_type` (`type_name`, `type_description`) 
+INSERT INTO `category_type` (`type_name`, `type_description`,`status_id`) 
 VALUES
-    ('Văn học Việt Nam', 'Các tác phẩm văn học do tác giả Việt Nam sáng tác'),
-    ('Văn học nước ngoài', 'Các tác phẩm văn học của tác giả quốc tế'),
-    ('Sách kỹ năng', 'Sách phát triển kỹ năng cá nhân'),
-    ('Sách giáo dục', 'Sách phục vụ học tập và giảng dạy'),
-    ('Sách giải trí', 'Sách mang tính giải trí');
+    ('Văn học Việt Nam', 'Các tác phẩm văn học do tác giả Việt Nam sáng tác',1),
+    ('Văn học nước ngoài', 'Các tác phẩm văn học của tác giả quốc tế',1),
+    ('Sách kỹ năng', 'Sách phát triển kỹ năng cá nhân',1),
+    ('Sách giáo dục', 'Sách phục vụ học tập và giảng dạy',1),
+    ('Sách giải trí', 'Sách mang tính giải trí',1);
 
 -- Tạo bảng category (thể loại)
 CREATE TABLE IF NOT EXISTS category (
@@ -360,7 +364,6 @@ CREATE TABLE IF NOT EXISTS supplier (
         ON DELETE SET NULL
         ON UPDATE CASCADE
 );
-
 INSERT INTO `supplier` (`supplier_name`, `contact_phone`, `address`, `publisher`, `status_id`) 
 VALUES
     ('Nhà Xuất Bản Trẻ', '028-3822-4567', '161B Lý Chính Thắng, Quận 3, TP.HCM', 'NXB Trẻ', 1),
@@ -374,6 +377,106 @@ VALUES
     ('Nhà Xuất Bản Thanh Niên', '028-3822-5670', '64 Bà Triệu, Hoàn Kiếm, Hà Nội', 'NXB Thanh Niên', 1),
     ('Nhà Xuất Bản Văn Hóa - Văn Nghệ', '028-3822-8901', '88-90 Ký Con, Quận 1, TP.HCM', 'NXB Văn Hóa - Văn Nghệ', 1);
 
+
+CREATE TABLE IF NOT EXISTS purchase_order (
+    purchase_order_id INT AUTO_INCREMENT PRIMARY KEY,
+    supplier_id INT,
+    user_id INT,
+    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    approve_date TIMESTAMP default null,
+    total_amount int NOT NULL,
+    total_price decimal(10, 2), 
+    status_id INT,
+    import_status TINYINT(1) DEFAULT 0,
+    FOREIGN KEY (supplier_id) REFERENCES supplier(supplier_id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES user(user_id)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE,
+    FOREIGN KEY (status_id) REFERENCES status(id)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS purchase_order_items (
+    purchase_order_item_id INT AUTO_INCREMENT PRIMARY KEY,
+    purchase_order_id INT,
+    product_id INT,
+    quantity INT NOT NULL DEFAULT 1,
+    price DECIMAL(10, 2) NOT NULL,
+    profit DECIMAL(10, 2) NOT NULL,
+    import_status TINYINT(1) DEFAULT 0,
+    approve_date TIMESTAMP default null,
+    FOREIGN KEY (purchase_order_id) REFERENCES purchase_order(purchase_order_id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES product(product_id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+);
+
+INSERT INTO `purchase_order` (`supplier_id`, `user_id`, `order_date`, `approve_date`, `total_amount`, `total_price`, `status_id`, `import_status`) 
+VALUES
+    (1, 1, '2025-02-05 08:00:00', '2025-02-06 10:00:00', 50, 4500000, 5, 1), -- Nhà Xuất Bản Trẻ, đã nhập
+    (2, 4, '2025-02-06 09:00:00', NULL, 30, 2400000, 3, 0), -- Nhà Xuất Bản Kim Đồng, đang chờ
+    (3, 7, '2025-02-07 10:00:00', '2025-02-08 12:00:00', 40, 3600000, 5, 1), -- Nhà Xuất Bản Văn Học, đã nhập
+    (4, 10, '2025-02-08 11:00:00', NULL, 20, 1800000, 3, 0), -- Nhà Xuất Bản Tổng Hợp TP.HCM, đang chờ
+    (5, 1, '2025-02-09 12:00:00', '2025-02-10 14:00:00', 60, 5400000, 5, 1), -- Nhà Xuất Bản Giáo Dục, đã nhập
+    (6, 4, '2025-02-10 13:00:00', NULL, 25, 2250000, 3, 0), -- Nhà Xuất Bản Hội Nhà Văn, đang chờ
+    (7, 7, '2025-02-11 14:00:00', '2025-02-12 16:00:00', 35, 3150000, 5, 1), -- Nhà Xuất Bản Phụ Nữ, đã nhập
+    (8, 10, '2025-02-12 15:00:00', NULL, 45, 4050000, 3, 0), -- Nhà Xuất Bản Lao Động, đang chờ
+    (9, 1, '2025-02-13 16:00:00', '2025-02-14 18:00:00', 15, 1350000, 5, 1), -- Nhà Xuất Bản Thanh Niên, đã nhập
+    (10, 4, '2025-02-14 17:00:00', NULL, 55, 4950000, 3, 0); -- Nhà Xuất Bản Văn Hóa - Văn Nghệ, đang chờ
+    INSERT INTO `purchase_order_items` (`purchase_order_id`, `product_id`, `quantity`, `price`, `profit`, `import_status`, `approve_date`) 
+VALUES
+    -- Đơn nhập hàng 1 (Nhà Xuất Bản Trẻ)
+    (1, 1, 20, 80000, 50.00, 1, '2025-02-06 10:00:00'),  -- 'Cho Tôi Xin Một Vé Đi Tuổi Thơ'
+    (1, 2, 15, 100000, 50.00, 1, '2025-02-06 10:00:00'),  -- 'Tôi Thấy Hoa Vàng Trên Cỏ Xanh'
+    (1, 15, 15, 80000, 56.25, 1, '2025-02-06 10:00:00'),  -- 'Mắt Biếc'
+
+    -- Đơn nhập hàng 2 (Nhà Xuất Bản Kim Đồng)
+    (2, 3, 20, 50000, 60.00, 0, NULL),  -- 'Dế Mèn Phiêu Lưu Ký'
+    (2, 13, 10, 20000, 75.00, 0, NULL),  -- 'Doraemon Tập 1'
+
+    -- Đơn nhập hàng 3 (Nhà Xuất Bản Văn Học)
+    (3, 4, 15, 60000, 50.00, 1, '2025-02-08 12:00:00'),  -- 'Nhật Ký Trong Tù'
+    (3, 5, 10, 70000, 57.14, 1, '2025-02-08 12:00:00'),  -- 'Số Đỏ'
+    (3, 6, 15, 60000, 58.33, 1, '2025-02-08 12:00:00'),  -- 'Truyện Kiều'
+
+    -- Đơn nhập hàng 4 (Nhà Xuất Bản Tổng Hợp TP.HCM)
+    (4, 7, 10, 55000, 54.55, 0, NULL),  -- 'Bố Con Cá Gai'
+    (4, 8, 10, 85000, 52.94, 0, NULL),  -- 'Cánh Đồng Bất Tận'
+
+    -- Đơn nhập hàng 5 (Nhà Xuất Bản Giáo Dục)
+    (5, 9, 20, 90000, 55.56, 1, '2025-02-10 14:00:00'),  -- 'Nỗi Buồn Chiến Tranh'
+    (5, 14, 30, 30000, 50.00, 1, '2025-02-10 14:00:00'),  -- 'Toán Lớp 10'
+    (5, 10, 10, 120000, 50.00, 1, '2025-02-10 14:00:00'), -- 'Harry Potter và Hòn Đá Phù Thủy'
+
+    -- Đơn nhập hàng 6 (Nhà Xuất Bản Hội Nhà Văn)
+    (6, 11, 15, 70000, 57.14, 0, NULL),  -- 'Nhà Giả Kim'
+    (6, 12, 10, 60000, 58.33, 0, NULL),  -- 'Đắc Nhân Tâm'
+
+    -- Đơn nhập hàng 7 (Nhà Xuất Bản Phụ Nữ)
+    (7, 1, 10, 80000, 50.00, 1, '2025-02-12 16:00:00'),  -- 'Cho Tôi Xin Một Vé Đi Tuổi Thơ'
+    (7, 2, 10, 100000, 50.00, 1, '2025-02-12 16:00:00'),  -- 'Tôi Thấy Hoa Vàng Trên Cỏ Xanh'
+    (7, 15, 15, 80000, 56.25, 1, '2025-02-12 16:00:00'),  -- 'Mắt Biếc'
+
+    -- Đơn nhập hàng 8 (Nhà Xuất Bản Lao Động)
+    (8, 3, 20, 50000, 60.00, 0, NULL),  -- 'Dế Mèn Phiêu Lưu Ký'
+    (8, 13, 15, 20000, 75.00, 0, NULL),  -- 'Doraemon Tập 1'
+    (8, 14, 10, 30000, 50.00, 0, NULL),  -- 'Toán Lớp 10'
+
+    -- Đơn nhập hàng 9 (Nhà Xuất Bản Thanh Niên)
+    (9, 4, 5, 60000, 50.00, 1, '2025-02-14 18:00:00'),  -- 'Nhật Ký Trong Tù'
+    (9, 5, 5, 70000, 57.14, 1, '2025-02-14 18:00:00'),  -- 'Số Đỏ'
+    (9, 6, 5, 60000, 58.33, 1, '2025-02-14 18:00:00'),  -- 'Truyện Kiều'
+
+    -- Đơn nhập hàng 10 (Nhà Xuất Bản Văn Hóa - Văn Nghệ)
+    (10, 7, 15, 55000, 54.55, 0, NULL),  -- 'Bố Con Cá Gai'
+    (10, 8, 20, 85000, 52.94, 0, NULL),  -- 'Cánh Đồng Bất Tận'
+    (10, 9, 20, 90000, 55.56, 0, NULL);  -- 'Nỗi Buồn Chiến Tranh'
+    
 
     
 CREATE TABLE IF NOT EXISTS review (
@@ -600,4 +703,3 @@ BEGIN
         (v_new_selling_price - p_new_cost_price) AS actual_profit;
 END //
 DELIMITER ;
-k
