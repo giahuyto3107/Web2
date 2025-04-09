@@ -1,4 +1,3 @@
-
 <body>
 <div class="header"></div>
 <div class="data-table">
@@ -30,7 +29,29 @@
                 </select>
             </div>
             <div class="search">
-                <input type="text" id="search-text" name="search-text" placeholder="Tìm kiếm..." />
+                <!-- Trường nhập liệu văn bản (mặc định) -->
+                <input type="text" id="search-text" name="search-text" placeholder="Tìm kiếm..." style="display: block;" />
+                <!-- Dropdown cho trạng thái (ẩn ban đầu) -->
+                <select id="search-status" name="search-status" style="display: none;">
+                    <option value="">Tất cả</option>
+                    <option value="3">Chờ duyệt</option>
+                    <option value="4">Đã duyệt</option>
+                    <option value="5">Đã giao</option>
+                    <option value="7">Đã hủy</option>
+                </select>
+                <!-- Dropdown cho phương thức thanh toán (ẩn ban đầu) -->
+                <select id="search-payment-method" name="search-payment-method" style="display: none;">
+                    <option value="">Tất cả</option>
+                    <option value="Tiền mặt">Tiền mặt</option>
+                    <option value="Chuyển khoản">Chuyển khoản</option>
+                </select>
+                <!-- Hai trường nhập liệu ngày (ẩn ban đầu) -->
+                <div id="search-date" style="display: none;">
+                    <label for="date-from">Từ ngày:</label>
+                    <input type="date" id="date-from" name="date-from" />
+                    <label for="date-to">Đến ngày:</label>
+                    <input type="date" id="date-to" name="date-to" />
+                </div>
             </div>
         </div>
         <div class="toolbar-button-wrapper">
@@ -68,6 +89,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         // Biến toàn cục
         let orders = []; // Dữ liệu gốc, không thay đổi
+        let filteredOrders = []; // Dữ liệu đã lọc
 
         // Hàm chuyển status_id thành văn bản
         function getStatusText(statusId) {
@@ -78,41 +100,6 @@
                 case "7": return 'Đã hủy';
                 default: return 'N/A';
             }
-        }
-
-        // Hàm thêm sự kiện lọc và tìm kiếm
-        function addFilterEventListener() {
-            const searchEl = document.getElementById("search-text");
-            const filterOptionsEl = document.getElementById("filter-options");
-
-            if (!searchEl || !filterOptionsEl) {
-                console.error('Required elements not found: #search-text or #filter-options');
-                return;
-            }
-
-            searchEl.addEventListener("input", () => {
-                const filterBy = filterOptionsEl.value;
-                const searchValue = searchEl.value.trim();
-
-                let filteredData = orders;
-
-                if (searchValue !== "") {
-                    filteredData = orders.filter((order) => {
-                        if (typeof order[filterBy] === "string") {
-                            return order[filterBy].toLowerCase().includes(searchValue.toLowerCase());
-                        } else {
-                            return order[filterBy].toString().includes(searchValue);
-                        }
-                    });
-                }
-
-                renderTable(filteredData);
-            });
-
-            filterOptionsEl.addEventListener("change", () => {
-                searchEl.value = "";
-                renderTable(orders);
-            });
         }
 
         // Hàm render bảng
@@ -172,15 +159,134 @@
             }
         }
 
-        // Fetch dữ liệu ban đầu từ server
+        // Hàm hiển thị/ẩn các thành phần trong .search
+        function toggleSearchFields() {
+            const filterBy = document.getElementById('filter-options').value;
+            const searchText = document.getElementById('search-text');
+            const searchStatus = document.getElementById('search-status');
+            const searchPaymentMethod = document.getElementById('search-payment-method');
+            const searchDate = document.getElementById('search-date');
+
+            // Reset giá trị các trường khi thay đổi bộ lọc
+            searchText.value = '';
+            searchStatus.value = '';
+            searchPaymentMethod.value = '';
+            document.getElementById('date-from').value = '';
+            document.getElementById('date-to').value = '';
+
+            if (filterBy === 'status_id') {
+                searchText.style.display = 'none';
+                searchStatus.style.display = 'block';
+                searchPaymentMethod.style.display = 'none';
+                searchDate.style.display = 'none';
+            } else if (filterBy === 'payment_method') {
+                searchText.style.display = 'none';
+                searchStatus.style.display = 'none';
+                searchPaymentMethod.style.display = 'block';
+                searchDate.style.display = 'none';
+            } else if (filterBy === 'order_date') {
+                searchText.style.display = 'none';
+                searchStatus.style.display = 'none';
+                searchPaymentMethod.style.display = 'none';
+                searchDate.style.display = 'block';
+            } else {
+                searchText.style.display = 'block';
+                searchStatus.style.display = 'none';
+                searchPaymentMethod.style.display = 'none';
+                searchDate.style.display = 'none';
+            }
+        }
+
+        // Hàm lọc dữ liệu trên client-side
+        function filterOrders() {
+            const filterBy = document.getElementById('filter-options').value;
+            const searchText = document.getElementById('search-text').value.trim();
+            const searchStatus = document.getElementById('search-status').value;
+            const searchPaymentMethod = document.getElementById('search-payment-method').value;
+            const dateFrom = document.getElementById('date-from').value;
+            const dateTo = document.getElementById('date-to').value;
+
+            let filteredData = [...orders]; // Sao chép dữ liệu gốc để lọc
+
+            if (filterBy === 'status_id') {
+                if (searchStatus) {
+                    filteredData = orders.filter(order => order.status_id === searchStatus);
+                }
+            } else if (filterBy === 'payment_method') {
+                if (searchPaymentMethod) {
+                    filteredData = orders.filter(order => order.payment_method === searchPaymentMethod);
+                }
+            } else if (filterBy === 'order_date') {
+                if (dateFrom || dateTo) {
+                    filteredData = orders.filter(order => {
+                        const orderDate = new Date(order.order_date);
+                        const fromDate = dateFrom ? new Date(dateFrom) : null;
+                        const toDate = dateTo ? new Date(dateTo) : null;
+
+                        if (fromDate && toDate) {
+                            return orderDate >= fromDate && orderDate <= toDate;
+                        } else if (fromDate) {
+                            return orderDate >= fromDate;
+                        } else if (toDate) {
+                            return orderDate <= toDate;
+                        }
+                        return true;
+                    });
+                }
+            } else {
+                if (searchText) {
+                    filteredData = orders.filter(order => {
+                        const value = order[filterBy];
+                        if (typeof value === 'string') {
+                            return value.toLowerCase().includes(searchText.toLowerCase());
+                        } else {
+                            return value.toString().includes(searchText);
+                        }
+                    });
+                }
+            }
+
+            renderTable(filteredData);
+        }
+
+        // Thêm sự kiện cho các thành phần lọc
+        function addFilterEventListeners() {
+            const filterOptionsEl = document.getElementById('filter-options');
+            const searchText = document.getElementById('search-text');
+            const searchStatus = document.getElementById('search-status');
+            const searchPaymentMethod = document.getElementById('search-payment-method');
+            const dateFrom = document.getElementById('date-from');
+            const dateTo = document.getElementById('date-to');
+
+            filterOptionsEl.addEventListener('change', () => {
+                toggleSearchFields();
+                filterOrders();
+            });
+            searchText.addEventListener('input', filterOrders);
+            searchStatus.addEventListener('change', filterOrders);
+            searchPaymentMethod.addEventListener('change', filterOrders);
+            dateFrom.addEventListener('change', filterOrders);
+            dateTo.addEventListener('change', filterOrders);
+        }
+
+        // Fetch dữ liệu ban đầu từ server (chỉ gọi một lần)
         fetch('quanlidonhang/fetch_donhang.php')
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    throw new Error('Response is not JSON');
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.status === 'success') {
                     orders = data.data;
                     console.log('Initial orders:', orders);
                     renderTable(orders);
-                    addFilterEventListener();
+                    addFilterEventListeners();
                 } else {
                     console.error('Error:', data.message);
                     document.getElementById('table-body').innerHTML = '<tr><td colspan="9">Lỗi khi tải danh sách đơn hàng.</td></tr>';
@@ -190,6 +296,8 @@
                 console.error('Fetch error:', error);
                 document.getElementById('table-body').innerHTML = '<tr><td colspan="9">Lỗi khi tải danh sách đơn hàng.</td></tr>';
             });
+
+        toggleSearchFields(); // Hiển thị trường tìm kiếm ban đầu
 
         // Sử dụng event delegation để xử lý các hành động
         document.getElementById('table-body').addEventListener('click', (e) => {
@@ -215,7 +323,6 @@
                 updateModalEl.setAttribute("data-order-id", orderId);
                 updateModalEl.setAttribute("data-status", newStatus);
 
-                // Nếu là "Duyệt đơn" (status từ 3 -> 4), kiểm tra số lượng sản phẩm
                 if (newStatus === "4") {
                     checkProductStock(orderId, updateModalEl);
                 } else {
@@ -273,7 +380,6 @@
                     const items = data.data.items;
                     const totalValue = data.data.total_value;
 
-                    // Điền thông tin chung
                     document.getElementById('modal-view-order-id').textContent = orderInfo.order_id || 'N/A';
                     document.getElementById('modal-view-user-name').textContent = orderInfo.user_name || 'N/A';
                     document.getElementById('modal-view-order-date').textContent = orderInfo.order_date || 'N/A';
@@ -283,7 +389,6 @@
                     document.getElementById('modal-view-phone').textContent = orderInfo.phone || 'N/A';
                     document.getElementById('modal-view-address').textContent = orderInfo.address || 'N/A';
 
-                    // Hiển thị danh sách sản phẩm
                     const tableBody = document.getElementById('order-items-body');
                     tableBody.innerHTML = '';
 
@@ -324,11 +429,12 @@
             .then(response => response.json())
             .then(result => {
                 if (result.status === 'success') {
+                    // Tải lại dữ liệu từ server để cập nhật danh sách đơn hàng
                     fetch('quanlidonhang/fetch_donhang.php')
                         .then(response => response.json())
                         .then(data => {
                             orders = data.data;
-                            renderTable(orders);
+                            filterOrders(); // Áp dụng lại bộ lọc hiện tại
                             const updateModalEl = document.getElementById('update-modal');
                             updateModalEl.close();
                             const successMessage = document.getElementById('success-message');
@@ -398,7 +504,6 @@
             });
         }
 
-        // Gọi hàm để thêm sự kiện
         addModalCloseButtonEventListeners();
         const viewModal = document.getElementById('view-modal');
         if (viewModal) {

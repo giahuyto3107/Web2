@@ -61,7 +61,7 @@ function handleLinkClick(e) {
 
 function loadPage(page) {
     console.log('Loading page:', page);
-    fetch(`http://localhost/Web2/FrontEnd/PublicUI/Trangchu/load_page.php?page=${encodeURIComponent(page)}`, {
+    fetch(`http://localhost/web2/FrontEnd/PublicUI/Trangchu/load_page.php?page=${encodeURIComponent(page)}`, {
         method: 'GET',
         headers: {
             'X-Requested-With': 'XMLHttpRequest'
