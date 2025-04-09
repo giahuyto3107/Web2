@@ -400,7 +400,7 @@ VALUES
     ('Quản lý nhập hàng', 'Cho phép tạo, phê duyệt và quản lý các đơn nhập hàng', 1),
     ('Quản lý tài khoản', 'Cho phép quản lý tài khoản người dùng và phân quyền', 1),
     ('Quản lý đánh giá', 'Cho phép xem và kiểm duyệt các đánh giá sản phẩm', 1),
-    ('Xem thống kê', 'Cho phép xem các báo cáo và thống kê doanh thu', 1),
+    ('Thống kê', 'Cho phép xem các báo cáo và thống kê doanh thu', 1),
     ('Quản lý nhà cung cấp', 'Cho phép thêm, sửa, xóa thông tin nhà cung cấp', 1),
     ('Đặt hàng', 'Cho phép khách hàng đặt hàng và xem lịch sử đơn hàng', 1);
 
