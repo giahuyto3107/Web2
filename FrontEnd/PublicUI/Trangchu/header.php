@@ -210,27 +210,28 @@ $featured_collection = $conn->query("SELECT p.* FROM product p JOIN product_cate
             <input type="text" id="search-input" placeholder="Tìm kiếm sách...">
         </div>
         <div class="user-actions">
-            <!-- <a href="?page=home" data-page="home">Trang chủ</a> -->
-            <a href="?page=cart" class="icon-link" data-page="cart">
-                <i class="fa-solid fa-cart-shopping"></i>
-                <?php if ($cart_count > 0): ?>
-                    <span class="cart-badge"><?php echo $cart_count; ?></span>
-                <?php endif; ?>
-            </a>
-            <?php if (isset($_SESSION['user_id'])): ?>
-                <div class="profile-icon">
-                    <i class="fa-solid fa-user"></i>
-                </div>
-                <div class="dropdown-menu">
-                    <a href="?page=profile" data-page="profile"><i class="fa-solid fa-user"></i> Hồ sơ</a>
-                    <a href="?page=orders" data-page="orders"><i class="fa-solid fa-box"></i> Đơn hàng</a>
-                    <a href="http://localhost/Web2/FrontEnd/PublicUI/Trangchu/Pages/logout.php"><i class="fa-solid fa-sign-out-alt"></i> Đăng xuất</a>
-                </div>
-            <?php else: ?>
-                <a href="?page=login" data-page="login">Đăng nhập</a>
-                <a href="?page=signup" data-page="signup">Đăng ký</a>
+    <?php if (isset($_SESSION['user_id'])): ?>
+        <a href="?page=cart" class="icon-link" data-page="cart">
+            <i class="fa-solid fa-cart-shopping"></i>
+            <?php if ($cart_count > 0): ?>
+                <span class="cart-badge"><?php echo $cart_count; ?></span>
             <?php endif; ?>
+        </a>
+    <?php endif; ?>
+    <?php if (isset($_SESSION['user_id'])): ?>
+        <div class="profile-icon">
+            <i class="fa-solid fa-user"></i>
         </div>
+        <div class="dropdown-menu">
+            <a href="?page=profile" data-page="profile"><i class="fa-solid fa-user"></i> Hồ sơ</a>
+            <a href="?page=orders" data-page="orders"><i class="fa-solid fa-box"></i> Đơn hàng</a>
+            <a href="http://localhost/Web2/FrontEnd/PublicUI/Trangchu/Pages/logout.php"><i class="fa-solid fa-sign-out-alt"></i> Đăng xuất</a>
+        </div>
+    <?php else: ?>
+        <a href="?page=login" data-page="login">Đăng nhập</a>
+        <a href="?page=signup" data-page="signup">Đăng ký</a>
+    <?php endif; ?>
+</div>
     </header>
 
     <script>

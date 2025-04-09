@@ -76,28 +76,61 @@ VALUES
     ('nguyen_thi_p', 'nguyenthip@gmail.com', '123', 1, NULL, 2, '2025-02-05 03:00:08', '2025-02-08 09:32:42'), -- Khách hàng
     ('hoang_thi_q', 'hoangthiq@gmail.com', '123', 1, NULL, 2, '2025-02-05 03:00:08', '2025-02-08 09:32:45'); -- Khách hàng
 
+CREATE TABLE IF NOT EXISTS category_type (
+    category_type_id INT AUTO_INCREMENT PRIMARY KEY,
+    type_name VARCHAR(100) NOT NULL UNIQUE,
+    type_description TEXT
+);
+
+-- Chèn dữ liệu mẫu cho bảng category_type
+INSERT INTO `category_type` (`type_name`, `type_description`) 
+VALUES
+    ('Văn học Việt Nam', 'Các tác phẩm văn học do tác giả Việt Nam sáng tác'),
+    ('Văn học nước ngoài', 'Các tác phẩm văn học của tác giả quốc tế'),
+    ('Sách kỹ năng', 'Sách phát triển kỹ năng cá nhân'),
+    ('Sách giáo dục', 'Sách phục vụ học tập và giảng dạy'),
+    ('Sách giải trí', 'Sách mang tính giải trí');
+
+-- Tạo bảng category (thể loại)
 CREATE TABLE IF NOT EXISTS category (
     category_id INT AUTO_INCREMENT PRIMARY KEY,
     category_name VARCHAR(100) NOT NULL UNIQUE,
     category_description TEXT,
     status_id INT,
+    category_type_id INT,
     FOREIGN KEY (status_id) REFERENCES status(id)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE,
+    FOREIGN KEY (category_type_id) REFERENCES category_type(category_type_id)
         ON DELETE SET NULL
         ON UPDATE CASCADE
 );
 
-INSERT INTO `category` (`category_name`, `category_description`, `status_id`) 
+-- Chèn dữ liệu mẫu cho bảng category với mỗi category_type có nhiều category
+INSERT INTO `category` (`category_name`, `category_description`, `status_id`, `category_type_id`) 
 VALUES
-    ('Văn học Việt Nam', 'Các tác phẩm văn học của tác giả Việt Nam', 1),
-    ('Truyện ngắn Việt Nam', 'Tập hợp các truyện ngắn của tác giả Việt Nam', 1),
-    ('Thơ Việt Nam', 'Các tập thơ của các nhà thơ Việt Nam', 1),
-    ('Sách thiếu nhi Việt Nam', 'Sách dành cho trẻ em của tác giả Việt Nam', 1),
-    ('Tiểu thuyết lịch sử Việt Nam', 'Tiểu thuyết dựa trên lịch sử Việt Nam', 1),
-    ('Kỹ năng sống', 'Sách về kỹ năng sống và phát triển bản thân', 1),
-    ('Khoa học viễn tưởng', 'Sách khám phá các khái niệm tương lai', 1),
-    ('Tiểu thuyết nước ngoài', 'Tiểu thuyết của các tác giả nước ngoài', 1),
-    ('Sách giáo khoa', 'Sách phục vụ học tập và giảng dạy', 1),
-    ('Truyện tranh', 'Sách truyện tranh cho mọi lứa tuổi', 1);
+    -- Chủng loại: Văn học Việt Nam (category_type_id = 1)
+    ('Văn học Việt Nam', 'Các tác phẩm văn học của tác giả Việt Nam', 1, 1),
+    ('Truyện ngắn Việt Nam', 'Tập hợp các truyện ngắn của tác giả Việt Nam', 1, 1),
+    ('Thơ Việt Nam', 'Các tập thơ của các nhà thơ Việt Nam', 1, 1),
+    ('Sách thiếu nhi Việt Nam', 'Sách dành cho trẻ em của tác giả Việt Nam', 1, 1),
+    ('Tiểu thuyết lịch sử Việt Nam', 'Tiểu thuyết dựa trên lịch sử Việt Nam', 1, 1),
+    
+    -- Chủng loại: Văn học nước ngoài (category_type_id = 2)
+    ('Khoa học viễn tưởng', 'Sách khám phá các khái niệm tương lai', 1, 2),
+    ('Tiểu thuyết nước ngoài', 'Tiểu thuyết của các tác giả nước ngoài', 1, 2),
+    
+    -- Chủng loại: Sách kỹ năng (category_type_id = 3)
+    ('Kỹ năng sống', 'Sách về kỹ năng sống và phát triển bản thân', 1, 3),
+    ('Kỹ năng giao tiếp', 'Sách hướng dẫn giao tiếp hiệu quả', 1, 3),
+    
+    -- Chủng loại: Sách giáo dục (category_type_id = 4)
+    ('Sách giáo khoa', 'Sách phục vụ học tập và giảng dạy', 1, 4),
+    ('Sách tham khảo', 'Sách bổ trợ kiến thức học tập', 1, 4),
+    
+    -- Chủng loại: Sách giải trí (category_type_id = 5)
+    ('Truyện tranh', 'Sách truyện tranh cho mọi lứa tuổi', 1, 5),
+    ('Truyện cười', 'Sách tổng hợp truyện cười giải trí', 1, 5);
 
 CREATE TABLE IF NOT EXISTS product (
     product_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -341,6 +374,7 @@ VALUES
     ('Nhà Xuất Bản Thanh Niên', '028-3822-5670', '64 Bà Triệu, Hoàn Kiếm, Hà Nội', 'NXB Thanh Niên', 1),
     ('Nhà Xuất Bản Văn Hóa - Văn Nghệ', '028-3822-8901', '88-90 Ký Con, Quận 1, TP.HCM', 'NXB Văn Hóa - Văn Nghệ', 1);
 
+
     
 CREATE TABLE IF NOT EXISTS review (
     review_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -398,7 +432,7 @@ VALUES
     ('Quản lý nhập hàng', 'Cho phép tạo, phê duyệt và quản lý các đơn nhập hàng', 1),
     ('Quản lý tài khoản', 'Cho phép quản lý tài khoản người dùng và phân quyền', 1),
     ('Quản lý đánh giá', 'Cho phép xem và kiểm duyệt các đánh giá sản phẩm', 1),
-    ('Xem thống kê', 'Cho phép xem các báo cáo và thống kê doanh thu', 1),
+    ('Thống kê', 'Cho phép xem các báo cáo và thống kê doanh thu', 1),
     ('Quản lý nhà cung cấp', 'Cho phép thêm, sửa, xóa thông tin nhà cung cấp', 1),
     ('Đặt hàng', 'Cho phép khách hàng đặt hàng và xem lịch sử đơn hàng', 1);
 
