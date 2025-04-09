@@ -72,7 +72,7 @@ if (!$query_product_invoice) {
                         <label for="percent">%</label>
                         <button type="button" id="applyAllBtn">Apply All</button>
                     </div>
-                <button type="button" id="confirmBtn">In phieu nhap hang</button>
+                <button type="button" id="confirmBtn">Đặt hàng</button>
             </div>
         </div>
     </div>
@@ -312,6 +312,9 @@ if (!$query_product_invoice) {
         let statusId = 1;
         let isValid = true;
 
+        totalPrice = totalPrice.replace(/[^\d.]/g, ''); // Result: "50000"
+        totalPrice = parseFloat(totalPrice);          // Result: 50000
+
         let purchaseItems = [];
         document.querySelectorAll(".single-invoice-content").forEach(item => {
             let singlePrice = item.querySelector(".bill-product-price").value;
@@ -341,7 +344,7 @@ if (!$query_product_invoice) {
         }
 
         let totalAmount = purchaseItems.reduce((sum, item) => sum + item.quantity, 0);
-
+        console.log(totalAmount);
         let formData = new FormData();
         formData.append("supplier_id", supplierId);
         formData.append("user_id", userId);
