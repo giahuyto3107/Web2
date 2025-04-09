@@ -21,18 +21,84 @@ include ('../../../BackEnd/Config/config.php');
 
         body {
             background: #ffffff;
-            /* padding: 50px; */
             min-height: 100vh;
             color: #1a1a1a;
         }
 
-        .container {
+        .content {
             max-width: 1200px;
             margin: 0 auto;
             padding: 40px;
+            display: flex;
+            flex-wrap: wrap;
         }
 
-        /* Header */
+        .sidebar {
+            width: 250px;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            padding: 20px;
+            margin-right: 30px;
+            flex-shrink: 0;
+        }
+
+        .sidebar h4 {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .category-type {
+            font-size: 0.95rem;
+            font-weight: 400;
+            color: #1a1a1a;
+            padding: 10px 15px;
+            border-bottom: 1px solid #e0e0e0;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .category-type:hover {
+            background: #f8f9fa;
+            color: #d4af37;
+            cursor: pointer;
+        }
+
+        .category-list {
+            list-style: none;
+            padding-left: 0;
+            background: #f8f9fa;
+            display: none; /* Ẩn mặc định để có hiệu ứng xổ ra */
+        }
+
+        .category-item {
+            font-size: 0.95rem;
+            font-weight: 400;
+            color: #1a1a1a;
+            padding: 10px 15px;
+            border-bottom: 1px solid #e0e0e0;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .category-item:hover {
+            color: #d4af37;
+            cursor: pointer;
+        }
+
+        .category-item.active {
+            color: #d4af37;
+            font-weight: 500;
+            background: #fff;
+        }
+
+        .main-content {
+            flex: 1;
+            min-width: 0;
+        }
+
         h2 {
             font-size: 1.8rem;
             font-weight: 400;
@@ -43,14 +109,12 @@ include ('../../../BackEnd/Config/config.php');
             text-transform: uppercase;
         }
 
-        /* Filters */
         .filters {
             display: flex;
-            
             margin-bottom: 40px;
         }
 
-        input, select {
+        input {
             border-radius: 0;
             border: 1px solid #e0e0e0;
             padding: 10px 15px;
@@ -61,17 +125,16 @@ include ('../../../BackEnd/Config/config.php');
             width: 100%;
         }
 
-        input:focus, select:focus {
+        input:focus {
             border-color: #d4af37;
             box-shadow: none;
         }
 
-        /* Product List */
         #product-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Sử dụng auto-fill để lấp đầy không gian */
-    gap: 30px;
-}
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 30px;
+        }
 
         .card {
             border: 1px solid #e0e0e0;
@@ -103,16 +166,6 @@ include ('../../../BackEnd/Config/config.php');
             margin-bottom: 10px;
         }
 
-        .card-text {
-            font-size: 0.85rem;
-            font-weight: 300;
-            color: #666;
-            height: 60px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            margin-bottom: 15px;
-        }
-
         .text-danger {
             font-size: 1.1rem;
             font-weight: 400;
@@ -137,7 +190,6 @@ include ('../../../BackEnd/Config/config.php');
             color: #fff;
         }
 
-        /* Pagination */
         .pagination {
             justify-content: center;
             margin-top: 40px;
@@ -167,64 +219,123 @@ include ('../../../BackEnd/Config/config.php');
             border-color: #1a1a1a;
         }
 
-        /* Responsive */
+
         @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                margin-right: 0;
+                margin-bottom: 20px;
+            }
+            .main-content {
+                width: 100%;
+            }
+            .filters {
+                flex-direction: column;
+            }
+            .filters .col-md-6, .filters .col-md-3 {
+                width: 100%;
+                margin-bottom: 10px;
+            }
             #product-list {
                 grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
             }
-
             .card-img-top {
                 height: 200px;
-            }
-
-            .card-title {
-                font-size: 0.9rem;
-            }
-
-            .text-danger {
-                font-size: 1rem;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h2>Danh Sách Sản Phẩm</h2>
-
-        <div class="row mb-3 filters">
-            <div class="col-md-6">
-                <input type="text" id="search_name" class="form-control" placeholder="Tìm kiếm sản phẩm">
-            </div>
-            <div class="col-md-2">
-                <select id="category" class="form-control">
-                    <option value="">Tất cả</option>
-                    <option value="1">Fiction</option>
-                    <option value="2">Non-Fiction</option>
-                    <option value="3">Science Fiction</option>
-                    <option value="4">Mystery</option>
-                </select>
-            </div>
-            <div class="col-md-2">
-                <input type="number" id="min_price" class="form-control" placeholder="Giá thấp nhất">
-            </div>
-            <div class="col-md-2">
-                <input type="number" id="max_price" class="form-control" placeholder="Giá cao nhất">
-            </div>
+    <div class="content">
+        <div class="sidebar">
+            <h4>Tìm Kiếm Theo Danh Mục</h4>
+            <ul id="category-type-list" class="list-unstyled">
+                <li class="category-item all-categories" data-category-id="">Tất cả thể loại</li>
+            </ul>
         </div>
 
-        <div id="product-list"></div>
+        <div class="main-content">
+            <h2>Danh Sách Sản Phẩm</h2>
 
-        <nav>
-            <ul class="pagination justify-content-center" id="pagination"></ul>
-        </nav>
+            <div class="row mb-3 filters">
+                <div class="col-md-6">
+                    <input type="text" id="search_name" class="form-control" placeholder="Tìm kiếm sản phẩm">
+                </div>
+                <div class="col-md-3">
+                    <input type="number" id="min_price" class="form-control" placeholder="Giá thấp nhất">
+                </div>
+                <div class="col-md-3">
+                    <input type="number" id="max_price" class="form-control" placeholder="Giá cao nhất">
+                </div>
+            </div>
+
+            <div id="product-list"></div>
+
+            <nav>
+                <ul class="pagination justify-content-center" id="pagination"></ul>
+            </nav>
+        </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
 $(document).ready(function () {
+    let selectedCategoryId = null; // Biến để lưu category_id đang chọn
+
+    // Load danh sách chủng loại
+    function loadCategoryTypes() {
+        $.ajax({
+            url: "http://localhost/Web2/FrontEnd/PublicUI/SanPham/fetch_category_types.php",
+            method: "GET",
+            dataType: "json",
+            success: function (response) {
+                let html = '<li class="category-item all-categories" data-category-id="">Tất cả thể loại</li>';
+                response.forEach(type => {
+                    html += `
+                        <li class="category-type" data-type-id="${type.category_type_id}">
+                            ${type.type_name}
+                            <ul class="category-list" id="category-list-${type.category_type_id}"></ul>
+                        </li>`;
+                });
+                window.scrollTo(0, 0);
+                $("#category-type-list").html(html);
+            },
+            error: function (xhr, status, error) {
+                console.error("Error loading category types:", error);
+            }
+        });
+    }
+
+    // Load danh sách thể loại theo category_type_id
+    function loadCategories(typeId = null) {
+        $.ajax({
+            url: "http://localhost/Web2/FrontEnd/PublicUI/SanPham/fetch_categories.php",
+            method: "GET",
+            data: { category_type_id: typeId },
+            dataType: "json",
+            success: function (response) {
+                if (typeId) {
+                    let html = "";
+                    response.forEach(category => {
+                        html += `
+                            <li class="category-item" data-category-id="${category.category_id}">
+                                ${category.category_name}
+                            </li>`;
+                    });
+                    window.scrollTo(0, 0);
+                    $(`#category-list-${typeId}`).html(html).slideDown(300); 
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("Error loading categories:", error);
+            }
+        });
+    }
+
+    // Load sản phẩm
     function fetchProducts(page = 1) {
         let search_name = $("#search_name").val();
-        let category = $("#category").val();
+        let category = selectedCategoryId; // Chỉ dùng category từ sidebar
         let min_price = $("#min_price").val();
         let max_price = $("#max_price").val();
 
@@ -265,15 +376,17 @@ $(document).ready(function () {
                 } else {
                     productsHtml = "<p class='text-center' style='font-weight: 300; color: #666;'>Không có sản phẩm nào</p>";
                 }
+                window.scrollTo(0, 0);
                 $("#product-list").html(productsHtml);
                 generatePagination(response.total_pages, response.current_page);
             },
-            error: function(xhr, status, error) {
+            error: function (xhr, status, error) {
                 console.error("Error:", error);
             }
         });
     }
 
+    // Tạo phân trang
     function generatePagination(total_pages, current_page) {
         let paginationHtml = "";
         if (total_pages > 1) {
@@ -287,17 +400,31 @@ $(document).ready(function () {
         $("#pagination").html(paginationHtml);
     }
 
-    $("#min_price, #max_price").on('input', function() {
-        if (this.value < 0) {
-            this.value = 0;
+    // Sự kiện click vào chủng loại
+    $(document).on("click", ".category-type", function () {
+        let typeId = $(this).data("type-id");
+        let categoryList = $(`#category-list-${typeId}`);
+        if (categoryList.children().length === 0) { 
+            loadCategories(typeId);
+        } else {
+            categoryList.slideToggle(300); 
         }
     });
 
-    $("#search_name, #category, #min_price, #max_price").on("keyup change", function () {
-        fetchProducts();
+
+    $(document).on("click", ".category-item", function () {
+        let categoryId = $(this).data("category-id");
+        $(".category-item").removeClass("active");
+
+        $(this).addClass("active");
+        selectedCategoryId = categoryId === "" ? null : categoryId;
+        fetchProducts(1); 
     });
 
-    // Xử lý click phân trang
+    $("#search_name, #min_price, #max_price").on("keyup change", function () {
+        fetchProducts(); 
+    });
+
     $(document).on("click", ".page-link[data-page-number]", function (e) {
         e.preventDefault();
         let page = $(this).data("page-number");
@@ -306,9 +433,10 @@ $(document).ready(function () {
         }
     });
 
-    // Gọi lần đầu
+
+    loadCategoryTypes();
     fetchProducts();
 });
-</script>
+    </script>
 </body>
 </html>
