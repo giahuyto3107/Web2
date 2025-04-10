@@ -208,6 +208,7 @@ VALUES
 CREATE TABLE IF NOT EXISTS user (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
     full_name VARCHAR(100) NOT NULL,
+    address varchar(100) not null,
     account_id INT unique,
     profile_picture VARCHAR(255),
     date_of_birth DATE,
@@ -218,23 +219,23 @@ CREATE TABLE IF NOT EXISTS user (
         ON UPDATE CASCADE
 );
 
-INSERT INTO `user` (`full_name`, `account_id`, `profile_picture`, `date_of_birth`) 
+INSERT INTO `user` (`full_name`, `account_id`, `address`, `profile_picture`, `date_of_birth`) 
 VALUES
-    ('Nguyễn Văn A', 1, 'avatar1.png', '1990-01-01'),
-    ('Trần Thị B', 2, 'avatar2.png', '1992-02-02'),
-    ('Lê Văn C', 3, 'avatar3.png', '1985-03-03'),
-    ('Phạm Thị D', 4, 'avatar4.png', '1978-04-04'),
-    ('Hoàng Văn E', 5, 'avatar5.png', '1995-05-05'),
-    ('Ngô Thị F', 6, 'avatar6.png', '1993-06-06'),
-    ('Vũ Văn G', 7, 'avatar7.png', '1988-07-07'),
-    ('Đỗ Thị H', 8, 'avatar8.png', '1991-08-08'),
-    ('Bùi Văn I', 9, 'avatar9.png', '1994-09-09'),
-    ('Đặng Thị K', 10, 'avatar10.png', '1980-10-10'),
-    ('Trần Văn L', 11, 'avatar11.png', '1996-11-11'),
-    ('Lê Thị M', 12, 'avatar12.png', '1997-12-12'),
-    ('Phạm Văn N', 13, 'avatar13.png', '1982-01-13'),
-    ('Nguyễn Thị P', 14, 'avatar14.png', '1998-02-14'),
-    ('Hoàng Thị Q', 15, 'avatar15.png', '1999-03-15');
+    ('Nguyễn Văn A', 1, 'ADV', 'avatar1.png', '1990-01-01'),
+    ('Trần Thị B', 2, 'ADV', 'avatar2.png', '1992-02-02'),
+    ('Lê Văn C', 3, 'ADV', 'avatar3.png', '1985-03-03'),
+    ('Phạm Thị D', 4, 'ADV', 'avatar4.png', '1978-04-04'),
+    ('Hoàng Văn E', 5, 'ADV', 'avatar5.png', '1995-05-05'),
+    ('Ngô Thị F', 6, 'ADV', 'avatar6.png', '1993-06-06'),
+    ('Vũ Văn G', 7, 'ADV', 'avatar7.png', '1988-07-07'),
+    ('Đỗ Thị H', 8, 'ADV', 'avatar8.png', '1991-08-08'),
+    ('Bùi Văn I', 9, 'ADV', 'avatar9.png', '1994-09-09'),
+    ('Đặng Thị K', 10, 'ADV', 'avatar10.png', '1980-10-10'),
+    ('Trần Văn L', 11, 'ADV', 'avatar11.png', '1996-11-11'),
+    ('Lê Thị M', 12, 'ADV', 'avatar12.png', '1997-12-12'),
+    ('Phạm Văn N', 13, 'ADV', 'avatar13.png', '1982-01-13'),
+    ('Nguyễn Thị P', 14, 'ADV', 'avatar14.png', '1998-02-14'),
+    ('Hoàng Thị Q', 15, 'ADV', 'avatar15.png', '1999-03-15');
     
 CREATE TABLE IF NOT EXISTS cart_items (
     user_id INT, 
@@ -532,12 +533,16 @@ INSERT INTO `permission` (`permission_name`, `permission_description`, `status_i
 VALUES
     ('Quản lý sản phẩm', 'Cho phép thêm, sửa, xóa sản phẩm và danh mục sản phẩm', 1),
     ('Quản lý đơn hàng', 'Cho phép xem, xử lý và hủy đơn hàng của khách hàng', 1),
-    ('Quản lý nhập hàng', 'Cho phép tạo, phê duyệt và quản lý các đơn nhập hàng', 1),
     ('Quản lý tài khoản', 'Cho phép quản lý tài khoản người dùng và phân quyền', 1),
     ('Quản lý đánh giá', 'Cho phép xem và kiểm duyệt các đánh giá sản phẩm', 1),
     ('Thống kê', 'Cho phép xem các báo cáo và thống kê doanh thu', 1),
     ('Quản lý nhà cung cấp', 'Cho phép thêm, sửa, xóa thông tin nhà cung cấp', 1),
-    ('Đặt hàng', 'Cho phép khách hàng đặt hàng và xem lịch sử đơn hàng', 1);
+    ('Đặt hàng', 'Cho phép khách hàng đặt hàng và xem lịch sử đơn hàng', 1),
+    ('Quản lý thể loại', 'Cho phép quản lý danh sách các thể loại', 1),
+    ('Quản lý phiếu nhập', 'Cho phép quản lý danh sách các phiếu nhập', 1),
+    ('Quản lý chức vụ', 'Cho phép quản lý chức vụ', 1),
+    ('Quản lý phân quyền', 'Cho phép quản lý phân quyền', 1),
+    ('Quản lý chủng loại', 'Cho phép quản lý chủng loại', 1);
 
 
 CREATE TABLE if not exists role_permission (
