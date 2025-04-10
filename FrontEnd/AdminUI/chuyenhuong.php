@@ -26,7 +26,9 @@
         include "quanliphanquyen/lietkephanquyen.php";
     } elseif ($action === 'quanlinhaphang') {
         include "nhaphang/menunhaphang.php";
-    } else {
+    }elseif ($action === 'quanlichungloai') {
+        include "quanlichungloai/lietkechungloai.php";
+     } else {
         include "thongke/thongke.php"; // Include thongke.php làm nội dung mặc định
     }
     ?>
