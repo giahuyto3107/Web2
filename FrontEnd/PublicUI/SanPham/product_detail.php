@@ -59,6 +59,7 @@ $avg_rating = $result_avg_rating->fetch_assoc()['avg_rating'];
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($product['product_name']); ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
@@ -338,7 +339,34 @@ $avg_rating = $result_avg_rating->fetch_assoc()['avg_rating'];
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
+        #stock-warning .alert {
+            font-size: 0.85rem;
+            padding: 8px 12px;
+            margin-top: 10px;
+            border-radius: 0.375rem;
+        }
+        #toast {
+            position: fixed;
+            right: 20px;
+            top: 100px; /* Đã dịch xuống để không che icon */
+            background-color: #16a34a; /* màu xanh thành công */
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 9999;
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
 
+        /* Trạng thái ẩn */
+        .toast-hidden {
+            display: none;
+            opacity: 0;
+        }
+        .toast-error {
+                background-color: #dc2626; /* đỏ */
+        }
         @keyframes marquee-vertical {
             0% { transform: translateY(0); }
             100% { transform: translateY(-100%); }
@@ -391,7 +419,8 @@ $avg_rating = $result_avg_rating->fetch_assoc()['avg_rating'];
                                     <input type="number" id="quantity" name="quantity" class="form-control" value="1" min="1" max="<?php echo $product['stock_quantity']; ?>">
                                 </div>
                             </div>
-                            <form action="cart.php" method="POST" class="mb-4">
+                            <div id="stock-warning" class="mt-2"></div>
+                            <form id="add-to-cart-form" class="mb-4">
                                 <input type="hidden" name="product_id" value="<?php echo $product['product_id']; ?>">
                                 <input type="hidden" name="quantity" id="hidden-quantity" value="1">
                                 <button type="submit" class="btn btn-add-to-cart"><i class="fas fa-cart-plus"></i> Thêm vào giỏ hàng</button>
@@ -496,10 +525,92 @@ $avg_rating = $result_avg_rating->fetch_assoc()['avg_rating'];
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script>
-        document.getElementById('quantity').addEventListener('input', function() {
+        document.getElementById('quantity').addEventListener('input', function () {
             document.getElementById('hidden-quantity').value = this.value;
         });
+
+        const quantityInput = document.getElementById('quantity');
+        const maxStock = <?php echo $product['stock_quantity']; ?>;
+
+        quantityInput.addEventListener('blur', function () {
+            let val = parseInt(this.value);
+            if (isNaN(val) || val < 1) {
+                this.value = 1;
+                document.getElementById('hidden-quantity').value = 1;
+                showWarning("Số lượng phải từ 1 trở lên!");
+            } else if (val > maxStock) {
+                this.value = maxStock;
+                document.getElementById('hidden-quantity').value = maxStock;
+                showWarning("Vượt quá số lượng tồn kho! Số lượng tối đa là " + maxStock);
+            }
+        });
+
+        function showWarning(message) {
+            const warningBox = document.getElementById('stock-warning');
+            warningBox.innerHTML = `
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>${message}
+                </div>`;
+            
+            setTimeout(() => {
+                warningBox.innerHTML = '';
+            }, 3000);
+        }
+        /// Ajax gửi tới thêm giỏ hàng
+        document.getElementById("add-to-cart-form").addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            const form = e.target;
+            const formData = new FormData(form);
+
+            fetch("../../PublicUI/SanPham/themgiohang.php", {
+                method: "POST",
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    // ✅ Hiện toast thông báo thành công
+                    showToast("Đã thêm vào giỏ hàng!");
+
+                    // ✅ Cập nhật số lượng trong icon giỏ hàng nếu có
+                    const cartBadge = document.getElementById("cart-count");
+                    if (cartBadge) {
+                        cartBadge.innerText = data.cart_count;
+                    }
+
+                } else {
+                    // ⚠️ Thông báo lỗi
+                    showToast(data.message || "Thêm thất bại!", "error");
+                }
+            });
+        });
+        /// Toast message
+        function showToast(message, type = "success") {
+            const toast = document.getElementById("toast");
+            toast.textContent = message;
+
+            toast.classList.remove("toast-hidden", "toast-error");
+            if (type === "error") {
+                toast.classList.add("toast-error");
+            }
+
+            toast.style.display = "block";
+            toast.style.opacity = "1";
+
+            // Tự động ẩn sau 3 giây
+            setTimeout(() => {
+                toast.style.opacity = "0";
+                setTimeout(() => {
+                    toast.style.display = "none";
+                    toast.classList.add("toast-hidden");
+                }, 300);
+            }, 3000);
+        }
+
     </script>
+    <div id="toast" class="toast-hidden">Đã thêm vào giỏ hàng!</div>
 </body>
 </html>
