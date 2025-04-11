@@ -19,24 +19,10 @@
 </head>
 <body>
     <!-- Include Sidebar từ menu.php -->
-    <?php
-    include 'login signin/login.php'; 
-    if (isset($_SESSION['user_id'])) {
-        // User is logged in, include the necessary files
-        include 'menu.php'; 
-        include '../../BackEnd/Config/config.php';
-        include 'chuyenhuong.php';
-    } 
-    // else {
-    //     // User is not logged in, check the 'page' parameter
-    //     $page = $_GET['page']; // Default to 'login' if no page is specified
-    //     if ($page === 'signup') {
-    //         include 'login signin/signup.php'; // Include signup page
-    //     } else {
-    //         include 'login signin/login.php'; // Include login page
-    //     }
-    // }
-    ?>
+    <?php include 'menu.php'; 
+    include '../../BackEnd/Config/config.php';?>
+
+    <?php include 'chuyenhuong.php'; ?>
     <!-- <script src="js/dashboard.js" type="module"></script>
     <script src="js/dashboard-products.js" type="module"></script>
     <script src="js/sidebar.js"></script> -->

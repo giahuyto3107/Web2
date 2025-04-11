@@ -3,7 +3,7 @@ header('Content-Type: application/json');
 include('../../../BackEnd/Config/config.php');
 
 try {
-    $sql = "SELECT category_id, category_name FROM category WHERE status_id != 6";
+    $sql = "SELECT category_id, category_name FROM category WHERE status_id = 1";
     $stmt = $conn->prepare($sql);
     $stmt->execute();
     $result = $stmt->get_result();

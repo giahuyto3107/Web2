@@ -7,6 +7,7 @@ $category_id = $_POST['category_id'] ?? null;
 $category_name = trim($_POST['category_name'] ?? '');
 $category_description = trim($_POST['category_description'] ?? '');
 $status_id = (int)($_POST['status_id'] ?? 1);
+$category_type_id = (int)($_POST['category_type_id'] ?? 0);
 
 // Xử lý dựa trên dữ liệu nhận được
 if ($category_id) {
@@ -24,7 +25,6 @@ if ($category_id) {
 
     if (isset($_POST['status_id']) && $_POST['status_id'] == 6) {
         // Trường hợp xóa (cập nhật status_id thành 6)
-        // Không cần kiểm tra category_name hay category_description
         $sql = "UPDATE category SET status_id = ? WHERE category_id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("ii", $status_id, $category_id);
@@ -40,6 +40,23 @@ if ($category_id) {
         // Kiểm tra tên thể loại không được để trống
         if (empty($category_name)) {
             echo json_encode(['status' => 'error', 'message' => 'Tên thể loại không được để trống!']);
+            exit;
+        }
+
+        // Kiểm tra category_type_id
+        if ($category_type_id <= 0) {
+            echo json_encode(['status' => 'error', 'message' => 'Vui lòng chọn chủng loại!']);
+            exit;
+        }
+
+        // Kiểm tra category_type_id có tồn tại không
+        $check_type_sql = "SELECT category_type_id FROM category_type WHERE category_type_id = ? AND status_id IN (1, 2)";
+        $stmt = $conn->prepare($check_type_sql);
+        $stmt->bind_param("i", $category_type_id);
+        $stmt->execute();
+        $type_result = $stmt->get_result();
+        if ($type_result->num_rows === 0) {
+            echo json_encode(['status' => 'error', 'message' => 'Chủng loại không tồn tại hoặc không hoạt động!']);
             exit;
         }
 
@@ -65,9 +82,9 @@ if ($category_id) {
         }
 
         // Cập nhật thông tin thể loại
-        $sql = "UPDATE category SET category_name = ?, category_description = ?, status_id = ? WHERE category_id = ?";
+        $sql = "UPDATE category SET category_name = ?, category_description = ?, status_id = ?, category_type_id = ? WHERE category_id = ?";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssii", $category_name, $category_description, $status_id, $category_id);
+        $stmt->bind_param("ssiii", $category_name, $category_description, $status_id, $category_type_id, $category_id);
 
         if ($stmt->execute()) {
             echo json_encode(['status' => 'success', 'message' => 'Thể loại đã được cập nhật thành công!']);
@@ -81,6 +98,23 @@ if ($category_id) {
     // Kiểm tra tên thể loại không được để trống
     if (empty($category_name)) {
         echo json_encode(['status' => 'error', 'message' => 'Tên thể loại không được để trống!']);
+        exit;
+    }
+
+    // Kiểm tra category_type_id
+    if ($category_type_id <= 0) {
+        echo json_encode(['status' => 'error', 'message' => 'Vui lòng chọn chủng loại!']);
+        exit;
+    }
+
+    // Kiểm tra category_type_id có tồn tại không
+    $check_type_sql = "SELECT category_type_id FROM category_type WHERE category_type_id = ? AND status_id IN (1, 2)";
+    $stmt = $conn->prepare($check_type_sql);
+    $stmt->bind_param("i", $category_type_id);
+    $stmt->execute();
+    $type_result = $stmt->get_result();
+    if ($type_result->num_rows === 0) {
+        echo json_encode(['status' => 'error', 'message' => 'Chủng loại không tồn tại hoặc không hoạt động!']);
         exit;
     }
 
@@ -103,9 +137,9 @@ if ($category_id) {
     }
 
     // Thêm thể loại vào bảng category
-    $sql = "INSERT INTO category (category_name, category_description, status_id) VALUES (?, ?, ?)";
+    $sql = "INSERT INTO category (category_name, category_description, status_id, category_type_id) VALUES (?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssi", $category_name, $category_description, $status_id);
+    $stmt->bind_param("ssii", $category_name, $category_description, $status_id, $category_type_id);
 
     if ($stmt->execute()) {
         echo json_encode(['status' => 'success', 'message' => 'Thể loại đã được thêm thành công!']);

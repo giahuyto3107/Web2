@@ -1,25 +1,33 @@
 <dialog data-modal id="edit-modal">
     <div class="modal-header">
-        <h2>Edit Category</h2>
+        <h2>Sửa Thể Loại</h2>
         <a class="modal-close" data-id="edit-modal" id="edit-close-button-icon">
             <i class="fa fa-times" style="font-size: 1.5rem; height: 1.5rem"></i>
         </a>
     </div>
     <div>
         <form class="modal-form" id="modal-edit-form" method="post">
-            <input type="hidden" id="modal-edit-category-id" name="category_id" /> <!-- Ẩn để lưu category_id -->
+            <input type="hidden" id="modal-edit-category-id" name="category_id" />
             <label for="modal-edit-name">
-                <span>Name</span>
+                <span>Tên Thể Loại</span>
                 <input type="text" id="modal-edit-name" name="category_name" required />
                 <p class="modal-error" id="modal-edit-name-error"></p>
             </label>
             <label for="modal-edit-desc" class="modal-desc-label">
-                <span>Description</span>
+                <span>Mô tả</span>
                 <textarea id="modal-edit-desc" name="category_description" rows="5"></textarea>
                 <p class="modal-error" id="modal-edit-desc-error"></p>
             </label>
+            <label for="modal-edit-category-type">
+                <span>Chủng Loại</span>
+                <select id="modal-edit-category-type" name="category_type_id" required>
+                    <option value="">Chọn chủng loại</option>
+                    <!-- Danh sách chủng loại sẽ được điền bằng JavaScript -->
+                </select>
+                <p class="modal-error" id="modal-edit-category-type-error"></p>
+            </label>
             <label for="modal-edit-status">
-                <span>Status</span>
+                <span>Trạng Thái</span>
                 <select id="modal-edit-status" name="status_id" required>
                     <option value="1">Active</option>
                     <option value="2">Inactive</option>
@@ -27,8 +35,8 @@
                 <p class="modal-error" id="modal-edit-status-error"></p>
             </label>
             <div class="modal-buttons">
-                <button type="button" class="cancel" id="edit-close-button">Cancel</button>
-                <button type="submit" class="submit">Submit</button>
+                <button type="button" class="cancel" id="edit-close-button">Hủy</button>
+                <button type="submit" class="submit">Cập Nhật</button>
             </div>
         </form>
     </div>

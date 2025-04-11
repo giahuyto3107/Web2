@@ -5,17 +5,41 @@
             <i class="fa fa-times" style="font-size: 1.5rem; height: 1.5rem"></i>
         </button>
     </div>
-    <div class="modal-content">
-        <p><strong>ID:</strong> <span id="modal-view-product-id"></span></p>
-        <p><strong>Tên Sản Phẩm:</strong> <span id="modal-view-name"></span></p>
-        <p><strong>Mô Tả:</strong> <span id="modal-view-description"></span></p>
-        <p><strong>Hình Ảnh:</strong> <span id="modal-view-image-url"></span></p>
-        <p><strong>Thể Loại:</strong> <span id="modal-view-categories"></span></p>
-        <p><strong>Giá:</strong> <span id="modal-view-price"></span></p>
-        <p><strong>Số Lượng Tồn:</strong> <span id="modal-view-stock-quantity"></span></p>
-        <p><strong>Trạng Thái:</strong> <span id="modal-view-status"></span></p>
+    <div class="view-container">
+        <div class="view-content">
+            <span>ID</span>
+            <p id="modal-view-product-id">N/A</p>
+        </div>
+        <div class="view-content">
+            <span>Tên Sản Phẩm</span>
+            <p id="modal-view-name">N/A</p>
+        </div>
+        <div class="view-content">
+            <span>Mô Tả</span>
+            <p id="modal-view-description">N/A</p>
+        </div>
+        <div class="view-content">
+            <span>Hình Ảnh</span>
+            <img id="modal-view-image-url" src="" alt="Hình Ảnh Sản Phẩm" style="max-width: 100px;" />
+        </div>
+        <div class="view-content">
+            <span>Thể Loại</span>
+            <p id="modal-view-categories">N/A</p>
+        </div>
+        <div class="view-content">
+            <span>Giá</span>
+            <p id="modal-view-price">N/A</p>
+        </div>
+        <div class="view-content">
+            <span>Số Lượng Tồn</span>
+            <p id="modal-view-stock-quantity">N/A</p>
+        </div>
+        <div class="view-content">
+            <span>Trạng Thái</span>
+            <p id="modal-view-status">N/A</p>
+        </div>
         <div class="modal-buttons">
-            <button type="button" class="close" id="view-close-button">Đóng</button>
+            <button class="close" id="view-close-button">Đóng</button>
         </div>
     </div>
 </dialog>

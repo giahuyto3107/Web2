@@ -28,31 +28,35 @@
                     <option value="address">Địa chỉ</option>
                 </select>
             </div>
-            <div class="search">
-                <!-- Trường nhập liệu văn bản (mặc định) -->
-                <input type="text" id="search-text" name="search-text" placeholder="Tìm kiếm..." style="display: block;" />
-                <!-- Dropdown cho trạng thái (ẩn ban đầu) -->
-                <select id="search-status" name="search-status" style="display: none;">
-                    <option value="">Tất cả</option>
-                    <option value="3">Chờ duyệt</option>
-                    <option value="4">Đã duyệt</option>
-                    <option value="5">Đã giao</option>
-                    <option value="7">Đã hủy</option>
-                </select>
-                <!-- Dropdown cho phương thức thanh toán (ẩn ban đầu) -->
-                <select id="search-payment-method" name="search-payment-method" style="display: none;">
-                    <option value="">Tất cả</option>
-                    <option value="Tiền mặt">Tiền mặt</option>
-                    <option value="Chuyển khoản">Chuyển khoản</option>
-                </select>
-                <!-- Hai trường nhập liệu ngày (ẩn ban đầu) -->
-                <div id="search-date" style="display: none;">
-                    <label for="date-from">Từ ngày:</label>
-                    <input type="date" id="date-from" name="date-from" />
-                    <label for="date-to">Đến ngày:</label>
-                    <input type="date" id="date-to" name="date-to" />
-                </div>
-            </div>
+
+    <div class="search">
+    <!-- Trường nhập liệu văn bản (mặc định) -->
+    <input type="text" id="search-text" name="search-text" placeholder="Tìm kiếm..." style="display: block;" />
+    <!-- Dropdown cho trạng thái (ẩn ban đầu) -->
+    <select id="search-status" name="search-status" style="display: none;">
+        <option value="">Tất cả</option>
+        <option value="3">Chờ duyệt</option>
+        <option value="4">Đã duyệt</option>
+        <option value="5">Đã giao</option>
+        <option value="7">Đã hủy</option>
+    </select>
+    <!-- Dropdown cho phương thức thanh toán (ẩn ban đầu) -->
+    <select id="search-payment-method" name="search-payment-method" style="display: none;">
+        <option value="">Tất cả</option>
+        <option value="Tiền mặt">Tiền mặt</option>
+        <option value="Chuyển khoản">Chuyển khoản</option>
+    </select>
+   <div id="search-date" style="display: none; margin-top: 0.5rem;">
+    <div class="date-filter-wrapper">
+        <label for="date-from" class="filter-label">Từ: </label>
+        <input type="date" id="date-from" name="date-from" />
+    </div>
+    <div class="date-filter-wrapper">
+        <label for="date-to" class="filter-label">Đến: </label>
+        <input type="date" id="date-to" name="date-to" />
+    </div>
+</div>
+</div>
         </div>
         <div class="toolbar-button-wrapper">
             <!-- Bỏ nút Thêm đơn hàng -->
@@ -188,7 +192,7 @@
                 searchText.style.display = 'none';
                 searchStatus.style.display = 'none';
                 searchPaymentMethod.style.display = 'none';
-                searchDate.style.display = 'block';
+                searchDate.style.display = 'flex';
             } else {
                 searchText.style.display = 'block';
                 searchStatus.style.display = 'none';
