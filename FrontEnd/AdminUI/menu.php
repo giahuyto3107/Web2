@@ -100,8 +100,8 @@
             </a>
             <span class="tooltip">Quản lí nhập hàng</span>
         </li>
-        <li> <!-- Logout doesn’t need a permission ID -->
-            <a href="#" id="logout">
+        <li> <!-- Logout doesn't need a permission ID -->
+            <a href="login signup/logout.php" id="logout">
                 <i class="bx bx-log-out"></i>
                 <span class="nav-item">Logout</span>
             </a>
