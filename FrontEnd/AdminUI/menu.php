@@ -30,7 +30,14 @@
             </a>
             <span class="tooltip">Quản lí sản phẩm</span>
         </li>
-        <li data-permission-id="8"> <!-- Assuming this falls under "Quản lý sản phẩm" -->
+        <li>
+            <a href="index.php?action=quanlichungloai">
+                <i class="bx bx-cog"></i>
+                <span class="nav-item">Quản lí chủng loại</span>
+            </a>
+            <span class="tooltip">Quản lí chủng loại</span>
+        </li>
+        <li>
             <a href="index.php?action=quanliloaisp">
                 <i class="bx bxs-grid-alt"></i>
                 <span class="nav-item">Quản lí thể loại</span>

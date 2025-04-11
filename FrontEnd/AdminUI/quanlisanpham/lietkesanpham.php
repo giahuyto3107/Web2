@@ -73,8 +73,8 @@
         // Hàm chuyển status_id thành văn bản
         function getStatusText(statusId) {
             switch (statusId) {
-                case 1: return 'Active';
-                case 2: return 'Inactive';
+                case 1: return 'Hoạt Động';
+                case 2: return 'Không hoạt động';
                 default: return 'N/A';
             }
         }
@@ -116,7 +116,18 @@
                 renderTable(products);
             });
         }
-
+                // Hàm định dạng tiền tệ Việt Nam
+        function formatCurrency(amount) {
+            if (amount === null || amount === undefined || isNaN(amount)) {
+                return '0 VNĐ';
+            }
+            // Chuyển đổi thành số và làm tròn 2 chữ số thập phân
+            const number = parseFloat(amount).toFixed(0);
+            // Thêm dấu phân cách hàng nghìn
+            const formatted = number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            return `${formatted} VNĐ`;
+        }
+        
         // Hàm render bảng
         function renderTable(displayedProducts) {
             const tableBody = document.getElementById('table-body');
@@ -140,7 +151,7 @@
                         <td>${product.product_description || 'N/A'}</td>
                         <td>${product.image_url ? `<img src="${product.image_url}" alt="${product.product_name}" style="max-width: 100px;" />` : 'N/A'}</td>
                         <td>${product.categories || 'N/A'}</td>
-                        <td>${product.price || '0.00'}</td>
+                        <td>${formatCurrency(product.price)}</td> <!-- Sử dụng formatCurrency -->
                         <td>${product.stock_quantity || '0'}</td>
                         <td>${getStatusText(product.status_id)}</td>
                         <td class="actions">
@@ -538,18 +549,20 @@ function openEditModal(product) {
         }
 
         // Hàm thêm dữ liệu vào modal
-        function addModalData(modalEl, product, type) {
-            if (type === "innerHTML") {
-                modalEl.querySelector("#modal-view-product-id").textContent = product.product_id || 'N/A';
-                modalEl.querySelector("#modal-view-name").textContent = product.product_name || 'N/A';
-                modalEl.querySelector("#modal-view-description").textContent = product.product_description || 'N/A';
-                modalEl.querySelector("#modal-view-image-url").textContent = product.image_url || 'N/A';
-                modalEl.querySelector("#modal-view-categories").textContent = product.categories || 'N/A';
-                modalEl.querySelector("#modal-view-price").textContent = product.price || '0.00';
-                modalEl.querySelector("#modal-view-stock-quantity").textContent = product.stock_quantity || '0';
-                modalEl.querySelector("#modal-view-status").textContent = getStatusText(product.status_id);
-            }
-        }
+function addModalData(modalEl, product, type) {
+    if (type === "innerHTML") {
+        modalEl.querySelector("#modal-view-product-id").textContent = product.product_id || 'N/A';
+        modalEl.querySelector("#modal-view-name").textContent = product.product_name || 'N/A';
+        modalEl.querySelector("#modal-view-description").textContent = product.product_description || 'N/A';
+        const imageEl = modalEl.querySelector("#modal-view-image-url");
+        imageEl.src = product.image_url || ''; // Điền URL vào src
+        imageEl.alt = product.image_url ? 'Hình Ảnh Sản Phẩm' : 'Không có hình ảnh'; // Cập nhật alt
+        modalEl.querySelector("#modal-view-categories").textContent = product.categories || 'N/A';
+        modalEl.querySelector("#modal-view-price").textContent = formatCurrency(product.price); // Sử dụng formatCurrency
+        modalEl.querySelector("#modal-view-stock-quantity").textContent = product.stock_quantity || '0';
+        modalEl.querySelector("#modal-view-status").textContent = getStatusText(product.status_id);
+    }
+}
 
 // Hàm xử lý modal
 function addModalCloseButtonEventListeners() {
