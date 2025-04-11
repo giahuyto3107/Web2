@@ -20,6 +20,7 @@
 <body>
     <?php
     session_start();
+
     
     if (isset($_SESSION['user_id'])) {
         // User is logged in, include the necessary files
@@ -34,5 +35,8 @@
     <!-- <script src="js/dashboard.js" type="module"></script>
     <script src="js/dashboard-products.js" type="module"></script>
     <script src="js/sidebar.js"></script> -->
+    
+    <!-- Include module permission script -->
+    <script src="js/module_permission.js"></script>
 </body>
 </html>

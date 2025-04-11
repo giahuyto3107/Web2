@@ -32,7 +32,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 $_SESSION["user_email"] = $user["email"];
                 $response["success"] = true;
                 $response["message"] = "Đăng nhập thành công!";
-                $response["redirect"] = "../index.php"; // Chuyển hướng đến trang chủ
+                $response["redirect"] = "index.php"; // Chuyển hướng đến trang chủ
             } else {
                 $response["message"] = "Mật khẩu không đúng.";
             }

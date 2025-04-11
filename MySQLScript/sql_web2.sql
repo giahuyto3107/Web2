@@ -548,36 +548,29 @@ VALUES
 CREATE TABLE if not exists role_permission (
     role_id INT,
     permission_id INT,
+    action varchar(100),
     PRIMARY KEY (role_id, permission_id),
     FOREIGN KEY (role_id) REFERENCES role(id) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (permission_id) REFERENCES permission(permission_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-INSERT INTO `role_permission` (`role_id`, `permission_id`) 
+INSERT INTO `role_permission` (`role_id`, `permission_id`, `action`) 
 VALUES
-    -- Quản trị viên (role_id = 1) có toàn quyền
-    (1, 1), -- Quản lý sản phẩm
-    (1, 2), -- Quản lý đơn hàng
-    (1, 3), -- Quản lý nhập hàng
-    (1, 4), -- Quản lý tài khoản
-    (1, 5), -- Quản lý đánh giá
-    (1, 6), -- Xem thống kê
-    (1, 7), -- Quản lý nhà cung cấp
-    (1, 8), -- Đặt hàng
+(1, 1, 'Xem'),
+(1, 2, 'Xem'),
+(1, 3, 'Xem'),
+(1, 4, 'Xem'),
+(1, 5, 'Xem'),
+(1, 6, 'Xem'),
+(1, 7, 'Đặt hàng'),
+(1, 8, 'Xem'),
+(1, 9, 'Xem'),
+(1, 10, 'Xem'),
+(1, 11, 'Xem'),
+(1, 12, 'Xem');
 
-    -- Quản lý (role_id = 4) có quyền hạn chế
-    (4, 1), -- Quản lý sản phẩm
-    (4, 2), -- Quản lý đơn hàng
-    (4, 3), -- Quản lý nhập hàng
-    (4, 5), -- Quản lý đánh giá
-    (4, 6), -- Xem thống kê
 
-    -- Nhà cung cấp (role_id = 3) chỉ có quyền liên quan đến nhập hàng
-    (3, 3), -- Quản lý nhập hàng
-    (3, 7), -- Quản lý nhà cung cấp
-
-    -- Khách hàng (role_id = 2) chỉ có quyền đặt hàng
-    (2, 8); -- Đặt hàng
+    
 
 CREATE TABLE IF NOT EXISTS price_history (
     history_id INT AUTO_INCREMENT PRIMARY KEY,
