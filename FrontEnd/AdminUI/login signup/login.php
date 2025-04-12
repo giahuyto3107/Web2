@@ -147,7 +147,7 @@
                 <button id="submit-login" type="submit">Đăng nhập</button>
                 <p id="login-message"></p>
             </form>
-            <p class="text-sm mt-4">Chưa có tài khoản? <a href="login signup/signup.php" data-page="signup">Đăng ký ngay</a></p>
+            <!-- <p class="text-sm mt-4">Chưa có tài khoản? <a href="login signup/signup.php" data-page="signup">Đăng ký ngay</a></p> -->
         </div>
     </div>
 
@@ -174,7 +174,7 @@
             submitButton.disabled = true;
             submitButton.textContent = "Đang đăng nhập...";
 
-            fetch("process-login.php", {
+            fetch("login signup/process-login.php", {
                 method: "POST",
                 headers: { "Content-Type": "application/x-www-form-urlencoded" },
                 body: `email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`

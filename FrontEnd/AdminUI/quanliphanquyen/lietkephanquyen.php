@@ -1,3 +1,16 @@
+<?php
+    // Check if user is logged in
+    if (!isset($_SESSION['user_id'])) {
+        error_log("User ID not set in lietkephieunhap.php, redirecting to login");
+        header("Location: /Web2/FrontEnd/AdminUI/login signup/login.php");
+        exit;
+    }
+
+    $user_id = $_SESSION['user_id'];
+    echo $user_id;
+    error_log("User ID in lietkephieunhap.php: " . $user_id);
+?>
+
 <body>
     <div class="header"></div>
     <div class="data-table">

@@ -1,38 +1,64 @@
 <?php
-include('../../../BackEnd/Config/config.php');
+/**
+ * Fetch Role Permissions
+ * This file returns the permissions for the current user's role
+ */
+
 session_start();
-header('Content-Type: application/json');
+include_once('../../../BackEnd/Config/config.php');
 
-// Simulate user ID from session (replace with your actual authentication logic)
-$user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
+header("Content-Type: application/json; charset=UTF-8");
 
-if (!$user_id) {
-    echo json_encode(['success' => false, 'message' => 'User not logged in']);
+// Check if user is logged in
+if (!isset($_SESSION['user_id'])) {
+    echo json_encode([
+        "success" => false,
+        "message" => "User not logged in"
+    ]);
     exit;
 }
 
-// Fetch user's role_id and permissions
-$query = "
-    SELECT rp.permission_id 
-    FROM users u 
-    JOIN role_permission rp ON u.role_id = rp.role_id 
-    WHERE u.id = ?
-";
-$stmt = $conn->prepare($query);
-$stmt->bind_param('i', $user_id);
+$userId = $_SESSION['user_id'];
+
+// Get the user's role_id
+$sql = "SELECT role_id FROM account WHERE account_id = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $userId);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows === 0) {
+    echo json_encode([
+        "success" => false,
+        "message" => "User not found"
+    ]);
+    exit;
+}
+
+$user = $result->fetch_assoc();
+$roleId = $user['role_id'];
+
+// Get all permissions for the role with their actions
+$sql = "SELECT p.permission_id, rp.action 
+        FROM permission p 
+        JOIN role_permission rp ON p.permission_id = rp.permission_id 
+        WHERE rp.role_id = ? AND p.status_id = 1";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $roleId);
 $stmt->execute();
 $result = $stmt->get_result();
 
 $permissions = [];
+$permissionActions = [];
+
 while ($row = $result->fetch_assoc()) {
-    $permissions[] = $row['permission_id'];
+    $permissions[] = (int)$row['permission_id'];
+    $permissionActions[(int)$row['permission_id']] = $row['action'];
 }
 
 echo json_encode([
-    'success' => true,
-    'permissions' => $permissions
+    "success" => true,
+    "permissions" => $permissions,
+    "permissionActions" => $permissionActions
 ]);
-
-$stmt->close();
-$conn->close();
 ?>
