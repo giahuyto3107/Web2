@@ -149,7 +149,7 @@
                         <td>${index + 1}</td>
                         <td>${product.product_name || 'N/A'}</td>
                         <td>${product.product_description || 'N/A'}</td>
-                        <td>${product.image_url ? `<img src="${product.image_url}" alt="${product.product_name}" style="max-width: 100px;" />` : 'N/A'}</td>
+                        <td>${product.image_url ? `<img src="${product.image_url}" alt="${product.product_name}" style="width: 100px; height: 100px;object-fit: cover; border-radius: 4px;display: block; " />` : 'N/A'}</td>
                         <td>${product.categories || 'N/A'}</td>
                         <td>${formatCurrency(product.price)}</td> <!-- Sử dụng formatCurrency -->
                         <td>${product.stock_quantity || '0'}</td>
