@@ -30,14 +30,14 @@
             </a>
             <span class="tooltip">Quản lí sản phẩm</span>
         </li>
-        <li>
+        <li data-permission-id="12">
             <a href="index.php?action=quanlichungloai">
                 <i class="bx bx-cog"></i>
                 <span class="nav-item">Quản lí chủng loại</span>
             </a>
             <span class="tooltip">Quản lí chủng loại</span>
         </li>
-        <li>
+        <li data-permission-id="8">
             <a href="index.php?action=quanliloaisp">
                 <i class="bx bxs-grid-alt"></i>
                 <span class="nav-item">Quản lí thể loại</span>
@@ -79,14 +79,14 @@
             </a>
             <span class="tooltip">Quản lí tài khoản</span>
         </li>
-        <li data-permission-id="10"> <!-- Assuming this falls under "Quản lý tài khoản" -->
+        <li data-permission-id="10">
             <a href="index.php?action=quanlichucvu">
                 <i class="bx bx-cog"></i>
                 <span class="nav-item">Quản lí chức vụ</span>
             </a>
             <span class="tooltip">Quản lí chức vụ</span>
         </li>
-        <li data-permission-id="11"> <!-- Assuming this falls under "Quản lý tài khoản" -->
+        <li data-permission-id="11">
             <a href="index.php?action=quanliphanquyen">
                 <i class="bx bx-cog"></i>
                 <span class="nav-item">Quản lí phân quyền</span>
@@ -100,7 +100,7 @@
             </a>
             <span class="tooltip">Quản lí nhập hàng</span>
         </li>
-        <li> <!-- Logout doesn't need a permission ID -->
+        <li>
             <a href="login signup/logout.php" id="logout">
                 <i class="bx bx-log-out"></i>
                 <span class="nav-item">Logout</span>

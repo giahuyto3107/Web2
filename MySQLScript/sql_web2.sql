@@ -549,7 +549,7 @@ CREATE TABLE if not exists role_permission (
     role_id INT,
     permission_id INT,
     action varchar(100),
-    PRIMARY KEY (role_id, permission_id),
+    PRIMARY KEY (role_id, permission_id, action),
     FOREIGN KEY (role_id) REFERENCES role(id) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (permission_id) REFERENCES permission(permission_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -557,6 +557,8 @@ CREATE TABLE if not exists role_permission (
 INSERT INTO `role_permission` (`role_id`, `permission_id`, `action`) 
 VALUES
 (1, 1, 'Xem'),
+(1, 1, 'Xóa'),
+(1, 1, 'Sửa'),
 (1, 2, 'Xem'),
 (1, 3, 'Xem'),
 (1, 4, 'Xem'),
@@ -566,11 +568,14 @@ VALUES
 (1, 8, 'Xem'),
 (1, 9, 'Xem'),
 (1, 10, 'Xem'),
+(1, 10, 'Sửa'),
+(1, 10, 'Xóa'),
+(1, 10, 'Cập nhật phân quyền'),
+(1, 10, 'Thêm'),
 (1, 11, 'Xem'),
 (1, 12, 'Xem');
 
 
-    
 
 CREATE TABLE IF NOT EXISTS price_history (
     history_id INT AUTO_INCREMENT PRIMARY KEY,

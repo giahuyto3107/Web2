@@ -1,4 +1,3 @@
-
 <body>
     <div class="header"></div>
     <div class="data-table">
@@ -140,9 +139,9 @@
                                 <div class="dropdown">
                                     <button class="dropdownButton"><i class="fa fa-ellipsis-v dropIcon"></i></button>
                                     <div class="dropdown-content">
-                                        <a href="#" class="viewReview" data-review-id="${review.review_id}">Xem Bình Luận <i class="fa fa-eye"></i></a>
-                                        <a href="#" class="editReview" data-review-id="${review.review_id}">Sửa Bình Luận <i class="fa fa-edit"></i></a>
-                                        <a href="#" class="deleteReview" data-review-id="${review.review_id}">Xóa Bình Luận <i class="fa fa-trash"></i></a>
+                                        <a href="#" class="viewReview" data-permission-id="4" data-action="Xem" data-review-id="${review.review_id}">Xem Bình Luận <i class="fa fa-eye"></i></a>
+                                        <a href="#" class="editReview" data-permission-id="4" data-action="Sửa" data-review-id="${review.review_id}">Sửa Bình Luận <i class="fa fa-edit"></i></a>
+                                        <a href="#" class="deleteReview" data-permission-id="4" data-action="Xóa" data-review-id="${review.review_id}">Xóa Bình Luận <i class="fa fa-trash"></i></a>
                                     </div>
                                 </div>
                             </td>

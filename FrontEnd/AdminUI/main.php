@@ -125,8 +125,84 @@
         ?>
     </div>
 
-    <!-- Include permission scripts -->
-    <script src="js/permissions.js"></script>
-    <script src="js/module_permission.js"></script>
-    <script src="js/init-permissions.js"></script>
+    <!-- Initialize PermissionSystem namespace -->
+    <script>
+        console.log('Initializing PermissionSystem namespace...');
+        
+        // Create the global namespace immediately
+        window.PermissionSystem = {
+            hasActionPermission: null,
+            isPermissionLoaded: () => false,
+            moduleLoaded: false,
+            ready: new Promise((resolve) => {
+                window._resolvePermissionSystem = resolve;
+            })
+        };
+        
+        // Debug global object
+        console.log('PermissionSystem initialized:', window.PermissionSystem);
+    </script>
+
+    <!-- Load permission scripts -->
+    <script>
+        // Debug script paths
+        const scriptPaths = {
+            modulePermission: '<?php echo "/Web2/FrontEnd/AdminUI/js/module_permission.js"; ?>',
+            actionPermission: '<?php echo "/Web2/FrontEnd/AdminUI/js/action-permission.js"; ?>',
+            initPermissions: '<?php echo "/Web2/FrontEnd/AdminUI/js/init-permissions.js"; ?>'
+        };
+        
+        console.log('Script paths:', scriptPaths);
+        
+        // Load a script and return a promise
+        function loadScript(src) {
+            return new Promise((resolve, reject) => {
+                console.log('Loading script:', src);
+                const script = document.createElement('script');
+                script.src = src;
+                script.async = false; // Maintain loading order
+                script.onload = () => {
+                    console.log('Successfully loaded:', src);
+                    resolve();
+                };
+                script.onerror = (error) => {
+                    console.error('Failed to load:', src, error);
+                    reject(new Error(`Failed to load ${src}`));
+                };
+                document.head.appendChild(script);
+            });
+        }
+
+        // Load all scripts in sequence
+        async function loadAllScripts() {
+            try {
+                console.log('Starting script loading sequence...');
+                
+                // Load module_permission.js first
+                await loadScript(scriptPaths.modulePermission);
+                console.log('module_permission.js loaded, PermissionSystem:', window.PermissionSystem);
+                
+                // Load action-permission.js
+                await loadScript(scriptPaths.actionPermission);
+                console.log('action-permission.js loaded');
+                
+                // Load init-permissions.js
+                await loadScript(scriptPaths.initPermissions);
+                console.log('init-permissions.js loaded');
+                
+                console.log('All scripts loaded successfully');
+            } catch (error) {
+                console.error('Error in script loading sequence:', error);
+            }
+        }
+
+        // Start loading when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', loadAllScripts);
+        } else {
+            loadAllScripts();
+        }
+    </script>
+</body>
+</html>
 

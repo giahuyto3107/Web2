@@ -41,8 +41,8 @@
                 </div>
             </div>
             <div class="toolbar-button-wrapper">
-                <button class="toolbar-button add-product-button" id="add-product-toolbar">
-                    <span>Thêm quyền</span>
+                <button class="toolbar-button add-product-button" id="add-product-toolbar" data-permission-id="11" data-action="Thêm">
+                    <span>Thêm phân quyền</span>
                     <i class="bx bx-plus-medical"></i>
                 </button>
             </div>
@@ -146,9 +146,9 @@
                                 <div class="dropdown">
                                     <button class="dropdownButton"><i class="fa fa-ellipsis-v dropIcon"></i></button>
                                     <div class="dropdown-content">
-                                        <a href="#" class="viewPermission" data-permission-id="${permission.permission_id}">Xem Quyền <i class="fa fa-eye"></i></a>
-                                        <a href="#" class="editPermission" data-permission-id="${permission.permission_id}">Sửa Quyền <i class="fa fa-edit"></i></a>
-                                        <a href="#" class="deletePermission" data-permission-id="${permission.permission_id}">Xóa Quyền <i class="fa fa-trash"></i></a>
+                                        <a href="#" class="viewPermission" data-permission-id="11" data-action="Xem" data-permission-id="${permission.permission_id}">Xem Phân Quyền <i class="fa fa-eye"></i></a>
+                                        <a href="#" class="editPermission" data-permission-id="11" data-action="Sửa" data-permission-id="${permission.permission_id}">Sửa Phân Quyền <i class="fa fa-edit"></i></a>
+                                        <a href="#" class="deletePermission" data-permission-id="11" data-action="Xóa" data-permission-id="${permission.permission_id}">Xóa Phân Quyền <i class="fa fa-trash"></i></a>
                                     </div>
                                 </div>
                             </td>

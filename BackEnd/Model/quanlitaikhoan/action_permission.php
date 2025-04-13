@@ -42,17 +42,16 @@ function hasActionPermission($actionName, $moduleName) {
     $modulePermissionMap = [
         'quanlisanpham' => 1,      // Quản lý sản phẩm
         'quanlidonhang' => 2,      // Quản lý đơn hàng
-        'quanlinhacungcap' => 3,   // Quản lý nhà cung cấp
-        'quanlitaikhoan' => 4,     // Quản lý tài khoản
-        'quanlibinhluan' => 5,     // Quản lý đánh giá
-        'thongke' => 6,            // Xem thống kê
-        'quanlinhacungcap' => 7,   // Quản lý nhà cung cấp
-        'dathang' => 8,            // Đặt hàng
-        'quanliloaisp' => 9,       // Quản lý thể loại
-        'quanliphieunhap' => 10,   // Quản lý phiếu nhập
-        'quanlichucvu' => 11,      // Quản lý chức vụ
-        'quanliphanquyen' => 12,   // Quản lý phân quyền
-        'quanlichungloai' => 13    // Quản lý chủng loại
+        'quanlitaikhoan' => 3,   // Quản lý nhà cung cấp
+        'quanlidanhgia' => 4,     // Quản lý tài khoản
+        'thongke' => 5,     // Quản lý đánh giá
+        'quanlinhacungcap' => 6,            // Xem thống kê
+        'dathang' => 7,   // Quản lý nhà cung cấp
+        'quanlitheloai' => 8,            // Đặt hàng
+        'quanliphieunhap' => 9,       // Quản lý thể loại
+        'quanlichucvu' => 10,   // Quản lý phiếu nhập
+        'quanliphanquyen' => 11,      // Quản lý chức vụ
+        'quanlichungloai' => 12,   // Quản lý phân quyền
     ];
     
     // Check if the module exists in our map

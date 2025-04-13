@@ -4,7 +4,7 @@ $servername = "localhost";
 $username = "root"; // Thay bằng username của bạn
 $password = "1234"; // Thay bằng password của bạn
 $dbname = "web2_sql";
-$port = "3306";
+$port = "3305";
 
 // Tạo kết nối
 $conn = new mysqli($servername, $username,$password , $dbname, $port);

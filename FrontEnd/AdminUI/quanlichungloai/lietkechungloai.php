@@ -27,7 +27,7 @@
       </div>
     </div>
     <div class="toolbar-button-wrapper">
-      <button class="toolbar-button add-product-button" id="add-product-toolbar">
+      <button class="toolbar-button add-product-button" id="add-product-toolbar" data-permission-id="12" data-action="Thêm">
         <span>Thêm chủng loại</span>
         <i class="bx bx-plus-medical"></i>
       </button>
@@ -132,9 +132,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="dropdown">
                             <button class="dropdownButton"><i class="fa fa-ellipsis-v dropIcon"></i></button>
                             <div class="dropdown-content">
-                                <a href="#" class="viewCategoryType" data-category-type-id="${categoryType.category_type_id}">View Category Type <i class="fa fa-eye"></i></a>
-                                <a href="#" class="editCategoryType" data-category-type-id="${categoryType.category_type_id}">Edit Category Type <i class="fa fa-edit"></i></a>
-                                <a href="#" class="deleteCategoryType" data-category-type-id="${categoryType.category_type_id}">Delete Category Type <i class="fa fa-trash"></i></a>
+                                <a href="#" class="viewCategoryType" data-permission-id="12" data-action="Xem" data-category-type-id="${categoryType.category_type_id}">View Category Type <i class="fa fa-eye"></i></a>
+                                <a href="#" class="editCategoryType" data-permission-id="12" data-action="Sửa" data-category-type-id="${categoryType.category_type_id}">Edit Category Type <i class="fa fa-edit"></i></a>
+                                <a href="#" class="deleteCategoryType" data-permission-id="12" data-action="Xóa" data-category-type-id="${categoryType.category_type_id}">Delete Category Type <i class="fa fa-trash"></i></a>
                             </div>
                         </div>
                     </td>

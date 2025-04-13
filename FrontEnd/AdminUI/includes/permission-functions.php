@@ -10,6 +10,20 @@ if (!defined('ADMIN_ACCESS')) {
     exit('Direct access forbidden.');
 }
 
+// Include database connection at the top level
+require_once __DIR__ . '/../../../BackEnd/Config/config.php';
+global $conn;
+
+if (!function_exists('debug_log')) {
+    function debug_log($message, $data = null) {
+        error_log(sprintf(
+            "[Permission Debug] %s %s",
+            $message,
+            $data !== null ? json_encode($data, JSON_UNESCAPED_UNICODE) : ''
+        ));
+    }
+}
+
 /**
  * Get all permissions for a user
  * 
@@ -17,57 +31,66 @@ if (!defined('ADMIN_ACCESS')) {
  * @return array An associative array of permissions organized by module
  */
 function getUserPermissions($userId) {
-    // Initialize an empty permissions array
+    global $conn;
+    
+    debug_log("Getting permissions for user ID", $userId);
+    
+    if (!$userId) {
+        debug_log("Invalid user ID provided", $userId);
+        return [];
+    }
+
+    // Get user's role IDs
+    $roleQuery = "SELECT role_id FROM account WHERE id = ?";
+    $roleStmt = $conn->prepare($roleQuery);
+    $roleStmt->bind_param("i", $userId);
+    $roleStmt->execute();
+    $roleResult = $roleStmt->get_result();
+    
+    if ($roleResult->num_rows === 0) {
+        debug_log("No roles found for user", $userId);
+        return [];
+    }
+    
+    $roleIds = [];
+    while ($row = $roleResult->fetch_assoc()) {
+        $roleIds[] = $row['role_id'];
+    }
+    
+    debug_log("Found role IDs for user", $roleIds);
+    
+    // Get permissions for all roles
     $permissions = [];
+    $permissionQuery = "
+        SELECT DISTINCT 
+            rp.permission_id,
+            rp.action,
+            p.module_name
+        FROM role_permission rp
+        JOIN permission p ON rp.permission_id = p.permission_id
+        WHERE rp.role_id IN (" . implode(',', array_fill(0, count($roleIds), '?')) . ")";
     
-    // If user is not logged in, return empty permissions
-    if ($userId <= 0) {
-        return $permissions;
-    }
-    
-    // Connect to the database
-    require_once __DIR__ . '/../../BackEnd/Config/config.php';
-    
-    // Get the user's role ID
-    $stmt = $conn->prepare("SELECT role_id FROM users WHERE id = ?");
-    $stmt->bind_param("i", $userId);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    
-    if ($row = $result->fetch_assoc()) {
-        $roleId = $row['role_id'];
+    $permissionStmt = $conn->prepare($permissionQuery);
+    if ($permissionStmt) {
+        $permissionStmt->bind_param(str_repeat("i", count($roleIds)), ...$roleIds);
+        $permissionStmt->execute();
+        $permissionResult = $permissionStmt->get_result();
         
-        // Get all permissions for this role
-        $stmt = $conn->prepare("
-            SELECT m.name as module_name, a.name as action_name
-            FROM role_permissions rp
-            JOIN permissions p ON rp.permission_id = p.id
-            JOIN modules m ON p.module_id = m.id
-            JOIN actions a ON p.action_id = a.id
-            WHERE rp.role_id = ?
-        ");
-        $stmt->bind_param("i", $roleId);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        
-        // Organize permissions by module
-        while ($row = $result->fetch_assoc()) {
-            $moduleName = $row['module_name'];
-            $actionName = $row['action_name'];
-            
-            // Initialize module array if it doesn't exist
-            if (!isset($permissions[$moduleName])) {
-                $permissions[$moduleName] = [];
+        while ($row = $permissionResult->fetch_assoc()) {
+            $permId = $row['permission_id'];
+            if (!isset($permissions[$permId])) {
+                $permissions[$permId] = [
+                    'module_name' => $row['module_name'],
+                    'actions' => []
+                ];
             }
-            
-            // Add action to module
-            $permissions[$moduleName][] = $actionName;
+            $permissions[$permId]['actions'][] = $row['action'];
         }
+        
+        debug_log("Retrieved permissions", $permissions);
+    } else {
+        debug_log("Failed to prepare permission query", $conn->error);
     }
-    
-    // Close the database connection
-    $stmt->close();
-    $conn->close();
     
     return $permissions;
 }
@@ -76,20 +99,64 @@ function getUserPermissions($userId) {
  * Check if a user has a specific permission
  * 
  * @param int $userId The user ID
- * @param string $moduleName The module name
+ * @param int $permissionId The permission ID
  * @param string $actionName The action name
  * @return bool True if the user has the permission, false otherwise
  */
-function hasPermission($userId, $moduleName, $actionName) {
-    $permissions = getUserPermissions($userId);
+function hasPermission($userId, $permissionId, $action = null) {
+    global $conn;
     
-    // Check if the module exists in the permissions
-    if (!isset($permissions[$moduleName])) {
-        return false;
+    debug_log("Checking permission", [
+        'userId' => $userId,
+        'permissionId' => $permissionId,
+        'action' => $action
+    ]);
+
+    // Get user's role ID
+    $roleQuery = "SELECT role_id FROM account WHERE id = ?";
+    $roleStmt = $conn->prepare($roleQuery);
+    $roleStmt->bind_param("i", $userId);
+    $roleStmt->execute();
+    $roleResult = $roleStmt->get_result();
+    
+    if ($roleRow = $roleResult->fetch_assoc()) {
+        $roleId = $roleRow['role_id'];
+        debug_log("User role found", ['roleId' => $roleId]);
+        
+        // Get all actions for this permission and role
+        $actionQuery = "SELECT DISTINCT action_name FROM role_permission 
+                       WHERE role_id = ? AND permission_id = ?";
+        $actionStmt = $conn->prepare($actionQuery);
+        $actionStmt->bind_param("ii", $roleId, $permissionId);
+        $actionStmt->execute();
+        $actionResult = $actionStmt->get_result();
+        
+        $allowedActions = [];
+        while ($row = $actionResult->fetch_assoc()) {
+            $allowedActions[] = $row['action_name'];
+        }
+        
+        debug_log("Allowed actions", $allowedActions);
+        
+        // If no specific action is required, return true if user has any actions
+        if ($action === null) {
+            $hasPermission = !empty($allowedActions);
+            debug_log("No specific action required, checking if any actions exist", 
+                     ['hasPermission' => $hasPermission]);
+            return $hasPermission;
+        }
+        
+        // Check if the specific action is allowed
+        $hasPermission = in_array($action, $allowedActions);
+        debug_log("Checking specific action", [
+            'action' => $action,
+            'hasPermission' => $hasPermission
+        ]);
+        return $hasPermission;
     }
     
-    // Check if the action exists in the module
-    return in_array($actionName, $permissions[$moduleName]);
+    debug_log("User role not found", ['userId' => $userId]);
+    return false;
 }
 
 /**
@@ -104,31 +171,31 @@ function getUserModules($userId) {
 }
 
 /**
- * Get all actions that a user has for a specific module
+ * Get all actions that a user has for a specific permission
  * 
  * @param int $userId The user ID
- * @param string $moduleName The module name
+ * @param int $permissionId The permission ID
  * @return array An array of action names
  */
-function getUserModuleActions($userId, $moduleName) {
+function getUserModuleActions($userId, $permissionId) {
     $permissions = getUserPermissions($userId);
     
-    // Check if the module exists in the permissions
-    if (!isset($permissions[$moduleName])) {
+    // Check if the permission exists in the permissions
+    if (!isset($permissions[$permissionId])) {
         return [];
     }
     
-    return $permissions[$moduleName];
+    return $permissions[$permissionId]['actions'];
 }
 
 /**
- * Check if a user has access to a specific module
+ * Check if a user has access to a specific permission
  * 
  * @param int $userId The user ID
- * @param string $moduleName The module name
- * @return bool True if the user has access to the module, false otherwise
+ * @param int $permissionId The permission ID
+ * @return bool True if the user has access to the permission, false otherwise
  */
-function hasModuleAccess($userId, $moduleName) {
+function hasModuleAccess($userId, $permissionId) {
     global $conn;
     
     // If no user ID is provided, return false
@@ -137,7 +204,7 @@ function hasModuleAccess($userId, $moduleName) {
     }
     
     // Get the user's role ID
-    $stmt = $conn->prepare("SELECT role_id FROM users WHERE id = ?");
+    $stmt = $conn->prepare("SELECT role_id FROM account WHERE account_id = ?");
     $stmt->bind_param("i", $userId);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -145,15 +212,13 @@ function hasModuleAccess($userId, $moduleName) {
     if ($row = $result->fetch_assoc()) {
         $roleId = $row['role_id'];
         
-        // Check if the role has any permissions for the specified module
+        // Check if the role has any permissions for the specified permission
         $stmt = $conn->prepare("
             SELECT COUNT(*) as count
-            FROM role_permissions rp
-            JOIN permissions p ON rp.permission_id = p.id
-            JOIN modules m ON p.module_id = m.id
-            WHERE rp.role_id = ? AND m.name = ?
+            FROM role_permission rp
+            WHERE rp.role_id = ? AND rp.permission_id = ?
         ");
-        $stmt->bind_param("is", $roleId, $moduleName);
+        $stmt->bind_param("ii", $roleId, $permissionId);
         $stmt->execute();
         $result = $stmt->get_result();
         
@@ -166,13 +231,13 @@ function hasModuleAccess($userId, $moduleName) {
 }
 
 /**
- * Get all actions a user can perform for a specific module
+ * Get all actions a user can perform for a specific permission
  * 
  * @param int $userId The user ID
- * @param string $moduleName The module name
+ * @param int $permissionId The permission ID
  * @return array An array of action names
  */
-function getUserActionsForModule($userId, $moduleName) {
+function getUserActionsForModule($userId, $permissionId) {
     global $conn;
     
     // Initialize an empty actions array
@@ -184,7 +249,7 @@ function getUserActionsForModule($userId, $moduleName) {
     }
     
     // Get the user's role ID
-    $stmt = $conn->prepare("SELECT role_id FROM users WHERE id = ?");
+    $stmt = $conn->prepare("SELECT role_id FROM account WHERE account_id = ?");
     $stmt->bind_param("i", $userId);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -192,16 +257,13 @@ function getUserActionsForModule($userId, $moduleName) {
     if ($row = $result->fetch_assoc()) {
         $roleId = $row['role_id'];
         
-        // Get all actions for this role and module
+        // Get all actions for this role and permission
         $stmt = $conn->prepare("
-            SELECT a.name as action_name
-            FROM role_permissions rp
-            JOIN permissions p ON rp.permission_id = p.id
-            JOIN modules m ON p.module_id = m.id
-            JOIN actions a ON p.action_id = a.id
-            WHERE rp.role_id = ? AND m.name = ?
+            SELECT rp.action as action_name
+            FROM role_permission rp
+            WHERE rp.role_id = ? AND rp.permission_id = ?
         ");
-        $stmt->bind_param("is", $roleId, $moduleName);
+        $stmt->bind_param("ii", $roleId, $permissionId);
         $stmt->execute();
         $result = $stmt->get_result();
         
@@ -212,5 +274,48 @@ function getUserActionsForModule($userId, $moduleName) {
     }
     
     return $actions;
+}
+
+/**
+ * Check if a user has a specific action for a permission
+ * 
+ * @param int $userId The user ID
+ * @param int $permissionId The permission ID
+ * @param string $actionName The action name
+ * @return bool True if the user has the action, false otherwise
+ */
+function hasActionPermission($userId, $permissionId, $actionName) {
+    global $conn;
+    
+    // If no user ID is provided, return false
+    if (!$userId) {
+        return false;
+    }
+    
+    // Get the user's role ID
+    $stmt = $conn->prepare("SELECT role_id FROM account WHERE account_id = ?");
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    if ($row = $result->fetch_assoc()) {
+        $roleId = $row['role_id'];
+        
+        // Check if the role has the specific action for the permission
+        $stmt = $conn->prepare("
+            SELECT COUNT(*) as count
+            FROM role_permission rp
+            WHERE rp.role_id = ? AND rp.permission_id = ? AND rp.action = ?
+        ");
+        $stmt->bind_param("iis", $roleId, $permissionId, $actionName);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        if ($row = $result->fetch_assoc()) {
+            return $row['count'] > 0;
+        }
+    }
+    
+    return false;
 }
 ?> 

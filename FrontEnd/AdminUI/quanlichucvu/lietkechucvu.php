@@ -28,7 +28,7 @@
             </div>
         </div>
         <div class="toolbar-button-wrapper">
-            <button class="toolbar-button add-product-button" id="add-product-toolbar">
+            <button class="toolbar-button add-product-button" id="add-product-toolbar" data-permission-id="10" data-action="Thêm">
                 <span>Thêm chức vụ</span>
                 <i class="bx bx-plus-medical"></i>
             </button>
@@ -132,10 +132,10 @@
                             <div class="dropdown">
                                 <button class="dropdownButton"><i class="fa fa-ellipsis-v dropIcon"></i></button>
                                 <div class="dropdown-content">
-                                    <a href="#" class="viewRole" data-role-id="${role.id}">Xem <i class="fa fa-eye"></i></a>
-                                    <a href="#" class="editRole" data-role-id="${role.id}">Sửa <i class="fa fa-edit"></i></a>
-                                    <a href="#" class="deleteRole" data-role-id="${role.id}">Xóa <i class="fa fa-trash"></i></a>
-                                    <a href="#" class="updatePermission" data-role-id="${role.id}" data-role-name="${role.role_name}">Cập nhật quyền <i class="fa fa-key"></i></a>
+                                    <a href="#" class="viewRole" data-permission-id="10" data-action="Xem" data-role-id="${role.id}">Xem <i class="fa fa-eye"></i></a>
+                                    <a href="#" class="editRole" data-permission-id="10" data-action="Sửa" data-role-id="${role.id}">Sửa <i class="fa fa-edit"></i></a>
+                                    <a href="#" class="deleteRole" data-permission-id="10" data-action="Xóa" data-role-id="${role.id}">Xóa <i class="fa fa-trash"></i></a>
+                                    <a href="#" class="updatePermission" data-permission-id="10" data-action="Cập nhật phân quyền" data-role-id="${role.id}" data-role-name="${role.role_name}">Cập nhật quyền <i class="fa fa-key"></i></a>
                                 </div>
                             </div>
                         </td>
@@ -210,10 +210,11 @@
                 "Quản lý đơn hàng": ["Xem", "Hoàn tất", "Hủy"],
                 "Quản lý phiếu nhập": ["Xem"],
                 "Quản lý bình luận": ["Xem", "Xóa", "Sửa"],
-                "Thống kê" : ["Xem"]
+                "Thống kê" : ["Xem"],
+                "Quản lý chức vụ": ["Xem", "Thêm", "Xóa", "Sửa", "Cập nhật phân quyền"]
             };
             const defaultActions = ["Xem", "Thêm", "Xóa", "Sửa"];
-            const allActions = ["Xem", "Thêm", "Xóa", "Sửa", "Hoàn tất", "Hủy", "Đặt hàng"];
+            const allActions = ["Xem", "Thêm", "Xóa", "Sửa", "Cập nhật phân quyền", "Hoàn tất", "Hủy", "Đặt hàng"];
 
             // Fetch all permissions from the server
             fetch('../../BackEnd/Model/quanlichucvu/fetch_quyen.php')
