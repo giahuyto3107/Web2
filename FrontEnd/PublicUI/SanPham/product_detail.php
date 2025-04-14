@@ -558,7 +558,6 @@ $avg_rating = $result_avg_rating->fetch_assoc()['avg_rating'];
                 warningBox.innerHTML = '';
             }, 3000);
         }
-        /// Ajax gửi tới thêm giỏ hàng
         document.getElementById("add-to-cart-form").addEventListener("submit", function (e) {
             e.preventDefault();
 
@@ -572,45 +571,50 @@ $avg_rating = $result_avg_rating->fetch_assoc()['avg_rating'];
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
-                    // ✅ Hiện toast thông báo thành công
-                    showToast("Đã thêm vào giỏ hàng!");
-
-                    // ✅ Cập nhật số lượng trong icon giỏ hàng nếu có
-                    const cartBadge = document.getElementById("cart-count");
-                    if (cartBadge) {
+                    const cartBadge = document.querySelector(".cart-badge");
+                    if (cartBadge && data.cart_count !== undefined) {
                         cartBadge.innerText = data.cart_count;
                     }
 
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Thành công!',
+                        text: 'Đã thêm vào giỏ hàng!',
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 1500,
+                        timerProgressBar: true
+                    });
                 } else {
-                    // ⚠️ Thông báo lỗi
-                    showToast(data.message || "Thêm thất bại!", "error");
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi!',
+                        text: data.message || 'Thêm thất bại!',
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true
+                    });
                 }
+            })
+            .catch(error => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi!',
+                    text: 'Đã xảy ra lỗi, vui lòng thử lại!',
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true
+                });
             });
         });
-        /// Toast message
-        function showToast(message, type = "success") {
-            const toast = document.getElementById("toast");
-            toast.textContent = message;
-
-            toast.classList.remove("toast-hidden", "toast-error");
-            if (type === "error") {
-                toast.classList.add("toast-error");
-            }
-
-            toast.style.display = "block";
-            toast.style.opacity = "1";
-
-            // Tự động ẩn sau 3 giây
-            setTimeout(() => {
-                toast.style.opacity = "0";
-                setTimeout(() => {
-                    toast.style.display = "none";
-                    toast.classList.add("toast-hidden");
-                }, 300);
-            }, 3000);
-        }
+                
 
     </script>
-    <div id="toast" class="toast-hidden">Đã thêm vào giỏ hàng!</div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 </html>

@@ -121,9 +121,9 @@ body {
     gap: 1rem;
 }
 
-.bio-row:last-child {
+/* .bio-row:last-child {
     border-bottom: 0;
-}
+} */
 
 .bio-row strong {
     color: var(--primary-color);
@@ -313,6 +313,11 @@ body {
     }
 }
 
+.stats-container{
+    margin-top: 20px;
+    padding: 20px;
+}
+
     </style>
 </head>
 <body>
@@ -321,15 +326,15 @@ body {
             <div class="main_giohang_content">
                 <?php  
                     include ('../../../BackEnd/Config/config.php');
-                                  
-                    $account_id = $_SESSION['user_id']; 
                     
+                    $account_id = $_SESSION['user_id']; 
 
                     $sql_user = "SELECT 
                                     u.full_name, 
                                     u.profile_picture, 
                                     a.email, 
-                                    u.date_of_birth
+                                    u.date_of_birth,
+                                    u.address
                                 FROM user u
                                 INNER JOIN account a ON u.account_id = a.account_id
                                 WHERE u.account_id = '$account_id'";
@@ -343,8 +348,6 @@ body {
                         <div class="profile-nav">
                             <div class="user-heading">
                                 <img src="../../../BackEnd/Uploads/Profile Picture/<?php echo $row_user_data['profile_picture']; ?>" alt="">
-                                <!-- <h1><?php echo $row_user_data['full_name']; ?></h1>
-                                <p>ID: <?php echo $account_id; ?></p> -->
                             </div>
                             <ul class="nav nav-pills nav-stacked">
                                 <li class="nav-item active"><a class="nav-link" href="#"> <i class="fas fa-user"></i> Profile</a></li>
@@ -353,8 +356,13 @@ body {
                                         <i class="fas fa-edit"></i> Edit profile
                                     </a>
                                 </li>
-                                <li class="nav-item"><a class="nav-link" href="../../PublicUI/Lichsumuahang/listmuahang.php"> <i class="fas fa-bars"></i> Lịch sử mua hàng</a></li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="?page=orders" data-page="orders">
+                                        <i class="fa-solid fa-box"></i> Lịch sử mua hàng
+                                    </a>
+                                </li>
                             </ul>
+                           
                         </div>
                     </div>
                     <div class="col-md-9">
@@ -374,73 +382,37 @@ body {
                                     <div class="col-md-6 bio-row">
                                         <p><strong>Ngày sinh:</strong> <?php echo $row_user_data['date_of_birth']; ?></p>
                                     </div>
+                                    <div class="col-md-6 bio-row">
+                                        <p><strong>Địa chỉ</strong> <?php echo $row_user_data['address']; ?></p>
+                                    </div>
                                 </div>
                             </div>
+
                             <?php  
-                                $sql_spent_per_month = "SELECT DATE_FORMAT(order_date, '%Y-%m') AS month, SUM(total_amount) AS total FROM orders WHERE user_id = '$account_id' AND status_id=4 GROUP BY month ORDER BY month";
-                                $result_spent = mysqli_query($conn, $sql_spent_per_month);
+                                $sql_stats = "SELECT 
+                                                SUM(oi.quantity) AS total_products,
+                                                SUM(o.total_amount) AS total_spent
+                                            FROM orders o
+                                            LEFT JOIN order_items oi ON o.order_id = oi.order_id
+                                            WHERE o.user_id = '$account_id' AND o.status_id = 5";
+                                $result_stats = mysqli_query($conn, $sql_stats);
+                                $stats = mysqli_fetch_assoc($result_stats);
 
-                                $months = [];
-                                $totals = [];
-
-                                while ($row = mysqli_fetch_assoc($result_spent)) {
-                                    $months[] = $row['month'];
-                                    $totals[] = $row['total'];
-                                }
-
-                                $months_json = json_encode($months);
-                                $totals_json = json_encode($totals);
+                                $total_products = $stats['total_products'] ?? 0; 
+                                $total_spent = $stats['total_spent'] ?? 0;
                             ?>
 
-                            <div class="chart-container">
-                                <h1 style="text-align: center;">Thống kê chi tiêu</h1>
-                                <canvas id="spendingChart"></canvas>
+                            <div class="stats-container">
+                                <h1 style="text-align: center;">Thống kê mua sắm</h1>
+                                <div class="row">
+                                    <div class="col-md-6 bio-row">
+                                        <p><strong>Tổng đơn hàng:</strong> <?= number_format($total_products, 0, ',', '.') ?></p>
+                                    </div>
+                                    <div class="col-md-6 bio-row">
+                                        <p><strong>Tổng số tiền đã chi:</strong> <?= number_format($total_spent, 0, ',', '.') ?> đ</p>
+                                    </div>
+                                </div>
                             </div>
-                            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-                            <script>
-                                document.addEventListener("DOMContentLoaded", function () {
-                                    let ctx = document.getElementById('spendingChart').getContext('2d');
-                                    let months = <?php echo $months_json; ?>;
-                                    let totals = <?php echo $totals_json; ?>;
-
-                                    new Chart(ctx, {
-                                        type: 'bar', 
-                                        data: {
-                                            labels: months,
-                                            datasets: [{
-                                                label: 'Chi tiêu (VND)',
-                                                data: totals,
-                                                backgroundColor: 'rgba(255, 99, 132, 0.5)',
-                                                borderColor: 'rgba(255, 99, 132, 1)',
-                                                borderWidth: 2
-                                            }]
-                                        },
-                                        options: {
-                                            responsive: true,
-                                            plugins: {
-                                                legend: { display: false },
-                                                tooltip: {
-                                                    callbacks: {
-                                                        label: function(tooltipItem) {
-                                                            return tooltipItem.raw.toLocaleString() + " VND";
-                                                        }
-                                                    }
-                                                }
-                                            },
-                                            scales: {
-                                                y: {
-                                                    beginAtZero: true,
-                                                    ticks: {
-                                                        callback: function(value) {
-                                                            return value.toLocaleString() + " VND";
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    });
-                                });
-                            </script>
                         </div>
                     </div>
                 </div>
@@ -483,6 +455,11 @@ body {
                     <div class="form-group">
                         <label for="dob">Ngày sinh:</label>
                         <input type="date" class="form-control" id="dob" name="dob" value="<?php echo $row_user_data['date_of_birth']; ?>" required>
+                        <span class="error-message text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="address">Địa chỉ</label>
+                        <input type="address" class="form-control" id="address" name="address" value="<?php echo $row_user_data['address']; ?>" required>
                         <span class="error-message text-danger"></span>
                     </div>
 
@@ -635,6 +612,7 @@ body {
         let email = $("#email");
         let dob = $("#dob");
         let saveBtn = $("#saveChanges");
+        let address = $("#address");
         let errorContainer = $("#errorContainer"); 
 
         function validateForm() {
@@ -643,6 +621,7 @@ body {
             let fullNameVal = $("#fullName").val().trim();
             let emailVal = $("#email").val().trim();
             let dobVal = $("#dob").val().trim(); 
+            let addressVal = $("#address").val().trim();
 
             let nameRegex = /^[a-zA-ZÀ-Ỹà-ỹ\s]{3,50}$/;
             let emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -688,6 +667,7 @@ body {
                     fullName: fullName.val().trim(),
                     email: email.val().trim(),
                     dob: dob.val().trim(),
+                    address: address.val().trim(),
                 },
                 success: function (response) {
                     console.log("Server response:", response);

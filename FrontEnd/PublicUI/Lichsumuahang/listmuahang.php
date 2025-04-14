@@ -55,7 +55,7 @@ $user_id = $_SESSION['user_id'];
         .form-control, .form-select {
             border-radius: 0;
             border: 1px solid #e0e0e0;
-            padding: 10px 15px;
+            /* padding: 10px 15px; */
             font-size: 0.9rem;
             font-weight: 300;
             color: #1a1a1a;
@@ -196,14 +196,15 @@ $user_id = $_SESSION['user_id'];
             <select class="form-select" id="status-filter">
                 <option value="">Tất cả trạng thái</option>
                 <option value="4">Đã duyệt</option>
-                <option value="2">Đã hủy</option>
+                <option value="7">Đã hủy</option>
                 <option value="3">Chờ duyệt</option>
+                <option value="5">Đã giao</option>
             </select>
         </div>
         <div id="order-list">
             <?php
                 $conn = mysqli_connect("localhost", "root", "", "web2_sql");
-                $query_lietke_dh = "SELECT orders.order_id, orders.order_date, orders.total_amount, status.status_name 
+                $query_lietke_dh = "SELECT orders.order_id, orders.order_date, orders.total_amount, status.status_name , orders.payment_method
                                     FROM orders
                                     JOIN status ON status.id = orders.status_id
                                     WHERE orders.user_id = $user_id";
@@ -222,19 +223,29 @@ $user_id = $_SESSION['user_id'];
                 <div class="order-card">
                     <div class="order-header">
                         <div>
-                            <h5>Mã đơn hàng: <?= htmlspecialchars($row['order_id']) ?></h5>
+                            <p>
+                                <h5>Mã đơn hàng: <?= htmlspecialchars($row['order_id']) ?></h5>  
+                                <?= htmlspecialchars($row['payment_method']) ?>: 
+                                <?php 
+                                    if (strtolower($row['payment_method']) === 'cod') {
+                                        echo 'Thanh toán khi nhận hàng';
+                                    } else {
+                                        echo 'Thanh toán online';
+                                    }
+                                ?>
+                            </p>
                             <div class="date">Ngày mua: <?= htmlspecialchars($row['order_date']) ?></div>
                         </div>
-                        <div class="status <?= $status_class ?>">
+                        <div class="status <?= htmlspecialchars($status_class) ?>">
                             <?= htmlspecialchars($row['status_name']) ?>
                         </div>
                     </div>
                     <div class="order-details">
-                    <div class="total">Tổng giá trị: <?= htmlspecialchars($row['total_amount']) ?> đ</div>
-                    <a href="?page=order_details&order_id=<?= $row['order_id'] ?>" 
-                           data-page="order_details&order_id=<?= $row['order_id'] ?>" 
-                           class="btn btn-primary">Xem chi tiết</a>
-                </div>
+                        <div class="total">Tổng giá trị: <?= number_format($row['total_amount'], 0, ',', '.') ?> đ</div>
+                        <a href="?page=order_details&order_id=<?= htmlspecialchars($row['order_id']) ?>" 
+                        data-page="order_details&order_id=<?= htmlspecialchars($row['order_id']) ?>" 
+                        class="btn btn-primary">Xem chi tiết</a>
+                    </div>
                 </div>
             <?php
                 }
