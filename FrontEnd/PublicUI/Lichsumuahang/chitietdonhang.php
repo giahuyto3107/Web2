@@ -312,6 +312,9 @@ if (!$result_items) {
         <h2>Đơn Hàng #<?= htmlspecialchars($order['order_id']) ?></h2>
         <div class="order-info">
             Ngày đặt hàng: <?= htmlspecialchars($order['order_date']) ?>
+            <?php if ($order_status == 7) : ?>
+                <span class="text-danger ms-3">Đơn hàng bị hủy</span>
+            <?php endif; ?>
         </div>
     </div>
 
@@ -324,7 +327,7 @@ if (!$result_items) {
                     <th>Số lượng</th>
                     <th>Giá</th>
                     <th>Thành tiền</th>
-                    <?php if ($order_status == 4) : ?> 
+                    <?php if ($order_status == 5) : ?> 
                         <th>Đánh giá</th>
                     <?php endif; ?>
                 </tr>
@@ -340,7 +343,7 @@ if (!$result_items) {
                         <td><?= htmlspecialchars($item['quantity']) ?></td>
                         <td><?= number_format($price, 0, ',', '.') ?> đ</td>
                         <td><?= number_format($item['price'], 0, ',', '.') ?> đ</td>
-                        <?php if ($order_status == 4) : ?>
+                        <?php if ($order_status == 5) : ?>
                             <td>
                                 <?php if ($item['review'] == 0) : ?>
                                     <button class="btn btn-review" data-bs-toggle="modal" data-bs-target="#reviewModal" 
@@ -359,25 +362,26 @@ if (!$result_items) {
         </table>
     </div>
 
+    <?php if ($order_status != 7) : ?>
     <div class="status-tracker">
         <div class="d-flex">
             <?php
             $status_map = [
-                3 => 'Pending',
-                4 => 'Order Confirmed',
-                5 => 'Delivered'
+                4 => 'Pending',
+                5 => 'Order Confirmed',
+                6 => 'Delivered'
             ];
 
             $status_colors = [
-                3 => 'bg-success',
                 4 => 'bg-success',
-                5 => 'bg-success'
+                5 => 'bg-success',
+                6 => 'bg-success'
             ];
 
             $icons = [
-                3 => "fa-spinner",
-                4 => "fa-clipboard-check",
-                5 => "fa-house-chimney"
+                4 => "fa-spinner",
+                5 => "fa-clipboard-check",
+                6 => "fa-house-chimney"
             ];
 
             $order_status = isset($order['status_id']) ? $order['status_id'] : 3;
@@ -402,6 +406,7 @@ if (!$result_items) {
             <p>Đã giao</p>
         </div>
     </div>
+    <?php endif; ?>
 
     <div class="order-total">
         Tổng tiền: <span><?= number_format($order['total_amount'], 0, ',', '.') ?> đ</span>

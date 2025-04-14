@@ -181,106 +181,143 @@ mysqli_close($conn);
         </div>
 
         <div class="col-md-4">
-            <div class="payment-info">
-                <h5>Thanh toán</h5>
-                <hr>
-                <div class="mb-3">
-                    <label for="phone">📞 Số điện thoại</label>
-                    <input type="text" class="form-control" id="phone" placeholder="Nhập số điện thoại" oninput="saveUserInfo()">
-                    <span class="error-message text-danger"></span>
-                </div>
-                <div class="mb-3">
-                    <label for="address">📍 Địa chỉ giao hàng</label>
-                    <input type="text" class="form-control" id="address" placeholder="Nhập địa chỉ" oninput="saveUserInfo()">
-                </div>
+    <div class="payment-info">
+        <h5>Thanh toán</h5>
+        <hr>
+        <div class="mb-3">
+            <label for="phone">📞 Số điện thoại</label>
+            <input type="text" class="form-control" id="phone" placeholder="Nhập số điện thoại" oninput="saveUserInfo()">
+            <span class="error-message text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label for="address">📍 Địa chỉ giao hàng</label>
+            
+            <input type="text" class="form-control" id="address" placeholder="Nhập địa chỉ" oninput="saveUserInfo()">
+            <div class="form-check mb-2">
+        <input class="form-check-input" type="checkbox" id="defaultAddress" onchange="toggleDefaultAddress()">
+        <label class="form-check-label" for="defaultAddress">
+            Sử dụng địa chỉ mặc định
+        </label>
+    </div>
+        </div>
 
-                <script>
-                    function saveUserInfo(type, value) {
-        if (typeof type === 'undefined' || type === null || type === '') {
-            console.error("Lỗi: type không hợp lệ:", type);
-            return;
-        }
-        if (typeof value === 'undefined' || value === null) {
-            value = '';
-        }
+        <script>
+            function saveUserInfo(type, value) {
+                if (typeof type === 'undefined' || type === null || type === '') {
+                    console.error("Lỗi: type không hợp lệ:", type);
+                    return;
+                }
+                if (typeof value === 'undefined' || value === null) {
+                    value = '';
+                }
 
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", "http://localhost/Web2/FrontEnd/PublicUI/Giohang/save_user_info.php", true);
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === 4) {
+                        if (xhr.status === 200) {
+                            let response = JSON.parse(xhr.responseText);
+                            console.log("Response:", response);
+                            console.log("Session hiện tại:", response.session);
+                        } else {
+                            console.error("Lỗi server:", xhr.status, xhr.statusText);
+                        }
+                    }
+                };
+
+                let data = type + "=" + encodeURIComponent(value);
+                console.log("Sending:", data);
+                xhr.send(data);
+            }
+
+            function toggleDefaultAddress() {
+    var checkbox = document.getElementById("defaultAddress");
+    var addressInput = document.getElementById("address");
+
+    if (checkbox.checked) {
+        // Lấy địa chỉ mặc định từ server
         var xhr = new XMLHttpRequest();
-        xhr.open("POST", "http://localhost/Web2/FrontEnd/PublicUI/Giohang/save_user_info.php", true);
-        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-
+        xhr.open("GET", "http://localhost/Web2/FrontEnd/PublicUI/Giohang/get_default_address.php", true);
+        
         xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4) {
-                if (xhr.status === 200) {
-                    let response = JSON.parse(xhr.responseText);
-                    console.log("Response:", response);
-                    console.log("Session hiện tại:", response.session);
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                let response = JSON.parse(xhr.responseText);
+                if (response.success && response.address) {
+                    addressInput.value = response.address; // Cập nhật giá trị vào input
+                    addressInput.disabled = true;
+                    saveUserInfo("address", response.address);
+                    checkPaymentInfo(); // Gọi lại để kiểm tra ngay lập tức
                 } else {
-                    console.error("Lỗi server:", xhr.status, xhr.statusText);
+                    console.error("Không tìm thấy địa chỉ mặc định:", response.message);
+                    checkbox.checked = false;
+                    checkPaymentInfo(); // Cập nhật trạng thái
                 }
             }
         };
-
-        let data = type + "=" + encodeURIComponent(value);
-        console.log("Sending:", data);
-        xhr.send(data);
-    }
-
-    // Gắn sự kiện input sau khi DOM sẵn sàng
-    var addressInput = document.getElementById("address");
-    var phoneInput = document.getElementById("phone");
-
-    if (addressInput) {
-        addressInput.addEventListener("input", function () {
-            saveUserInfo("address", this.value);
-        });
+        xhr.send();
     } else {
-        console.error("Không tìm thấy #address trong DOM");
+        addressInput.value = "";
+        addressInput.disabled = false;
+        checkPaymentInfo(); // Cập nhật trạng thái
     }
+}
 
-    if (phoneInput) {
-        phoneInput.addEventListener("input", function () {
-            saveUserInfo("phone", this.value);
-        });
-    } else {
-        console.error("Không tìm thấy #phone trong DOM");
-    }
-                </script>
+            // Gắn sự kiện input sau khi DOM sẵn sàng
+            var addressInput = document.getElementById("address");
+            var phoneInput = document.getElementById("phone");
 
-                <div class="payment-method mb-3">
-                    <label>💳 Chọn hình thức thanh toán:</label><br>
-                    
-                    <label>
-                        <input type="radio" name="payment" value="cod" checked> Ship COD
-                    </label>
+            if (addressInput) {
+                addressInput.addEventListener("input", function () {
+                    if (!document.getElementById("defaultAddress").checked) {
+                        saveUserInfo("address", this.value);
+                    }
+                });
+            } else {
+                console.error("Không tìm thấy #address trong DOM");
+            }
 
-                    <label id="momo-label" class="disabled-radio">
-                        <input type="radio" name="payment" value="momo" id="momo-option" disabled> MoMo
-                    </label>
+            if (phoneInput) {
+                phoneInput.addEventListener("input", function () {
+                    saveUserInfo("phone", this.value);
+                });
+            } else {
+                console.error("Không tìm thấy #phone trong DOM");
+            }
+        </script>
+        <div class="payment-method mb-3">
+    <label>💳 Chọn hình thức thanh toán:</label><br>
+    
+    <label>
+        <input type="radio" name="payment" value="cod" checked> Ship COD
+    </label>
 
-                    <label id="QR-label" class="disabled-radio">
-                        <input type="radio" name="payment" value="QR" id="QR-option" disabled>Quét mã
-                    </label>
-                    <form id="momo-form" method="POST" action="http://localhost/Web2/FrontEnd/PublicUI/Giohang/thanhtoanmomo.php">
-                        <input type="hidden" name="payment_method" value="momo">
-                    </form>
-                    <form id="QR-form" method="POST" action="http://localhost/Web2/FrontEnd/PublicUI/Giohang/QRthanhtoan.php">
-                        <input type="hidden" name="payment_method" value="QR">
-                    </form>
-                </div>
+    <label id="momo-label" class="disabled-radio">
+        <input type="radio" name="payment" value="momo" id="momo-option" disabled> Thanh toán Online (MoMo)
+    </label>
+
+    <form id="momo-form" method="POST" action="http://localhost/Web2/FrontEnd/PublicUI/Giohang/thanhtoanmomo.php">
+        <input type="hidden" name="payment_method" value="momo">
+    </form>
+</div>
+<div class="d-flex justify-content-between">
+    <span><b>Tổng tiền:</b></span>
+    <span><b><span id="cart-total">0</span></b></span>
+</div>
+<button id="checkout-button" class="btn btn-light btn-block mt-3" disabled>🛍 Thanh toán ngay</button>
+</div>
+
+                
 
 
 
-                <div class="d-flex justify-content-between">
-                    <span><b>Tổng tiền:</b></span>
-                    <span><b><span id="cart-total">0</span></b></span>
-                </div>
-                <button id="checkout-button" class="btn btn-light btn-block mt-3" disabled>🛍 Thanh toán ngay</button>
-            </div>
+                
         </div>
     </div>
 </div>
 
-<script>
+<!-- <script>
     document.getElementById("momo-option").addEventListener("change", function() {
         if (this.checked) {
             document.getElementById("momo-form").submit(); 
@@ -291,12 +328,16 @@ mysqli_close($conn);
             document.getElementById("QR-form").submit(); 
         }
     });
-</script>
+</script> -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
 $(document).ready(function () {
+    // Xóa sản phẩm khỏi giỏ hàng
     $(".remove-item").click(function (e) {
         e.preventDefault(); 
         let productId = $(this).data("product-id"); 
@@ -321,7 +362,6 @@ $(document).ready(function () {
                     success: function (response) {
                         if (response.success) {
                             itemRow.fadeOut(300, function () { $(this).remove(); });
-
                             Swal.fire({
                                 title: "Đã xóa!",
                                 text: response.message,
@@ -349,56 +389,47 @@ $(document).ready(function () {
             }
         });
     });
-});
 
-</script>
-
-<script>
-    $(document).ready(function () {
-        function updateTotalPrice() {
-            let total = 0;
-            $(".product-checkbox:checked").each(function () {
-                total += parseFloat($(this).data("price"));
-            });
-            $("#cart-total").text(new Intl.NumberFormat('vi-VN').format(total) + "₫");
-
-        }
-
-        $(".product-checkbox").change(function () {
-            updateTotalPrice();
+    // Cập nhật tổng tiền
+    function updateTotalPrice() {
+        let total = 0;
+        $(".product-checkbox:checked").each(function () {
+            total += parseFloat($(this).data("price"));
         });
+        $("#cart-total").text(new Intl.NumberFormat('vi-VN').format(total) + "₫");
+    }
 
-        $(".update-quantity").click(function () {
-            var productId = $(this).data("product-id");
-            var action = $(this).data("action");
+    // Cập nhật số lượng sản phẩm
+    $(".update-quantity").click(function () {
+        var productId = $(this).data("product-id");
+        var action = $(this).data("action");
 
-            $.ajax({
-                url: "http://localhost/Web2/FrontEnd/PublicUI/Giohang/update_cart.php",
-                type: "POST",
-                data: { product_id: productId, action: action },
-                success: function (response) {
-                    var data = JSON.parse(response);
-                    if (data.success) {
-                        $("#quantity-" + productId).text(data.new_quantity);
-                        $("#total-" + productId).text(new Intl.NumberFormat('en-US').format(data.new_total_price) + "₫");
-                        $("#checkbox-" + productId).data("price", parseFloat(data.new_total_price));
-                        if ($("#checkbox-" + productId).prop("checked")) {
-                            updateTotalPrice();
-                        }
+        $.ajax({
+            url: "http://localhost/Web2/FrontEnd/PublicUI/Giohang/update_cart.php",
+            type: "POST",
+            data: { product_id: productId, action: action },
+            success: function (response) {
+                var data = JSON.parse(response);
+                if (data.success) {
+                    $("#quantity-" + productId).text(data.new_quantity);
+                    $("#total-" + productId).text(new Intl.NumberFormat('vi-VN').format(data.new_total_price) + "₫");
+                    $("#checkbox-" + productId).data("price", parseFloat(data.new_total_price));
+                    if ($("#checkbox-" + productId).prop("checked")) {
+                        updateTotalPrice();
                     }
                 }
-            });
+            }
         });
     });
-</script>
-<script>
+
+    // Cập nhật sản phẩm được chọn
     function updateSelectedProducts() {
         let selectedProducts = [];
         $(".product-checkbox:checked").each(function () {
             let productId = $(this).data("product-id");
             let price = parseFloat($(this).data("price"));
             let quantity = $(this).closest(".items").find(".quantity-display").text();
-            selectedProducts.push({ product_id: productId, price: price, quantity:quantity });
+            selectedProducts.push({ product_id: productId, price: price, quantity: quantity });
         });
 
         $.ajax({
@@ -411,171 +442,63 @@ $(document).ready(function () {
         });
     }
 
-    $(".product-checkbox").change(function () {
-        updateSelectedProducts();
-    });
-</script>
-<script>
-    $(document).ready(function () {
-        function checkPaymentInfo() {
-            let phone = $("#phone").val().trim();
-            let address = $("#address").val().trim();
-            let hasSelectedProduct = $(".product-checkbox:checked").length > 0;
-            let phoneRegex = /^\d{10}$/;
-
-            if (!phoneRegex.test(phone)) {
-                $("#phone").next(".error-message").text("❌ Số điện thoại không hợp lệ");
-                $("#phone").css("border-color", "red");
-                isValid = false;
-            } else {
-                $("#phone").next(".error-message").text("");
-                $("#phone").css("border-color", "");
-            }
-
-            if (phoneRegex.test(phone) && address !== "" && hasSelectedProduct) {
-                $("#checkout-button").prop("disabled", false);
-                $("#momo-option").prop("disabled", false);
-                $("#QR-option").prop("disabled", false);
-                $("#phone").css("border-color", "");
-            } else {
-                $("#checkout-button").prop("disabled", true);
-                $("#momo-option").prop("disabled", true);
-                $("#QR-option").prop("disabled", true);
-                $("#phone").css("border-color", "red"); 
-                // $("#phone").focus();
-            }
-        }
-        $("#phone, #address").on("input", function () {
-            checkPaymentInfo();
-        });
-
-        $(".product-checkbox").change(function () {
-            checkPaymentInfo();
-        });
-
-        $("#checkout-button").click(function () {
-             
-        });
-    });
-</script>
-<script>
-$(document).ready(function () {
+    // Kiểm tra thông tin thanh toán
     function checkPaymentInfo() {
         let phone = $("#phone").val().trim();
         let address = $("#address").val().trim();
         let hasSelectedProduct = $(".product-checkbox:checked").length > 0;
         let phoneRegex = /^(0[3|5|7|8|9])[0-9]{8}$/;
+        let isDefaultAddress = $("#defaultAddress").is(":checked"); 
 
-        if (!nameRegex.test(fullNameVal)) {
-                $("#phone").next(".error-message").text("❌ Họ tên không hợp lệ (3-50 chữ).");
-                isValid = false;
-            } else {
-                $("#fullName").next(".error-message").text(""); 
-            }
-
-        if (phoneRegex.test(phone) && address !== "" && hasSelectedProduct) {
+        if (phoneRegex.test(phone) && 
+            (isDefaultAddress || address !== "") && 
+            hasSelectedProduct) {
             $("#checkout-button").prop("disabled", false);
             $("#momo-option").prop("disabled", false);
-            $("#QR-option").prop("disabled", false);
             $("#phone").css("border-color", "");
+            $("#address").css("border-color", "");
+            $("#phone").next(".error-message").text("");
+            $("#address").next(".error-message").text("");
         } else {
             $("#checkout-button").prop("disabled", true);
             $("#momo-option").prop("disabled", true);
-            $("#QR-option").prop("disabled", true);
-            $("#phone").css("border-color", "red");
+
+            if (!phoneRegex.test(phone)) {
+                $("#phone").css("border-color", "red");
+                $("#phone").next(".error-message").text("❌ Số điện thoại không hợp lệ");
+            } else {
+                $("#phone").css("border-color", "");
+                $("#phone").next(".error-message").text("");
+            }
+
+            if (!isDefaultAddress && address === "") {
+                $("#address").css("border-color", "red");
+                $("#address").next(".error-message").text("❌ Vui lòng nhập địa chỉ");
+            } else {
+                $("#address").css("border-color", "");
+                $("#address").next(".error-message").text("");
+            }
+
+            if (!hasSelectedProduct) {
+                console.log("Vui lòng chọn ít nhất một sản phẩm");
+            }
         }
     }
 
-
-    $("#phone, #address").on("input", function () {
-        checkPaymentInfo();
-    });
-
-
+    // Sự kiện thay đổi checkbox sản phẩm
     $(".product-checkbox").change(function () {
+        updateTotalPrice();
+        updateSelectedProducts();
         checkPaymentInfo();
     });
 
-    $(document).ready(function () {
-        $("#confirm-payment-button").click(function () {
-            let products = []; 
-            $(".product-checkbox:checked").each(function () {
-                let productId = $(this).data("product-id");
-                let quantity = $(this).closest(".items").find(".quantity-display").text();
-                products.push({ product_id: productId, quantity: quantity });
-            });
+    // Sự kiện thay đổi thông tin thanh toán
+    $("#phone, #address, #defaultAddress").on("input change", checkPaymentInfo);
 
-            if (products.length === 0) {
-                Swal.fire({
-                    title: "Lỗi!",
-                    text: "Vui lòng chọn ít nhất một sản phẩm để thanh toán.",
-                    icon: "warning",
-                    confirmButtonText: "OK"
-                });
-                return;
-            }
-
-            Swal.fire({
-                title: "Xác nhận thanh toán?",
-                text: "Bạn có chắc chắn muốn thanh toán đơn hàng này?",
-                icon: "question",
-                showCancelButton: true,
-                confirmButtonColor: "#3085d6",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Xác nhận",
-                cancelButtonText: "Hủy"
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: "http://localhost/Web2/FrontEnd/PublicUI/Giohang/process_payment.php",
-                        type: "POST",
-                        data: { 
-                            user_id: <?= $user_id ?>, 
-                            total_amount: $("#cart-total").text().replace(/[^0-9]/g, ''), 
-                            status_id: 3, 
-                            payment_method: $("input[name='payment']:checked").val(), 
-                            phone: $("#phone").val(), 
-                            address: $("#address").val(), 
-                            products: JSON.stringify(products) 
-                        },
-                        success: function (response) {
-                            let data = JSON.parse(response);
-                            if (data.success) {
-                                Swal.fire({
-                                    title: "Thanh toán thành công!",
-                                    text: "Cảm ơn bạn đã mua hàng.",
-                                    icon: "success",
-                                    confirmButtonText: "OK"
-                                }).then(() => {
-                                    $("#confirmPaymentModal").modal("hide");
-                                    location.reload();
-                                });
-                            } else {
-                                Swal.fire({
-                                    title: "Lỗi!",
-                                    text: data.message,
-                                    icon: "error",
-                                    confirmButtonText: "OK"
-                                });
-                            }
-                        },
-                        error: function () {
-                            Swal.fire({
-                                title: "Lỗi!",
-                                text: "Không thể kết nối đến server. Vui lòng thử lại.",
-                                icon: "error",
-                                confirmButtonText: "OK"
-                            });
-                        }
-                    });
-                }
-            });
-        });
-    });
-
-    $("#checkout-button").click(function () {
-        if (!$(this).prop("disabled")) {
-            let name = "<?= $full_name ?>";
+    // Hàm hiển thị modal xác nhận
+    function showConfirmationModal() {
+        if (!$("#checkout-button").prop("disabled")) { 
+            let name = "<?= $full_name ?>"; 
             let phone = $("#phone").val();
             let diachi = $("#address").val();
             let paymentMethod = $("input[name='payment']:checked").val();
@@ -584,7 +507,7 @@ $(document).ready(function () {
             $("#confirm-name").text(name);
             $("#confirm-phone").text(phone);
             $("#confirm-address").text(diachi);
-            $("#confirm-payment-method").text(paymentMethod === "cod" ? "Ship COD" : "MoMo");
+            $("#confirm-payment-method").text(paymentMethod === "cod" ? "Ship COD" : "Thanh toán Online (MoMo)");
             $("#confirm-total-price").text(totalPrice);
 
             let productList = $("#confirm-product-list");
@@ -609,8 +532,95 @@ $(document).ready(function () {
 
             $("#confirmPaymentModal").modal("show");
         }
+    }
+
+    // Sự kiện nhấn nút thanh toán
+    $("#checkout-button").click(function () {
+        showConfirmationModal();
     });
-    
+
+    // Sự kiện thay đổi phương thức thanh toán
+    $("input[name='payment']").change(function () {
+        if (!$(this).prop("disabled")) {
+            showConfirmationModal();
+        }
+    });
+
+    // Xử lý xác nhận thanh toán
+    $("#confirm-payment-button").click(function () {
+        let paymentMethod = $("input[name='payment']:checked").val();
+        let products = []; 
+        $(".product-checkbox:checked").each(function () {
+            let productId = $(this).data("product-id");
+            let quantity = $(this).closest(".items").find(".quantity-display").text();
+            products.push({ product_id: productId, quantity: quantity });
+        });
+
+        if (products.length === 0) {
+            Swal.fire({
+                title: "Lỗi!",
+                text: "Vui lòng chọn ít nhất một sản phẩm để thanh toán.",
+                icon: "warning",
+                confirmButtonText: "OK"
+            });
+            return;
+        }
+
+        if (paymentMethod === "cod") {
+            $.ajax({
+                url: "http://localhost/Web2/FrontEnd/PublicUI/Giohang/process_payment.php",
+                type: "POST",
+                data: { 
+                    user_id: <?= $user_id ?>, 
+                    total_amount: $("#cart-total").text().replace(/[^0-9]/g, ''), 
+                    status_id: 3, 
+                    payment_method: paymentMethod, 
+                    phone: $("#phone").val(), 
+                    address: $("#address").val(), 
+                    products: JSON.stringify(products) 
+                },
+                success: function (response) {
+                    let data = JSON.parse(response);
+                    if (data.success) {
+                        Swal.fire({
+                            title: "Thanh toán thành công!",
+                            text: "Cảm ơn bạn đã mua hàng.",
+                            icon: "success",
+                            confirmButtonText: "OK"
+                        }).then(() => {
+                            $("#confirmPaymentModal").modal("hide");
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            title: "Lỗi!",
+                            text: data.message,
+                            icon: "error",
+                            confirmButtonText: "OK"
+                        });
+                    }
+                },
+                error: function () {
+                    Swal.fire({
+                        title: "Lỗi!",
+                        text: "Không thể kết nối đến server. Vui lòng thử lại.",
+                        icon: "error",
+                        confirmButtonText: "OK"
+                    });
+                }
+            });
+        } else if (paymentMethod === "momo") {
+            let form = $("#momo-form");
+            form.empty(); 
+            form.append(`<input type="hidden" name="user_id" value="<?= $user_id ?>">`);
+            form.append(`<input type="hidden" name="total_amount" value="${$("#cart-total").text().replace(/[^0-9]/g, '')}">`);
+            form.append(`<input type="hidden" name="phone" value="${$("#phone").val()}">`);
+            form.append(`<input type="hidden" name="address" value="${$("#address").val()}">`);
+            form.append(`<input type="hidden" name="products" value='${JSON.stringify(products)}'>`);
+            form.append(`<input type="hidden" name="payment_method" value="momo">`);
+            form.submit(); 
+        }
+    });
 });
 </script>
 
