@@ -421,6 +421,10 @@ $featured_collection = $conn->query("SELECT p.* FROM product p JOIN product_cate
     .review-card:hover .stars i {
         transform: scale(1.1);
     }
+    .product-card .product-link{
+        text-decoration: none;
+        
+    }
 </style>
 
 <section class="hero">
@@ -458,12 +462,14 @@ $featured_collection = $conn->query("SELECT p.* FROM product p JOIN product_cate
         if ($best_sellers && $best_sellers->num_rows > 0) {
             while ($product = $best_sellers->fetch_assoc()): ?>
                 <div class="product-card">
+                    <a href="index.php?page=product_details&id=<?php echo $product['product_id']; ?>" class="product-link">
                     <div class="product-image">
                         <img src="../../../BackEnd/Uploads/Product Picture/<?php echo htmlspecialchars($product['image_url'] ?: 'placeholder.jpg'); ?>" alt="<?php echo htmlspecialchars($product['product_name']); ?>">
                         <div class="bookmark"></div>
                     </div>
                     <h3><?php echo htmlspecialchars($product['product_name']); ?></h3>
                     <p class="price"><?php echo number_format($product['price'], 0, ',', '.') . ' VNĐ'; ?></p>
+                    </a>
                     <a href="#" class="add-to-cart"><i class="fa-solid fa-cart-plus"></i></a>
                 </div>
             <?php endwhile; 
@@ -483,11 +489,13 @@ $featured_collection = $conn->query("SELECT p.* FROM product p JOIN product_cate
         if ($featured_collection && $featured_collection->num_rows > 0) {
             while ($product = $featured_collection->fetch_assoc()): ?>
                 <div class="collection-card">
+                    <a href="index.php?page=product_details&id=<?php echo $product['product_id']; ?>" class="product-link">
                     <img src="../../../BackEnd/Uploads/Product Picture/<?php echo htmlspecialchars($product['image_url'] ?: 'placeholder.jpg'); ?>" alt="<?php echo htmlspecialchars($product['product_name']); ?>">
                     <div class="collection-info">
                         <h3><?php echo htmlspecialchars($product['product_name']); ?></h3>
                         <p><?php echo number_format($product['price'], 0, ',', '.') . ' VNĐ'; ?></p>
                     </div>
+                    </a>
                 </div>
             <?php endwhile; 
         } else {
@@ -503,6 +511,7 @@ $featured_collection = $conn->query("SELECT p.* FROM product p JOIN product_cate
         if ($new_releases && $new_releases->num_rows > 0) {
             while ($product = $new_releases->fetch_assoc()): ?>
                 <div class="product-card">
+                    <a href="index.php?page=product_details&id=<?php echo $product['product_id']; ?>" class="product-link">
                     <div class="product-image">
                         <img src="../../../BackEnd/Uploads/Product Picture/<?php echo htmlspecialchars($product['image_url'] ?: 'placeholder.jpg'); ?>" alt="<?php echo htmlspecialchars($product['product_name']); ?>">
                         <span class="new-badge">Mới</span>
@@ -510,6 +519,7 @@ $featured_collection = $conn->query("SELECT p.* FROM product p JOIN product_cate
                     </div>
                     <h3><?php echo htmlspecialchars($product['product_name']); ?></h3>
                     <p class="price"><?php echo number_format($product['price'], 0, ',', '.') . ' VNĐ'; ?></p>
+                    </a>
                 </div>
             <?php endwhile; 
         } else {

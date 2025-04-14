@@ -28,7 +28,7 @@
             </div>
         </div>
         <div class="toolbar-button-wrapper">
-            <button class="toolbar-button add-product-button" id="add-product-toolbar">
+            <button class="toolbar-button add-product-button" id="add-product-toolbar" data-permission-id="10" data-action="Thêm">
                 <span>Thêm chức vụ</span>
                 <i class="bx bx-plus-medical"></i>
             </button>
@@ -132,10 +132,10 @@
                             <div class="dropdown">
                                 <button class="dropdownButton"><i class="fa fa-ellipsis-v dropIcon"></i></button>
                                 <div class="dropdown-content">
-                                    <a href="#" class="viewRole" data-role-id="${role.id}">Xem <i class="fa fa-eye"></i></a>
-                                    <a href="#" class="editRole" data-role-id="${role.id}">Sửa <i class="fa fa-edit"></i></a>
-                                    <a href="#" class="deleteRole" data-role-id="${role.id}">Xóa <i class="fa fa-trash"></i></a>
-                                    <a href="#" class="updatePermission" data-role-id="${role.id}" data-role-name="${role.role_name}">Cập nhật quyền <i class="fa fa-key"></i></a>
+                                    <a href="#" class="viewRole" data-permission-id="10" data-action="Xem" data-role-id="${role.id}">Xem <i class="fa fa-eye"></i></a>
+                                    <a href="#" class="editRole" data-permission-id="10" data-action="Sửa" data-role-id="${role.id}">Sửa <i class="fa fa-edit"></i></a>
+                                    <a href="#" class="deleteRole" data-permission-id="10" data-action="Xóa" data-role-id="${role.id}">Xóa <i class="fa fa-trash"></i></a>
+                                    <a href="#" class="updatePermission" data-permission-id="10" data-action="Cập nhật phân quyền" data-role-id="${role.id}" data-role-name="${role.role_name}">Cập nhật quyền <i class="fa fa-key"></i></a>
                                 </div>
                             </div>
                         </td>
@@ -210,10 +210,11 @@
                 "Quản lý đơn hàng": ["Xem", "Hoàn tất", "Hủy"],
                 "Quản lý phiếu nhập": ["Xem"],
                 "Quản lý bình luận": ["Xem", "Xóa", "Sửa"],
-                "Thống kê" : ["Xem"]
+                "Thống kê" : ["Xem"],
+                "Quản lý chức vụ": ["Xem", "Thêm", "Xóa", "Sửa", "Cập nhật phân quyền"]
             };
             const defaultActions = ["Xem", "Thêm", "Xóa", "Sửa"];
-            const allActions = ["Xem", "Thêm", "Xóa", "Sửa", "Hoàn tất", "Hủy", "Đặt hàng"];
+            const allActions = ["Xem", "Thêm", "Xóa", "Sửa", "Cập nhật phân quyền", "Hoàn tất", "Hủy", "Đặt hàng"];
 
             // Fetch all permissions from the server
             fetch('../../BackEnd/Model/quanlichucvu/fetch_quyen.php')
@@ -256,22 +257,29 @@
                             // Create the table
                             const table = document.createElement('table');
                             table.style.width = '100%';
+                            table.style.borderCollapse = 'collapse';
 
                             // Create table header
                             const thead = document.createElement('thead');
                             const trHead = document.createElement('tr');
                             const thPermission = document.createElement('th');
                             thPermission.textContent = 'Quyền';
+                            thPermission.style.padding = '8px';
+                            thPermission.style.borderBottom = '1px solid #ddd';
                             trHead.appendChild(thPermission);
 
                             allActions.forEach(action => {
                                 const th = document.createElement('th');
                                 th.textContent = action;
+                                th.style.padding = '8px';
+                                th.style.borderBottom = '1px solid #ddd';
                                 trHead.appendChild(th);
                             });
 
                             const thSelectAll = document.createElement('th');
                             thSelectAll.textContent = 'Select All';
+                            thSelectAll.style.padding = '8px';
+                            thSelectAll.style.borderBottom = '1px solid #ddd';
                             trHead.appendChild(thSelectAll);
                             thead.appendChild(trHead);
                             table.appendChild(thead);
@@ -282,32 +290,54 @@
                             allPermissions.data.forEach(permission => {
                                 const allowedActions = permissionActions[permission.name] || defaultActions;
                                 const tr = document.createElement('tr');
+                                tr.style.borderBottom = '1px solid #ddd';
+                                
                                 const tdPermission = document.createElement('td');
                                 tdPermission.textContent = permission.name;
+                                tdPermission.style.padding = '8px';
                                 tr.appendChild(tdPermission);
 
                                 allActions.forEach(action => {
                                     const td = document.createElement('td');
+                                    td.style.padding = '8px';
+                                    td.style.textAlign = 'center';
                                     if (allowedActions.includes(action)) {
                                         const checkbox = document.createElement('input');
                                         checkbox.type = 'checkbox';
                                         checkbox.name = `permissions[${permission.id}][${action}]`;
+                                        checkbox.className = 'permission-checkbox';
+                                        
+                                        // Check if the current user has this action
+                                        const hasAction = window.PermissionSystem && 
+                                            window.PermissionSystem.hasActionPermission ? 
+                                            window.PermissionSystem.hasActionPermission(permission.id, action) : false;
+                                        
+                                        // Check if this permission-action pair is assigned to the role
                                         if (assignedSet.has(`${permission.id}-${action}`)) {
                                             checkbox.checked = true;
                                         }
+
+                                        // If the user has this permission-action, check it
+                                        if (hasAction) {
+                                            checkbox.checked = true;
+                                        }
+                                        
                                         td.appendChild(checkbox);
                                     }
-                                    // Leave cell empty if action is not allowed
                                     tr.appendChild(td);
                                 });
 
                                 // Add Select All button
                                 const tdSelectAll = document.createElement('td');
+                                tdSelectAll.style.padding = '8px';
+                                tdSelectAll.style.textAlign = 'center';
                                 const selectAllButton = document.createElement('button');
                                 selectAllButton.type = 'button';
                                 selectAllButton.textContent = 'Select All';
+                                selectAllButton.style.padding = '4px 8px';
+                                selectAllButton.style.cursor = 'pointer';
                                 selectAllButton.addEventListener('click', () => {
-                                    const checkboxes = tr.querySelectorAll('input[type="checkbox"]');
+                                    const checkboxes = tr.querySelectorAll('input[type="checkbox"]:not(:disabled)');
                                     checkboxes.forEach(cb => cb.checked = true);
                                 });
                                 tdSelectAll.appendChild(selectAllButton);

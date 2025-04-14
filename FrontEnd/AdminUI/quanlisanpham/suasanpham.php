@@ -30,8 +30,8 @@
             <div class="modal-input-wrapper">
                 <label for="modal-edit-status">Trạng Thái</label>
                 <select id="modal-edit-status" name="status_id" required>
-                    <option value="1">Active</option>
-                    <option value="2">Inactive</option>
+                    <option value="1">Hoạt Động</option>
+                    <option value="2">Không Hoạt Động</option>
                 </select>
                 <p class="modal-error"></p>
             </div>

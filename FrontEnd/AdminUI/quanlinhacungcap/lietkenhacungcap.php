@@ -29,8 +29,7 @@
       </div>
     </div>
     <div class="toolbar-button-wrapper">
-
-      <button class="toolbar-button add-product-button" id="add-product-toolbar">
+      <button class="toolbar-button add-product-button" id="add-product-toolbar" data-permission-id="6" data-action="Thêm">
         <span>Thêm nhà cung cấp</span>
         <i class="bx bx-plus-medical"></i>
       </button>
@@ -140,9 +139,9 @@ document.addEventListener('DOMContentLoaded', function() {
                           <div class="dropdown">
                               <button class="dropdownButton"><i class="fa fa-ellipsis-v dropIcon"></i></button>
                               <div class="dropdown-content">
-                                  <a href="#" class="viewSupplier" data-supplier-id="${supplier.supplier_id}">View Supplier <i class="fa fa-eye"></i></a>
-                                  <a href="#" class="editSupplier" data-supplier-id="${supplier.supplier_id}">Edit Supplier <i class="fa fa-edit"></i></a>
-                                  <a href="#" class="deleteSupplier" data-supplier-id="${supplier.supplier_id}">Delete Supplier <i class="fa fa-trash"></i></a>
+                                  <a href="#" class="viewSupplier" data-permission-id="6" data-action="Xem" data-supplier-id="${supplier.supplier_id}">View Supplier <i class="fa fa-eye"></i></a>
+                                  <a href="#" class="editSupplier" data-permission-id="6" data-action="Sửa" data-supplier-id="${supplier.supplier_id}">Edit Supplier <i class="fa fa-edit"></i></a>
+                                  <a href="#" class="deleteSupplier" data-permission-id="6" data-action="Xóa" data-supplier-id="${supplier.supplier_id}">Delete Supplier <i class="fa fa-trash"></i></a>
                               </div>
                           </div>
                       </td>

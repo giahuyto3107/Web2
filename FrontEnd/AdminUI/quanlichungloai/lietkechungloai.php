@@ -27,7 +27,7 @@
       </div>
     </div>
     <div class="toolbar-button-wrapper">
-      <button class="toolbar-button add-product-button" id="add-product-toolbar">
+      <button class="toolbar-button add-product-button" id="add-product-toolbar" data-permission-id="12" data-action="Thêm">
         <span>Thêm chủng loại</span>
         <i class="bx bx-plus-medical"></i>
       </button>
@@ -38,7 +38,7 @@
 
   <div class="table-container">
     <div class="no-products">
-      <p>Looks like you do not have any category types.</p>
+      <p>Có vẻ hiện tại bạn chưa có chủng loại nào?</p>
     </div>
 
     <table class="table" id="data-table">
@@ -85,10 +85,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const filterBy = filterOptionsEl.value;
             const searchValue = searchEl.value.trim();
 
-            console.log('Search value:', searchValue);
-            console.log('Filter by:', filterBy);
-
-            let filteredData = categoryTypes; // Luôn bắt đầu từ dữ liệu gốc
+            let filteredData = categoryTypes;
 
             if (searchValue !== "") {
                 filteredData = categoryTypes.filter((categoryType) => {
@@ -100,7 +97,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             }
 
-            console.log('Filtered category types:', filteredData);
             renderTable(filteredData);
         });
 
@@ -121,12 +117,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         tableBody.innerHTML = '';
-        if (displayedCategoryTypes.length > 0) {
+        const activeCategoryTypes = displayedCategoryTypes.filter(categoryType => categoryType.status_id !== 6);
+
+        if (activeCategoryTypes.length > 0) {
             noProductsEl.style.display = 'none';
-            displayedCategoryTypes.forEach((categoryType, index) => {
+            activeCategoryTypes.forEach((categoryType, index) => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td>${index + 1}</td> <!-- Số thứ tự -->
+                    <td>${index + 1}</td>
                     <td>${categoryType.type_name || 'N/A'}</td>
                     <td>${categoryType.type_description || 'N/A'}</td>
                     <td>${getStatusText(categoryType.status_id)}</td>
@@ -134,9 +132,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="dropdown">
                             <button class="dropdownButton"><i class="fa fa-ellipsis-v dropIcon"></i></button>
                             <div class="dropdown-content">
-                                <a href="#" class="viewCategoryType" data-category-type-id="${categoryType.category_type_id}">View Category Type <i class="fa fa-eye"></i></a>
-                                <a href="#" class="editCategoryType" data-category-type-id="${categoryType.category_type_id}">Edit Category Type <i class="fa fa-edit"></i></a>
-                                <a href="#" class="deleteCategoryType" data-category-type-id="${categoryType.category_type_id}">Delete Category Type <i class="fa fa-trash"></i></a>
+                                <a href="#" class="viewCategoryType" data-permission-id="12" data-action="Xem" data-category-type-id="${categoryType.category_type_id}">View Category Type <i class="fa fa-eye"></i></a>
+                                <a href="#" class="editCategoryType" data-permission-id="12" data-action="Sửa" data-category-type-id="${categoryType.category_type_id}">Edit Category Type <i class="fa fa-edit"></i></a>
+                                <a href="#" class="deleteCategoryType" data-permission-id="12" data-action="Xóa" data-category-type-id="${categoryType.category_type_id}">Delete Category Type <i class="fa fa-trash"></i></a>
                             </div>
                         </div>
                     </td>
@@ -167,20 +165,6 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Fetch error:', error);
             document.getElementById('table-body').innerHTML = '<tr><td colspan="5">Error loading category types.</td></tr>';
         });
-
-    // Hàm kiểm tra danh mục rỗng
-    function checkNoProducts(categoryTypes) {
-        const tableContainer = document.querySelector(".table-container");
-        const noProductsEl = document.querySelector(".no-products");
-        if (categoryTypes.length === 0) {
-            tableContainer.scrollLeft = 0;
-            tableContainer.style.overflow = "hidden";
-            noProductsEl.style.display = "flex";
-        } else {
-            noProductsEl.style.display = "none";
-            tableContainer.style.overflow = "auto";
-        }
-    }
 
     // Sử dụng event delegation để xử lý các hành động
     document.getElementById('table-body').addEventListener('click', (e) => {
@@ -215,19 +199,14 @@ document.addEventListener('DOMContentLoaded', function() {
         const editModal = document.getElementById('edit-modal');
         const form = document.getElementById('modal-edit-form');
 
-        // Điền dữ liệu
         document.getElementById('modal-edit-category-type-id').value = categoryType.category_type_id;
         document.getElementById('modal-edit-name').value = categoryType.type_name || '';
         document.getElementById('modal-edit-desc').value = categoryType.type_description || '';
         document.getElementById('modal-edit-status').value = categoryType.status_id;
 
-        // Xóa lỗi cũ
         clearFormErrors(form);
-
-        // Gắn sự kiện submit
         form.removeEventListener('submit', handleEditSubmit);
         form.addEventListener('submit', handleEditSubmit);
-
         editModal.showModal();
     }
 
@@ -235,14 +214,25 @@ document.addEventListener('DOMContentLoaded', function() {
     function handleEditSubmit(e) {
         e.preventDefault();
         const form = document.getElementById('modal-edit-form');
-        const isError = validateModalFormInputs(form);
+        const editModal = document.getElementById('edit-modal');
+        const errorContainer = editModal.querySelector('.modal-error') || document.createElement('p');
 
-        if (!isError) {
-            updateCategoryType(form);
-        } else {
-            const editModal = document.getElementById('edit-modal');
-            editModal.scrollTop = 0;
+        clearFormErrors(form);
+        if (!errorContainer.parentElement) {
+            editModal.querySelector('.modal-buttons').insertAdjacentElement('beforebegin', errorContainer);
         }
+        errorContainer.textContent = '';
+        errorContainer.style.display = 'none';
+
+        const isError = validateModalFormInputs(form);
+        if (isError) {
+            errorContainer.style.display = 'block';
+            errorContainer.style.color = 'var(--clr-error)';
+            editModal.scrollTop = 0;
+            return;
+        }
+
+        updateCategoryType(form);
     }
 
     // Hàm cập nhật chủng loại
@@ -274,11 +264,12 @@ document.addEventListener('DOMContentLoaded', function() {
                             successMessage.style.display = 'none';
                         }, 3000);
                     })
-                    .catch(error => {
-                        console.error('Có lỗi khi lấy dữ liệu chủng loại:', error);
-                    });
+                    .catch(error => console.error('Có lỗi khi lấy dữ liệu chủng loại:', error));
             } else {
-                displayFormErrors(result.errors);
+                const errorContainer = editModal.querySelector('.modal-error');
+                errorContainer.textContent = result.message || 'Có lỗi khi cập nhật chủng loại';
+                errorContainer.style.display = 'block';
+                errorContainer.style.color = 'var(--clr-error)';
                 editModal.scrollTop = 0;
             }
         })
@@ -286,6 +277,137 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Cập nhật chủng loại thất bại:', error);
             const editModal = document.getElementById('edit-modal');
             editModal.scrollTop = 0;
+        });
+    }
+
+    // Hàm thêm chủng loại
+    function addCategoryType(formEl) {
+        const formData = new FormData(formEl);
+        fetch('../../BackEnd/Model/quanlichungloai/xulichungloai.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(result => {
+            const addCategoryTypeModal = document.getElementById("add-modal");
+            if (result.status === 'success') {
+                fetch('quanlichungloai/fetch_chungloai.php')
+                    .then(response => response.json())
+                    .then(data => {
+                        categoryTypes = data.data;
+                        renderTable(categoryTypes);
+                        addCategoryTypeModal.close();
+                        const successMessage = document.getElementById('success-message');
+                        successMessage.querySelector('.success-text p').textContent = result.message || 'Chủng loại thêm thành công';
+                        successMessage.style.display = 'block';
+                        setTimeout(() => {
+                            successMessage.style.display = 'none';
+                        }, 3000);
+                    })
+                    .catch(error => console.error('Có lỗi khi lấy dữ liệu chủng loại:', error));
+            } else {
+                const errorContainer = addCategoryTypeModal.querySelector('.modal-error');
+                errorContainer.textContent = result.message || 'Có lỗi khi thêm chủng loại';
+                errorContainer.style.display = 'block';
+                errorContainer.style.color = 'var(--clr-error)';
+                addCategoryTypeModal.scrollTop = 0;
+            }
+        })
+        .catch(error => {
+            console.error('Thêm chủng loại thất bại:', error);
+            const addCategoryTypeModal = document.getElementById("add-modal");
+            addCategoryTypeModal.scrollTop = 0;
+        });
+    }
+
+    // Hàm xóa chủng loại (cập nhật status_id thành 6)
+    function deleteCategoryType(categoryTypeId) {
+        const formData = new FormData();
+        formData.append('category_type_id', categoryTypeId);
+        formData.append('status_id', 6);
+
+        fetch('../../BackEnd/Model/quanlichungloai/xulichungloai.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.status === 'success') {
+                fetch('quanlichungloai/fetch_chungloai.php')
+                    .then(response => response.json())
+                    .then(data => {
+                        categoryTypes = data.data;
+                        renderTable(categoryTypes);
+                        const deleteModalEl = document.getElementById('delete-modal');
+                        deleteModalEl.close();
+                        const successMessage = document.getElementById('success-message');
+                        successMessage.querySelector('.success-text p').textContent = result.message || 'Chủng loại đã được đánh dấu xóa';
+                        successMessage.style.display = 'block';
+                        setTimeout(() => {
+                            successMessage.style.display = 'none';
+                        }, 3000);
+                    })
+                    .catch(error => console.error('Có lỗi khi lấy dữ liệu chủng loại:', error));
+            } else {
+                const successMessage = document.getElementById('success-message');
+                successMessage.querySelector('.success-text p').textContent = result.message || 'Xóa thất bại';
+                successMessage.style.display = 'block';
+                successMessage.style.backgroundColor = 'var(--clr-error)';
+                setTimeout(() => {
+                    successMessage.style.display = 'none';
+                    successMessage.style.backgroundColor = '';
+                }, 3000);
+            }
+        })
+        .catch(error => {
+            console.error('Lỗi khi gửi yêu cầu xóa:', error);
+            const successMessage = document.getElementById('success-message');
+            successMessage.querySelector('.success-text p').textContent = 'Lỗi khi gửi yêu cầu xóa';
+            successMessage.style.display = 'block';
+            successMessage.style.backgroundColor = 'var(--clr-error)';
+            setTimeout(() => {
+                successMessage.style.display = 'none';
+                successMessage.style.backgroundColor = '';
+            }, 3000);
+        });
+    }
+
+    // Event listener cho nút xóa trong delete-modal
+    const deleteModalEl = document.getElementById('delete-modal');
+    const deleteDeleteButton = deleteModalEl.querySelector('#delete-delete-button');
+    deleteDeleteButton.addEventListener('click', () => {
+        const categoryTypeId = parseInt(deleteModalEl.getAttribute('data-category-type-id'));
+        deleteCategoryType(categoryTypeId);
+    });
+
+    // Hàm xử lý modal Add
+    function addViewCategoryTypeModalEventListener() {
+        const addCategoryTypeModal = document.getElementById("add-modal");
+        const formEl = document.getElementById("modal-add-form");
+        const addCloseButton = addCategoryTypeModal.querySelector("#add-close-button");
+        const addCategoryTypeToolbar = document.querySelector("#add-product-toolbar");
+
+        addCategoryTypeToolbar.addEventListener("click", () => {
+            addCategoryTypeModal.showModal();
+        });
+
+        addCloseButton.addEventListener("click", () => {
+            addCategoryTypeModal.close();
+        });
+
+        formEl.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const isError = validateAddModalFormInputs(formEl);
+            if (!isError) {
+                addCategoryType(formEl);
+            } else {
+                addCategoryTypeModal.scrollTop = 0;
+            }
         });
     }
 
@@ -310,59 +432,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Hàm validate form thêm
-    function validateAddModalFormInputs(form) {
-        const inputs = form.querySelectorAll('input[required], textarea[required], select[required]');
-        let isError = false;
-
-        inputs.forEach(input => {
-            const value = input.value.trim();
-            const errorEl = input.parentElement.querySelector('.modal-error');
-            input.style.border = '';
-            if (errorEl) errorEl.textContent = '';
-
-            // Kiểm tra trường bắt buộc
-            if (!value) {
-                isError = true;
-                input.style.border = '1px solid var(--clr-error)';
-                if (errorEl) errorEl.textContent = 'Trường này không được để trống!';
-                return;
-            }
-
-            // Kiểm tra trường tên chủng loại (modal-add-name)
-            if (input.id === 'modal-add-name') {
-                if (!/^[a-zA-Z\s-]+$/.test(value)) {
-                    isError = true;
-                    input.style.border = '1px solid var(--clr-error)';
-                    if (errorEl) errorEl.textContent = 'Tên chủng loại chỉ chứa chữ cái, khoảng trắng, và dấu gạch ngang';
-                } else if (value.length > 100) {
-                    isError = true;
-                    input.style.border = '1px solid var(--clr-error)';
-                    if (errorEl) errorEl.textContent = 'Tên chủng loại không được vượt quá 100 ký tự';
-                }
-            }
-
-            // Kiểm tra trường mô tả (modal-add-desc)
-            if (input.id === 'modal-add-desc') {
-                if (value.length > 400) {
-                    isError = true;
-                    input.style.border = '1px solid var(--clr-error)';
-                    if (errorEl) errorEl.textContent = 'Mô tả không được vượt quá 400 ký tự';
-                }
-            }
-
-            // Kiểm tra trường trạng thái (modal-add-status)
-            if (input.id === 'modal-add-status' && !value) {
-                isError = true;
-                input.style.border = '1px solid var(--clr-error)';
-                if (errorEl) errorEl.textContent = 'Vui lòng chọn trạng thái!';
-            }
-        });
-
-        return isError;
-    }
-
-    // Hàm validate form chỉnh sửa
+    // Hàm validate form cho edit-modal
     function validateModalFormInputs(form) {
         const inputs = form.querySelectorAll('input[required], textarea[required], select[required]');
         let isError = false;
@@ -376,7 +446,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!value) {
                 isError = true;
                 input.style.border = '1px solid var(--clr-error)';
-                if (errorEl) errorEl.textContent = 'This field is required';
+                if (errorEl) errorEl.textContent = 'Trường này không được để trống!';
                 return;
             }
 
@@ -393,6 +463,48 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             if (input.id === 'modal-edit-desc') {
+                if (value.length > 400) {
+                    isError = true;
+                    input.style.border = '1px solid var(--clr-error)';
+                    if (errorEl) errorEl.textContent = 'Mô tả không được vượt quá 400 ký tự';
+                }
+            }
+        });
+
+        return isError;
+    }
+
+    // Hàm validate form cho add-modal
+    function validateAddModalFormInputs(form) {
+        const inputs = form.querySelectorAll('input[required], textarea[required], select[required]');
+        let isError = false;
+
+        inputs.forEach(input => {
+            const value = input.value.trim();
+            const errorEl = input.parentElement.querySelector('.modal-error');
+            input.style.border = '';
+            if (errorEl) errorEl.textContent = '';
+
+            if (!value) {
+                isError = true;
+                input.style.border = '1px solid var(--clr-error)';
+                if (errorEl) errorEl.textContent = 'Trường này không được để trống!';
+                return;
+            }
+
+            if (input.id === 'modal-add-name') {
+                if (!/^[a-zA-Z\s-]+$/.test(value)) {
+                    isError = true;
+                    input.style.border = '1px solid var(--clr-error)';
+                    if (errorEl) errorEl.textContent = 'Tên chủng loại chỉ chứa chữ cái, khoảng trắng, và dấu gạch ngang';
+                } else if (value.length > 100) {
+                    isError = true;
+                    input.style.border = '1px solid var(--clr-error)';
+                    if (errorEl) errorEl.textContent = 'Tên chủng loại không được vượt quá 100 ký tự';
+                }
+            }
+
+            if (input.id === 'modal-add-desc') {
                 if (value.length > 400) {
                     isError = true;
                     input.style.border = '1px solid var(--clr-error)';
@@ -453,118 +565,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Hàm xóa chủng loại (cập nhật status_id thành 6)
-    function deleteCategoryType(categoryTypeId) {
-        const formData = new FormData();
-        formData.append('category_type_id', categoryTypeId);
-        formData.append('status_id', 6); // Đặt status_id thành 6 (xóa mềm)
-
-        fetch('../../BackEnd/Model/quanlichungloai/xulichungloai.php', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(result => {
-            if (result.status === 'success') {
-                fetch('quanlichungloai/fetch_chungloai.php')
-                    .then(response => response.json())
-                    .then(data => {
-                        categoryTypes = data.data;
-                        renderTable(categoryTypes);
-                        const deleteModalEl = document.getElementById('delete-modal');
-                        deleteModalEl.close();
-                        const successMessage = document.getElementById('success-message');
-                        successMessage.querySelector('.success-text p').textContent = result.message || 'Chủng loại đã được đánh dấu xóa';
-                        successMessage.style.display = 'block';
-                        setTimeout(() => {
-                            successMessage.style.display = 'none';
-                        }, 3000);
-                    })
-                    .catch(error => console.error('Có lỗi khi lấy dữ liệu chủng loại:', error));
-            } else {
-                console.error('Xóa thất bại:', result.message);
-            }
-        })
-        .catch(error => console.error('Lỗi khi gửi yêu cầu xóa:', error));
-    }
-
-    // Event listener cho nút xóa trong delete-modal
-    const deleteModalEl = document.getElementById('delete-modal');
-    const deleteDeleteButton = deleteModalEl.querySelector('#delete-delete-button');
-    deleteDeleteButton.addEventListener('click', () => {
-        const categoryTypeId = parseInt(deleteModalEl.getAttribute('data-category-type-id'));
-        deleteCategoryType(categoryTypeId);
-    });
-
-    // Hàm thêm chủng loại
-    function addCategoryType(formEl) {
-        const formData = new FormData(formEl);
-        fetch('../../BackEnd/Model/quanlichungloai/xulichungloai.php', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(result => {
-            const addCategoryTypeModal = document.getElementById("add-modal");
-            if (result.status === 'success') {
-                fetch('quanlichungloai/fetch_chungloai.php')
-                    .then(response => response.json())
-                    .then(data => {
-                        categoryTypes = data.data;
-                        renderTable(categoryTypes);
-                        addCategoryTypeModal.close();
-                        const successMessage = document.getElementById('success-message');
-                        successMessage.querySelector('.success-text p').textContent = result.message || 'Chủng loại thêm thành công';
-                        successMessage.style.display = 'block';
-                        setTimeout(() => {
-                            successMessage.style.display = 'none';
-                        }, 3000);
-                    })
-                    .catch(error => {
-                        console.error('Có lỗi khi lấy dữ liệu chủng loại:', error);
-                    });
-           - } else {
-                addCategoryTypeModal.scrollTop = 0;
-            }
-        })
-        .catch(error => {
-            console.error('Thêm chủng loại thất bại:', error);
-            const addCategoryTypeModal = document.getElementById("add-modal");
-            addCategoryTypeModal.scrollTop = 0;
-        });
-    }
-
-    // Hàm xử lý modal Add
-    function addViewCategoryTypeModalEventListener() {
-        const addCategoryTypeModal = document.getElementById("add-modal");
-        const formEl = document.getElementById("modal-add-form");
-        const addCloseButton = addCategoryTypeModal.querySelector("#add-close-button");
-        const addCategoryTypeToolbar = document.querySelector("#add-product-toolbar");
-
-        addCategoryTypeToolbar.addEventListener("click", () => {
-            addCategoryTypeModal.showModal();
-        });
-
-        addCloseButton.addEventListener("click", () => {
-            addCategoryTypeModal.close();
-        });
-
-        formEl.addEventListener("submit", (e) => {
-            e.preventDefault();
-            const isError = validateAddModalFormInputs(formEl);
-            if (!isError) {
-                addCategoryType(formEl);
-            } else {
-                addCategoryTypeModal.scrollTop = 0;
-            }
-        });
-    }
-
     // Gọi hàm để thêm sự kiện
     addViewCategoryTypeModalEventListener();
     addModalCloseButtonEventListeners();
@@ -593,3 +593,4 @@ document.addEventListener('DOMContentLoaded', function() {
     include 'quanlichungloai/xemchungloai.php';
     include 'quanlichungloai/xoachungloai.php';
 ?>
+</div>

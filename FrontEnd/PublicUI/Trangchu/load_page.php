@@ -14,7 +14,6 @@ $custom_paths = [
     'order_details' => '../../PublicUI/Lichsumuahang/chitietdonhang.php',
     'product' => '../../PublicUI/SanPham/danhsachSP.php',
     'product_details' => '../../PublicUI/SanPham/product_detail.php',
-    
 ];
 
 if (!isset($_SERVER['HTTP_X_REQUESTED_WITH']) || strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) != 'xmlhttprequest') {

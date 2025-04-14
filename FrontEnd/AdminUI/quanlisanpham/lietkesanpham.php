@@ -1,4 +1,3 @@
-
 <body>
 <div class="header"></div>
 <div class="data-table">
@@ -32,7 +31,7 @@
             </div>
         </div>
         <div class="toolbar-button-wrapper">
-            <button class="toolbar-button add-product-button" id="add-product-toolbar">
+            <button class="toolbar-button add-product-button" id="add-product-toolbar" data-permission-id="1" data-action="Thêm">
                 <span>Thêm sản phẩm</span>
                 <i class="bx bx-plus-medical"></i>
             </button>
@@ -65,16 +64,35 @@
     </div>
 
     <!-- Script để fetch và hiển thị dữ liệu -->
+    <script src="js/action-permission.js?v=<?php echo time(); ?>"></script>
     <script>
+    // Override the getPermissionPath function to use the direct-fetch-permissions.php file
+    function getPermissionPath() {
+        return new Promise((resolve) => {
+            // Use the direct-fetch-permissions.php file
+            resolve('../includes/direct-fetch-permissions.php');
+        });
+    }
+    
     document.addEventListener('DOMContentLoaded', function() {
         // Biến toàn cục
         let products = []; // Dữ liệu gốc, không thay đổi
 
+        // Check and setup the add product button
+        const addProductButton = document.querySelector("#add-product-toolbar");
+        if (addProductButton) {
+            console.log("Add product button found:", addProductButton);
+            // Remove the disabled attribute to allow click events
+            addProductButton.removeAttribute('disabled');
+        } else {
+            console.error("Add product button not found");
+        }
+
         // Hàm chuyển status_id thành văn bản
         function getStatusText(statusId) {
             switch (statusId) {
-                case 1: return 'Active';
-                case 2: return 'Inactive';
+                case 1: return 'Hoạt Động';
+                case 2: return 'Không hoạt động';
                 default: return 'N/A';
             }
         }
@@ -116,7 +134,18 @@
                 renderTable(products);
             });
         }
-
+                // Hàm định dạng tiền tệ Việt Nam
+        function formatCurrency(amount) {
+            if (amount === null || amount === undefined || isNaN(amount)) {
+                return '0 VNĐ';
+            }
+            // Chuyển đổi thành số và làm tròn 2 chữ số thập phân
+            const number = parseFloat(amount).toFixed(0);
+            // Thêm dấu phân cách hàng nghìn
+            const formatted = number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            return `${formatted} VNĐ`;
+        }
+        
         // Hàm render bảng
         function renderTable(displayedProducts) {
             const tableBody = document.getElementById('table-body');
@@ -138,18 +167,18 @@
                         <td>${index + 1}</td>
                         <td>${product.product_name || 'N/A'}</td>
                         <td>${product.product_description || 'N/A'}</td>
-                        <td>${product.image_url ? `<img src="${product.image_url}" alt="${product.product_name}" style="max-width: 100px;" />` : 'N/A'}</td>
+                        <td>${product.image_url ? `<img src="${product.image_url}" alt="${product.product_name}" style="width: 100px; height: 100px;object-fit: cover; border-radius: 4px;display: block; " />` : 'N/A'}</td>
                         <td>${product.categories || 'N/A'}</td>
-                        <td>${product.price || '0.00'}</td>
+                        <td>${formatCurrency(product.price)}</td> <!-- Sử dụng formatCurrency -->
                         <td>${product.stock_quantity || '0'}</td>
                         <td>${getStatusText(product.status_id)}</td>
                         <td class="actions">
                             <div class="dropdown">
                                 <button class="dropdownButton"><i class="fa fa-ellipsis-v dropIcon"></i></button>
                                 <div class="dropdown-content">
-                                    <a href="#" class="viewProduct" data-product-id="${product.product_id}">Xem Sản Phẩm <i class="fa fa-eye"></i></a>
-                                    <a href="#" class="editProduct" data-product-id="${product.product_id}">Sửa Sản Phẩm <i class="fa fa-edit"></i></a>
-                                    <a href="#" class="deleteProduct" data-product-id="${product.product_id}">Xóa Sản Phẩm <i class="fa fa-trash"></i></a>
+                                    <a href="#" class="viewProduct" data-product-id="${product.product_id}" data-permission-id="1" data-action="Xem">Xem Sản Phẩm <i class="fa fa-eye"></i></a>
+                                    <a href="#" class="editProduct" data-product-id="${product.product_id}" data-permission-id="1" data-action="Sửa">Sửa Sản Phẩm <i class="fa fa-edit"></i></a>
+                                    <a href="#" class="deleteProduct" data-product-id="${product.product_id}" data-permission-id="1" data-action="Xóa">Xóa Sản Phẩm <i class="fa fa-trash"></i></a>
                                 </div>
                             </div>
                         </td>
@@ -182,67 +211,97 @@
             });
 
         // Sử dụng event delegation để xử lý các hành động
-        // Sử dụng event delegation để xử lý các hành động
-document.getElementById('table-body').addEventListener('click', (e) => {
-    const target = e.target.closest('a');
-    if (!target) return;
+        document.getElementById('table-body').addEventListener('click', (e) => {
+            const target = e.target.closest('a');
+            if (!target) return;
 
-    e.preventDefault();
-    const productId = parseInt(target.getAttribute('data-product-id')); // Chuyển đổi thành số
-    const product = products.find(prod => prod.product_id === productId);
+            e.preventDefault();
+            const productId = parseInt(target.getAttribute('data-product-id')); // Chuyển đổi thành số
+            const product = products.find(prod => prod.product_id === productId);
+            const permissionId = parseInt(target.getAttribute('data-permission-id'));
+            const action = target.getAttribute('data-action');
 
-    if (!product) {
-        console.error('Product not found:', productId);
-        return;
-    }
+            if (!product) {
+                console.error('Product not found:', productId);
+                return;
+            }
 
-    if (target.classList.contains('viewProduct')) {
-        const viewModalEl = document.getElementById("view-modal");
-        addModalData(viewModalEl, product, "innerHTML");
-        viewModalEl.showModal();
-    } else if (target.classList.contains('editProduct')) {
-        const editModalEl = document.getElementById("edit-modal");
-        openEditModal(product);
-    } else if (target.classList.contains('deleteProduct')) {
-        const deleteModalEl = document.getElementById("delete-modal");
-        deleteModalEl.setAttribute("data-product-id", productId);
-        deleteModalEl.showModal();
-    }
-});
+            if (target.classList.contains('viewProduct')) {
+                checkActionPermissionBeforeAction(
+                    permissionId,
+                    action,
+                    () => {
+                        const viewModalEl = document.getElementById("view-modal");
+                        addModalData(viewModalEl, product, "innerHTML");
+                        viewModalEl.showModal();
+                    },
+                    () => {
+                        alert("Bạn không có quyền xem sản phẩm.");
+                    }
+                );
+            } else if (target.classList.contains('editProduct')) {
+                checkActionPermissionBeforeAction(
+                    permissionId,
+                    action,
+                    () => {
+                        const editModalEl = document.getElementById("edit-modal");
+                        openEditModal(product);
+                    },
+                    () => {
+                        alert("Bạn không có quyền sửa sản phẩm.");
+                    }
+                );
+            } else if (target.classList.contains('deleteProduct')) {
+                checkActionPermissionBeforeAction(
+                    permissionId,
+                    action,
+                    () => {
+                        const deleteModalEl = document.getElementById("delete-modal");
+                        deleteModalEl.setAttribute("data-product-id", productId);
+                        deleteModalEl.showModal();
+                    },
+                    () => {
+                        alert("Bạn không có quyền xóa sản phẩm.");
+                    }
+                );
+            }
+        });
+
         // Hàm mở modal chỉnh sửa
-function openEditModal(product) {
-    const editModal = document.getElementById('edit-modal');
-    const form = document.getElementById('modal-edit-form');
-    const imagePreview = document.getElementById('edit-image-preview');
+        function openEditModal(product) {
+            const editModal = document.getElementById('edit-modal');
+            const form = document.getElementById('modal-edit-form');
+            const imagePreview = document.getElementById('edit-image-preview');
 
-    document.getElementById('modal-edit-product-id').value = product.product_id;
-    document.getElementById('modal-edit-name').value = product.product_name || '';
-    document.getElementById('modal-edit-description').value = product.product_description || '';
-    document.getElementById('modal-edit-status').value = product.status_id;
+            document.getElementById('modal-edit-product-id').value = product.product_id;
+            document.getElementById('modal-edit-name').value = product.product_name || '';
+            document.getElementById('modal-edit-description').value = product.product_description || '';
+            document.getElementById('modal-edit-status').value = product.status_id;
 
-    // Điền dữ liệu thể loại
-    const categorySelect = document.getElementById('modal-edit-categories');
-    const selectedCategories = product.categories ? product.categories.split(', ') : [];
-    Array.from(categorySelect.options).forEach(option => {
-        option.selected = selectedCategories.includes(option.textContent);
-    });
+            // Điền dữ liệu thể loại
+            const categorySelect = document.getElementById('modal-edit-categories');
+            const selectedCategories = product.categories ? product.categories.split(', ') : [];
+            Array.from(categorySelect.options).forEach(option => {
+                option.selected = selectedCategories.includes(option.textContent);
+            });
 
-    // Hiển thị ảnh cũ (nếu có)
-    if (product.image_url) {
-        imagePreview.src = product.image_url;
-        imagePreview.setAttribute('data-current-src', product.image_url); // Lưu ảnh cũ để khôi phục nếu cần
-        imagePreview.style.display = 'block';
-    } else {
-        imagePreview.src = '';
-        imagePreview.removeAttribute('data-current-src');
-        imagePreview.style.display = 'none';
-    }
+            // Hiển thị ảnh cũ (nếu có)
+            if (product.image_url) {
+                imagePreview.src = product.image_url;
+                imagePreview.setAttribute('data-current-src', product.image_url); // Lưu ảnh cũ để khôi phục nếu cần
+                imagePreview.style.display = 'block';
+            } else {
+                imagePreview.src = '';
+                imagePreview.removeAttribute('data-current-src');
+                imagePreview.style.display = 'none';
+            }
 
-    clearFormErrors(form);
-    form.removeEventListener('submit', handleEditSubmit);
-    form.addEventListener('submit', handleEditSubmit);
-    editModal.showModal();
-}
+            clearFormErrors(form);
+            form.removeEventListener('submit', handleEditSubmit);
+            form.addEventListener('submit', handleEditSubmit);
+            editModal.showModal();
+        }
+
         // Hàm xử lý submit form chỉnh sửa
         function handleEditSubmit(e) {
             e.preventDefault();
@@ -432,9 +491,24 @@ function openEditModal(product) {
             const addCloseButton = addProductModal.querySelector("#add-close-button");
             const addProductToolbar = document.querySelector("#add-product-toolbar");
 
-            addProductToolbar.addEventListener("click", () => {
-                addProductModal.showModal();
-            });
+            // Check if the button exists
+            if (addProductToolbar) {
+                addProductToolbar.addEventListener("click", () => {
+                    // Check if the user has permission to add products
+                    checkActionPermissionBeforeAction(
+                        1, // permission_id for "Quản lý sản phẩm"
+                        "Thêm",
+                        () => {
+                            addProductModal.showModal();
+                        },
+                        () => {
+                            alert("Bạn không có quyền thêm sản phẩm.");
+                        }
+                    );
+                });
+            } else {
+                console.error("Add product button not found");
+            }
 
             addCloseButton.addEventListener("click", () => {
                 addProductModal.close();
@@ -538,18 +612,20 @@ function openEditModal(product) {
         }
 
         // Hàm thêm dữ liệu vào modal
-        function addModalData(modalEl, product, type) {
-            if (type === "innerHTML") {
-                modalEl.querySelector("#modal-view-product-id").textContent = product.product_id || 'N/A';
-                modalEl.querySelector("#modal-view-name").textContent = product.product_name || 'N/A';
-                modalEl.querySelector("#modal-view-description").textContent = product.product_description || 'N/A';
-                modalEl.querySelector("#modal-view-image-url").textContent = product.image_url || 'N/A';
-                modalEl.querySelector("#modal-view-categories").textContent = product.categories || 'N/A';
-                modalEl.querySelector("#modal-view-price").textContent = product.price || '0.00';
-                modalEl.querySelector("#modal-view-stock-quantity").textContent = product.stock_quantity || '0';
-                modalEl.querySelector("#modal-view-status").textContent = getStatusText(product.status_id);
-            }
-        }
+function addModalData(modalEl, product, type) {
+    if (type === "innerHTML") {
+        modalEl.querySelector("#modal-view-product-id").textContent = product.product_id || 'N/A';
+        modalEl.querySelector("#modal-view-name").textContent = product.product_name || 'N/A';
+        modalEl.querySelector("#modal-view-description").textContent = product.product_description || 'N/A';
+        const imageEl = modalEl.querySelector("#modal-view-image-url");
+        imageEl.src = product.image_url || ''; // Điền URL vào src
+        imageEl.alt = product.image_url ? 'Hình Ảnh Sản Phẩm' : 'Không có hình ảnh'; // Cập nhật alt
+        modalEl.querySelector("#modal-view-categories").textContent = product.categories || 'N/A';
+        modalEl.querySelector("#modal-view-price").textContent = formatCurrency(product.price); // Sử dụng formatCurrency
+        modalEl.querySelector("#modal-view-stock-quantity").textContent = product.stock_quantity || '0';
+        modalEl.querySelector("#modal-view-status").textContent = getStatusText(product.status_id);
+    }
+}
 
 // Hàm xử lý modal
 function addModalCloseButtonEventListeners() {

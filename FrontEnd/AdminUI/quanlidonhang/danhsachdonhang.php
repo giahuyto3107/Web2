@@ -1,3 +1,16 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Đơn Hàng</title>
+    <!-- Liên kết đến file style.css chính -->
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Liên kết đến file CSS riêng nếu có -->
+    <link rel="stylesheet" href="css/quanlidonhang.css">
+    <!-- Liên kết đến file chitietdonhang.css cho modal -->
+    <link rel="stylesheet" href="css/chitietdonhang.css">
+</head>
 <body>
 <div class="header"></div>
 <div class="data-table">
@@ -28,6 +41,7 @@
                     <option value="address">Địa chỉ</option>
                 </select>
             </div>
+
             <div class="search">
                 <!-- Trường nhập liệu văn bản (mặc định) -->
                 <input type="text" id="search-text" name="search-text" placeholder="Tìm kiếm..." style="display: block;" />
@@ -45,12 +59,15 @@
                     <option value="Tiền mặt">Tiền mặt</option>
                     <option value="Chuyển khoản">Chuyển khoản</option>
                 </select>
-                <!-- Hai trường nhập liệu ngày (ẩn ban đầu) -->
-                <div id="search-date" style="display: none;">
-                    <label for="date-from">Từ ngày:</label>
-                    <input type="date" id="date-from" name="date-from" />
-                    <label for="date-to">Đến ngày:</label>
-                    <input type="date" id="date-to" name="date-to" />
+                <div id="search-date" style="display: none; margin-top: 0.5rem;">
+                    <div class="date-filter-wrapper">
+                        <label for="date-from" class="filter-label">Từ: </label>
+                        <input type="date" id="date-from" name="date-from" />
+                    </div>
+                    <div class="date-filter-wrapper">
+                        <label for="date-to" class="filter-label">Đến: </label>
+                        <input type="date" id="date-to" name="date-to" />
+                    </div>
                 </div>
             </div>
         </div>
@@ -90,6 +107,15 @@
         // Biến toàn cục
         let orders = []; // Dữ liệu gốc, không thay đổi
         let filteredOrders = []; // Dữ liệu đã lọc
+
+        // Hàm định dạng tiền tệ Việt Nam
+        function formatCurrencyVND(amount) {
+            if (isNaN(amount) || amount === null || amount === undefined) {
+                return '0 VND';
+            }
+            const number = parseFloat(amount);
+            return number.toLocaleString('vi-VN', { style: 'decimal' }) + ' VND';
+        }
 
         // Hàm chuyển status_id thành văn bản
         function getStatusText(statusId) {
@@ -136,7 +162,7 @@
                         <td>${order.order_id}</td>
                         <td>${order.user_name || 'N/A'}</td>
                         <td>${order.order_date || 'N/A'}</td>
-                        <td>${order.total_amount || '0'}</td>
+                        <td>${formatCurrencyVND(order.total_amount)}</td>
                         <td>${getStatusText(order.status_id)}</td>
                         <td>${order.payment_method || 'N/A'}</td>
                         <td>${order.phone || 'N/A'}</td>
@@ -188,7 +214,7 @@
                 searchText.style.display = 'none';
                 searchStatus.style.display = 'none';
                 searchPaymentMethod.style.display = 'none';
-                searchDate.style.display = 'block';
+                searchDate.style.display = 'flex';
             } else {
                 searchText.style.display = 'block';
                 searchStatus.style.display = 'none';
@@ -383,7 +409,7 @@
                     document.getElementById('modal-view-order-id').textContent = orderInfo.order_id || 'N/A';
                     document.getElementById('modal-view-user-name').textContent = orderInfo.user_name || 'N/A';
                     document.getElementById('modal-view-order-date').textContent = orderInfo.order_date || 'N/A';
-                    document.getElementById('modal-view-total-amount').textContent = totalValue.toLocaleString() + ' VND';
+                    document.getElementById('modal-view-total-amount').textContent = formatCurrencyVND(totalValue);
                     document.getElementById('modal-view-status').textContent = getStatusText(orderInfo.status_id);
                     document.getElementById('modal-view-payment-method').textContent = orderInfo.payment_method || 'N/A';
                     document.getElementById('modal-view-phone').textContent = orderInfo.phone || 'N/A';
@@ -399,8 +425,8 @@
                                     <td>${item.product_id || 'N/A'}</td>
                                     <td>${item.product_name || 'N/A'}</td>
                                     <td>${item.quantity || '0'}</td>
-                                    <td>${item.price || '0'}</td>
-                                    <td>${(item.quantity * item.price).toLocaleString() || '0'} VND</td>
+                                    <td>${formatCurrencyVND(item.price)}</td>
+                                    <td>${formatCurrencyVND(item.quantity * item.price)}</td>
                                 </tr>
                             `;
                             tableBody.innerHTML += row;

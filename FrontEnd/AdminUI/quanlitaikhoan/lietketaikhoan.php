@@ -29,7 +29,7 @@
       </div>
     </div>
     <div class="toolbar-button-wrapper">
-      <button class="toolbar-button add-product-button" id="add-product-toolbar">
+      <button class="toolbar-button add-product-button" id="add-product-toolbar" data-permission-id="3" data-action="Thêm">
         <span>Thêm tài khoản</span>
         <i class="bx bx-plus-medical"></i>
       </button>
@@ -138,9 +138,9 @@
               <div class="dropdown">
                 <button class="dropdownButton"><i class="fa fa-ellipsis-v dropIcon"></i></button>
                 <div class="dropdown-content">
-                  <a href="#" class="viewAccount" data-account-id="${account.account_id}">Xem <i class="fa fa-eye"></i></a>
-                  <a href="#" class="editAccount" data-account-id="${account.account_id}">Sửa <i class="fa fa-edit"></i></a>
-                  <a href="#" class="deleteAccount" data-account-id="${account.account_id}">Xóa <i class="fa fa-trash"></i></a>
+                  <a href="#" class="viewAccount" data-permission-id="3" data-action="Xem" data-account-id="${account.account_id}">Xem <i class="fa fa-eye"></i></a>
+                  <a href="#" class="editAccount" data-permission-id="3" data-action="Sửa" data-account-id="${account.account_id}">Sửa <i class="fa fa-edit"></i></a>
+                  <a href="#" class="deleteAccount" data-permission-id="3" data-action="Xóa" data-account-id="${account.account_id}">Xóa <i class="fa fa-trash"></i></a>
                 </div>
               </div>
             </td>
