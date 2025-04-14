@@ -257,22 +257,29 @@
                             // Create the table
                             const table = document.createElement('table');
                             table.style.width = '100%';
+                            table.style.borderCollapse = 'collapse';
 
                             // Create table header
                             const thead = document.createElement('thead');
                             const trHead = document.createElement('tr');
                             const thPermission = document.createElement('th');
                             thPermission.textContent = 'Quyền';
+                            thPermission.style.padding = '8px';
+                            thPermission.style.borderBottom = '1px solid #ddd';
                             trHead.appendChild(thPermission);
 
                             allActions.forEach(action => {
                                 const th = document.createElement('th');
                                 th.textContent = action;
+                                th.style.padding = '8px';
+                                th.style.borderBottom = '1px solid #ddd';
                                 trHead.appendChild(th);
                             });
 
                             const thSelectAll = document.createElement('th');
                             thSelectAll.textContent = 'Select All';
+                            thSelectAll.style.padding = '8px';
+                            thSelectAll.style.borderBottom = '1px solid #ddd';
                             trHead.appendChild(thSelectAll);
                             thead.appendChild(trHead);
                             table.appendChild(thead);
@@ -283,32 +290,54 @@
                             allPermissions.data.forEach(permission => {
                                 const allowedActions = permissionActions[permission.name] || defaultActions;
                                 const tr = document.createElement('tr');
+                                tr.style.borderBottom = '1px solid #ddd';
+                                
                                 const tdPermission = document.createElement('td');
                                 tdPermission.textContent = permission.name;
+                                tdPermission.style.padding = '8px';
                                 tr.appendChild(tdPermission);
 
                                 allActions.forEach(action => {
                                     const td = document.createElement('td');
+                                    td.style.padding = '8px';
+                                    td.style.textAlign = 'center';
                                     if (allowedActions.includes(action)) {
                                         const checkbox = document.createElement('input');
                                         checkbox.type = 'checkbox';
                                         checkbox.name = `permissions[${permission.id}][${action}]`;
+                                        checkbox.className = 'permission-checkbox';
+                                        
+                                        // Check if the current user has this action
+                                        const hasAction = window.PermissionSystem && 
+                                            window.PermissionSystem.hasActionPermission ? 
+                                            window.PermissionSystem.hasActionPermission(permission.id, action) : false;
+                                        
+                                        // Check if this permission-action pair is assigned to the role
                                         if (assignedSet.has(`${permission.id}-${action}`)) {
                                             checkbox.checked = true;
                                         }
+
+                                        // If the user has this permission-action, check it
+                                        if (hasAction) {
+                                            checkbox.checked = true;
+                                        }
+                                        
                                         td.appendChild(checkbox);
                                     }
-                                    // Leave cell empty if action is not allowed
                                     tr.appendChild(td);
                                 });
 
                                 // Add Select All button
                                 const tdSelectAll = document.createElement('td');
+                                tdSelectAll.style.padding = '8px';
+                                tdSelectAll.style.textAlign = 'center';
                                 const selectAllButton = document.createElement('button');
                                 selectAllButton.type = 'button';
                                 selectAllButton.textContent = 'Select All';
+                                selectAllButton.style.padding = '4px 8px';
+                                selectAllButton.style.cursor = 'pointer';
                                 selectAllButton.addEventListener('click', () => {
-                                    const checkboxes = tr.querySelectorAll('input[type="checkbox"]');
+                                    const checkboxes = tr.querySelectorAll('input[type="checkbox"]:not(:disabled)');
                                     checkboxes.forEach(cb => cb.checked = true);
                                 });
                                 tdSelectAll.appendChild(selectAllButton);
