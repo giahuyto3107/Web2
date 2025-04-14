@@ -136,6 +136,28 @@ include ('../../../BackEnd/Config/config.php');
             gap: 30px;
         }
 
+
+        .no-products {
+            grid-column: 1 / -1; 
+            text-align: center;
+            padding: 40px 20px;
+            /* background: linear-gradient(135deg, #ffffff, #f1f3f5); */
+            border-radius: 12px;
+            /* box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); */
+            animation: fadeIn 0.8s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 300px; 
+        }
+
+        .no-products .not-found-img {
+            max-width: 550px;
+            height: auto;
+            animation: wobble 3s infinite;
+            filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.2));
+        }
+
         .card {
             border: 1px solid #e0e0e0;
             border-radius: 0;
@@ -374,7 +396,9 @@ $(document).ready(function () {
                             </div>`;
                     });
                 } else {
-                    productsHtml = "<p class='text-center' style='font-weight: 300; color: #666;'>Không có sản phẩm nào</p>";
+                    productsHtml = "<div class='no-products text-center'>" +
+               "<img src='../../../BackEnd/Uploads/Product Picture/notfound.png' alt='Not Found' class='not-found-img'>" +
+               "</div>";
                 }
                 window.scrollTo(0, 0);
                 $("#product-list").html(productsHtml);
@@ -406,9 +430,10 @@ $(document).ready(function () {
         let categoryList = $(`#category-list-${typeId}`);
         if (categoryList.children().length === 0) { 
             loadCategories(typeId);
-        } else {
-            categoryList.slideToggle(300); 
-        }
+        } 
+        // else {
+        //     categoryList.slideToggle(300); 
+        // }
     });
 
 
