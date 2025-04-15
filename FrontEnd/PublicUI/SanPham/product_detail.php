@@ -24,7 +24,7 @@ if (!$product) {
 $sqlCategories = "SELECT c.category_id, c.category_name, c.category_description 
                   FROM category c 
                   INNER JOIN product_category pc ON c.category_id = pc.category_id 
-                  WHERE pc.product_id = ?";
+                  WHERE pc.product_id = ? and c.status_id = 1";
 $stmt_categories = $conn->prepare($sqlCategories);
 $stmt_categories->bind_param("i", $product_id);
 $stmt_categories->execute();
