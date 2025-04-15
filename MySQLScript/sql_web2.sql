@@ -208,41 +208,16 @@ VALUES
 CREATE TABLE IF NOT EXISTS user (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
     full_name VARCHAR(100) NOT NULL,
-<<<<<<< HEAD
-    account_id INT UNIQUE,
-=======
     address varchar(100) not null,
     account_id INT unique,
->>>>>>> 4a728e2feb3a5d6a30326f61bd3124aafbaaff1e
     profile_picture VARCHAR(255),
     date_of_birth DATE,
-    address VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (account_id) REFERENCES account(account_id)
         ON DELETE CASCADE
         ON UPDATE CASCADE
 );
-<<<<<<< HEAD
-INSERT INTO `user` (`full_name`, `account_id`, `profile_picture`, `date_of_birth`, `address`) 
-VALUES
-    ('Nguyễn Văn A', 1, 'avatar1.png', '1990-01-01', 'Hà Nội'),
-    ('Trần Thị B', 2, 'avatar2.png', '1992-02-02', 'Hải Phòng'),
-    ('Lê Văn C', 3, 'avatar3.png', '1985-03-03', 'Đà Nẵng'),
-    ('Phạm Thị D', 4, 'avatar4.png', '1978-04-04', 'TP. Hồ Chí Minh'),
-    ('Hoàng Văn E', 5, 'avatar5.png', '1995-05-05', 'Cần Thơ'),
-    ('Ngô Thị F', 6, 'avatar6.png', '1993-06-06', 'Huế'),
-    ('Vũ Văn G', 7, 'avatar7.png', '1988-07-07', 'Nam Định'),
-    ('Đỗ Thị H', 8, 'avatar8.png', '1991-08-08', 'Nghệ An'),
-    ('Bùi Văn I', 9, 'avatar9.png', '1994-09-09', 'Hòa Bình'),
-    ('Đặng Thị K', 10, 'avatar10.png', '1980-10-10', 'Quảng Ninh'),
-    ('Trần Văn L', 11, 'avatar11.png', '1996-11-11', 'Lào Cai'),
-    ('Lê Thị M', 12, 'avatar12.png', '1997-12-12', 'Bắc Ninh'),
-    ('Phạm Văn N', 13, 'avatar13.png', '1982-01-13', 'Bình Dương'),
-    ('Nguyễn Thị P', 14, 'avatar14.png', '1998-02-14', 'Vũng Tàu'),
-    ('Hoàng Thị Q', 15, 'avatar15.png', '1999-03-15', 'Phú Yên');
-
-=======
 
 INSERT INTO `user` (`full_name`, `account_id`, `address`, `profile_picture`, `date_of_birth`) 
 VALUES
@@ -261,7 +236,6 @@ VALUES
     ('Phạm Văn N', 13, 'ADV', 'avatar13.png', '1982-01-13'),
     ('Nguyễn Thị P', 14, 'ADV', 'avatar14.png', '1998-02-14'),
     ('Hoàng Thị Q', 15, 'ADV', 'avatar15.png', '1999-03-15');
->>>>>>> 4a728e2feb3a5d6a30326f61bd3124aafbaaff1e
     
 CREATE TABLE IF NOT EXISTS cart_items (
     user_id INT, 
@@ -409,10 +383,10 @@ CREATE TABLE IF NOT EXISTS purchase_order (
     purchase_order_id INT AUTO_INCREMENT PRIMARY KEY,
     supplier_id INT,
     user_id INT,
-    order_date DATE DEFAULT CURRENT_DATE,
-    approve_date DATE DEFAULT NULL,
-    total_amount INT NOT NULL,
-    total_price DECIMAL(10, 2), 
+    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    approve_date TIMESTAMP default null,
+    total_amount int NOT NULL,
+    total_price decimal(10, 2), 
     status_id INT,
     import_status TINYINT(1) DEFAULT 0,
     FOREIGN KEY (supplier_id) REFERENCES supplier(supplier_id)
@@ -434,7 +408,7 @@ CREATE TABLE IF NOT EXISTS purchase_order_items (
     price DECIMAL(10, 2) NOT NULL,
     profit DECIMAL(10, 2) NOT NULL,
     import_status TINYINT(1) DEFAULT 0,
-    approve_date DATE DEFAULT NULL,
+    approve_date TIMESTAMP default null,
     FOREIGN KEY (purchase_order_id) REFERENCES purchase_order(purchase_order_id)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
@@ -442,7 +416,6 @@ CREATE TABLE IF NOT EXISTS purchase_order_items (
         ON DELETE CASCADE
         ON UPDATE CASCADE
 );
-
 
 INSERT INTO `purchase_order` (`supplier_id`, `user_id`, `order_date`, `approve_date`, `total_amount`, `total_price`, `status_id`, `import_status`) 
 VALUES
@@ -586,7 +559,9 @@ VALUES
 (1, 1, 'Xem'),
 (1, 1, 'Xóa'),
 (1, 1, 'Sửa'),
+(1, 1, 'Cập nhật phân quyền'),
 (1, 2, 'Xem'),
+(1, 2, 'Duyệt đơn/Hoàn tất'),
 (1, 3, 'Xem'),
 (1, 4, 'Xem'),
 (1, 5, 'Xem'),
