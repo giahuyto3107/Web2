@@ -1,4 +1,12 @@
-
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thống kê Top 5 Khách hàng</title>
+    <!-- Font Awesome để sử dụng icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
 <body>
 <div class="header"></div>
 <div class="data-table">
@@ -21,6 +29,12 @@
         </div>
     </div>
 
+    <!-- Biểu đồ top 5 khách hàng -->
+    <div class="chart-container">
+        <canvas id="top-customers-chart"></canvas>
+    </div>
+
+    <!-- Bảng top 5 khách hàng -->
     <div class="table-container">
         <table class="table" id="top-customers-table">
             <thead>
@@ -32,6 +46,27 @@
                 </tr>
             </thead>
             <tbody id="table-body"></tbody>
+        </table>
+    </div>
+
+    <!-- Biểu đồ doanh thu theo tháng -->
+    <h2 class="sub-heading">Doanh thu theo tháng</h2>
+    <div class="chart-container">
+        <canvas id="monthly-revenue-chart"></canvas>
+    </div>
+
+    <!-- Bảng top sản phẩm bán chạy -->
+    <h2 class="sub-heading">Top sản phẩm bán chạy</h2>
+    <div class="table-container">
+        <table class="table" id="top-products-table">
+            <thead>
+                <tr>
+                    <th>Tên sản phẩm</th>
+                    <th>Số lượng bán</th>
+                    <th>Doanh thu (VND)</th>
+                </tr>
+            </thead>
+            <tbody id="top-products-body"></tbody>
         </table>
     </div>
 
@@ -62,6 +97,9 @@
         </div>
     </dialog>
 
+    <!-- Thêm Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <!-- Script để fetch và hiển thị dữ liệu -->
     <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -71,20 +109,23 @@
         const sortAscBtn = document.getElementById('sort-asc');
         const sortDescBtn = document.getElementById('sort-desc');
         const tableBody = document.getElementById('table-body');
+        const topProductsBody = document.getElementById('top-products-body');
         const orderDetailsBody = document.getElementById('order-details-body');
         const orderDetailsModal = document.getElementById('order-details-modal');
         let customersData = []; // Lưu dữ liệu khách hàng để sắp xếp
+        let chartInstance = null; // Lưu instance của biểu đồ top khách hàng
+        let revenueChartInstance = null; // Lưu instance của biểu đồ doanh thu
 
         // Đặt giá trị mặc định cho "Từ ngày" và "Đến ngày"
-        const defaultFromDate = '2020-01-01'; // Ngày 1/1/2020
-        const today = new Date(); // Ngày hiện tại (11/4/2025)
-        const defaultToDate = today.toISOString().split('T')[0]; // Định dạng YYYY-MM-DD
+        const defaultFromDate = '2020-01-01';
+        const today = new Date();
+        const defaultToDate = today.toISOString().split('T')[0];
 
         dateFromEl.value = defaultFromDate;
         dateToEl.value = defaultToDate;
 
-        // Hàm fetch dữ liệu top 5 khách hàng
-        function fetchTopCustomers() {
+        // Hàm fetch dữ liệu tổng hợp
+        function fetchAllData() {
             const dateFrom = dateFromEl.value;
             const dateTo = dateToEl.value;
 
@@ -93,20 +134,90 @@
                 return;
             }
 
+            // Fetch top 5 khách hàng
+            fetchTopCustomers(dateFrom, dateTo);
+
+            // Fetch doanh thu theo tháng
+            fetchMonthlyRevenue(dateFrom, dateTo);
+
+            // Fetch top sản phẩm bán chạy
+            fetchTopProducts(dateFrom, dateTo);
+        }
+
+        // Hàm fetch dữ liệu top 5 khách hàng
+        function fetchTopCustomers(dateFrom, dateTo) {
             fetch(`thongke/fetch_top_customers.php?date_from=${dateFrom}&date_to=${dateTo}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.status === 'success') {
-                        customersData = data.data;
+                        customersData = data.data || [];
+                        if (customersData.length === 0) {
+                            tableBody.innerHTML = '<tr><td colspan="4">Không có dữ liệu để hiển thị.</td></tr>';
+                            if (chartInstance) chartInstance.destroy();
+                            return;
+                        }
                         renderTable(customersData);
+                        renderChart(customersData);
                     } else {
                         console.error('Error:', data.message);
-                        tableBody.innerHTML = '<tr><td colspan="4">Lỗi khi tải dữ liệu.</td></tr>';
+                        tableBody.innerHTML = `<tr><td colspan="4">Lỗi: ${data.message}</td></tr>`;
+                        if (chartInstance) chartInstance.destroy();
                     }
                 })
                 .catch(error => {
                     console.error('Fetch error:', error);
-                    tableBody.innerHTML = '<tr><td colspan="4">Lỗi khi tải dữ liệu.</td></tr>';
+                    tableBody.innerHTML = '<tr><td colspan="4">Lỗi khi tải dữ liệu. Vui lòng thử lại.</td></tr>';
+                    if (chartInstance) chartInstance.destroy();
+                });
+        }
+
+        // Hàm fetch dữ liệu doanh thu theo tháng
+        function fetchMonthlyRevenue(dateFrom, dateTo) {
+            fetch(`thongke/fetch_monthly_revenue.php?date_from=${dateFrom}&date_to=${dateTo}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        const revenueData = data.data || [];
+                        if (revenueData.length === 0) {
+                            document.getElementById('monthly-revenue-chart').style.display = 'none';
+                            if (revenueChartInstance) revenueChartInstance.destroy();
+                            return;
+                        }
+                        document.getElementById('monthly-revenue-chart').style.display = 'block';
+                        renderRevenueChart(revenueData);
+                    } else {
+                        console.error('Error:', data.message);
+                        alert(`Lỗi: ${data.message}`);
+                        if (revenueChartInstance) revenueChartInstance.destroy();
+                    }
+                })
+                .catch(error => {
+                    console.error('Fetch error:', error);
+                    alert('Lỗi khi tải dữ liệu doanh thu. Vui lòng thử lại.');
+                    if (revenueChartInstance) revenueChartInstance.destroy();
+                });
+        }
+
+        // Hàm fetch dữ liệu top sản phẩm bán chạy
+        function fetchTopProducts(dateFrom, dateTo) {
+            fetch(`thongke/fetch_top_products.php?date_from=${dateFrom}&date_to=${dateTo}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        const productsData = data.data || [];
+                        if (productsData.length === 0) {
+                            topProductsBody.innerHTML = '<tr><td colspan="3">Không có dữ liệu để hiển thị.</td></tr>';
+                            return;
+                        }
+                        renderTopProducts(productsData);
+                    } else {
+                        console.error('Error:', data.message);
+                        topProductsBody.innerHTML = `<tr><td colspan="3">Lỗi: ${data.message}</td></tr>`;
+                    }
+                })
+                .catch(error => {
+                    console.error('Fetch error:', error);
+                    topProductsBody.innerHTML = '<tr><td colspan="3">Lỗi khi tải dữ liệu. Vui lòng thử lại.</td></tr>';
                 });
         }
 
@@ -116,14 +227,165 @@
             customers.forEach(customer => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td>${customer.user_name}</td>
-                    <td>${customer.order_count}</td>
-                    <td>${parseFloat(customer.total_spent).toLocaleString()}</td>
+                    <td>${customer.user_name || 'N/A'}</td>
+                    <td>${customer.order_count || '0'}</td>
+                    <td>${parseFloat(customer.total_spent || 0).toLocaleString()}</td>
                     <td>
                         <button class="view-details" data-user-id="${customer.user_id}">Xem chi tiết</button>
                     </td>
                 `;
                 tableBody.appendChild(row);
+            });
+        }
+
+        // Hàm vẽ biểu đồ top 5 khách hàng
+        function renderChart(customers) {
+            const ctx = document.getElementById('top-customers-chart').getContext('2d');
+            const labels = customers.map(customer => customer.user_name || 'N/A');
+            const totalSpent = customers.map(customer => parseFloat(customer.total_spent || 0));
+            const orderCount = customers.map(customer => parseInt(customer.order_count || 0));
+
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+
+            chartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Tổng tiền mua (VND)',
+                            data: totalSpent,
+                            backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Số đơn hàng',
+                            data: orderCount,
+                            type: 'line',
+                            fill: false,
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                            tension: 0.1,
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: 'Tổng tiền mua (VND)'
+                            }
+                        },
+                        y1: {
+                            beginAtZero: true,
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: 'Số đơn hàng'
+                            },
+                            grid: {
+                                drawOnChartArea: false
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Tên khách hàng'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    }
+                }
+            });
+        }
+
+        // Hàm vẽ biểu đồ doanh thu theo tháng
+        function renderRevenueChart(revenueData) {
+            const ctx = document.getElementById('monthly-revenue-chart').getContext('2d');
+            const labels = revenueData.map(item => `${item.sale_month}/${item.sale_year}`);
+            const revenues = revenueData.map(item => parseFloat(item.monthly_revenue || 0));
+
+            if (revenueChartInstance) {
+                revenueChartInstance.destroy();
+            }
+
+            revenueChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Doanh thu (VND)',
+                            data: revenues,
+                            fill: false,
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                            tension: 0.1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Doanh thu (VND)'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Tháng/Năm'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    }
+                }
+            });
+        }
+
+        // Hàm render bảng top sản phẩm bán chạy
+        function renderTopProducts(products) {
+            topProductsBody.innerHTML = '';
+            products.forEach(product => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${product.product_name || 'N/A'}</td>
+                    <td>${product.total_sold || '0'}</td>
+                    <td>${parseFloat(product.total_revenue || 0).toLocaleString()}</td>
+                `;
+                topProductsBody.appendChild(row);
             });
         }
 
@@ -133,13 +395,21 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.status === 'success') {
-                        renderOrderDetails(data.data);
-                        orderDetailsModal.showModal();
+                        if (data.data && data.data.length > 0) {
+                            renderOrderDetails(data.data);
+                            orderDetailsModal.showModal();
+                        } else {
+                            alert('Không có đơn hàng nào trong khoảng thời gian này.');
+                        }
                     } else {
                         console.error('Error:', data.message);
+                        alert(`Lỗi: ${data.message}`);
                     }
                 })
-                .catch(error => console.error('Fetch error:', error));
+                .catch(error => {
+                    console.error('Fetch error:', error);
+                    alert('Lỗi khi tải chi tiết đơn hàng. Vui lòng thử lại.');
+                });
         }
 
         // Hàm render chi tiết đơn hàng
@@ -148,9 +418,9 @@
             orders.forEach(order => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td>${order.order_id}</td>
-                    <td>${order.order_date}</td>
-                    <td>${parseFloat(order.total_amount).toLocaleString()}</td>
+                    <td>${order.order_id || 'N/A'}</td>
+                    <td>${order.order_date || 'N/A'}</td>
+                    <td>${parseFloat(order.total_amount || 0).toLocaleString()}</td>
                     <td>${getStatusText(order.status_id)}</td>
                     <td><button class="view-order" data-order-id="${order.order_id}">Xem chi tiết</button></td>
                 `;
@@ -169,19 +439,20 @@
             }
         }
 
-        // Hàm sắp xếp dữ liệu
+        // Hàm sắp xếp dữ liệu top khách hàng
         function sortData(order) {
             const sortedData = [...customersData];
             sortedData.sort((a, b) => {
                 return order === 'asc' 
-                    ? parseFloat(a.total_spent) - parseFloat(b.total_spent) 
-                    : parseFloat(b.total_spent) - parseFloat(a.total_spent);
+                    ? parseFloat(a.total_spent || 0) - parseFloat(b.total_spent || 0) 
+                    : parseFloat(b.total_spent || 0) - parseFloat(a.total_spent || 0);
             });
             renderTable(sortedData);
+            renderChart(sortedData);
         }
 
         // Event listener cho các nút
-        applyFilterBtn.addEventListener('click', fetchTopCustomers);
+        applyFilterBtn.addEventListener('click', fetchAllData);
         sortAscBtn.addEventListener('click', () => sortData('asc'));
         sortDescBtn.addEventListener('click', () => sortData('desc'));
 
@@ -203,7 +474,7 @@
             orderDetailsModal.close();
         });
 
-        // Hàm hiển thị chi tiết sản phẩm trong đơn hàng (tái sử dụng từ danhsachdonhang.php)
+        // Hàm hiển thị chi tiết sản phẩm trong đơn hàng
         function loadOrderItems(orderId) {
             fetch(`quanlidonhang/fetch_donhang_items.php?order_id=${orderId}`)
                 .then(response => response.json())
@@ -224,35 +495,45 @@
 
                         const tableBody = document.getElementById('order-items-body');
                         tableBody.innerHTML = '';
-                        items.forEach(item => {
-                            tableBody.innerHTML += `
-                                <tr>
-                                    <td>${item.product_id || 'N/A'}</td>
-                                    <td>${item.product_name || 'N/A'}</td>
-                                    <td>${item.quantity || '0'}</td>
-                                    <td>${item.price || '0'}</td>
-                                    <td>${(item.quantity * item.price).toLocaleString()} VND</td>
-                                </tr>
-                            `;
-                        });
-                        document.getElementById('view-modal').showModal();
+                        if (items && items.length > 0) {
+                            items.forEach(item => {
+                                tableBody.innerHTML += `
+                                    <tr>
+                                        <td>${item.product_id || 'N/A'}</td>
+                                        <td>${item.product_name || 'N/A'}</td>
+                                        <td>${item.quantity || '0'}</td>
+                                        <td>${item.price || '0'}</td>
+                                        <td>${(item.quantity * item.price).toLocaleString()} VND</td>
+                                        <td><img src="${item.image_url || 'path/to/default-image.jpg'}" alt="${item.product_name || 'Sản phẩm'}" loading="lazy" /></td>
+                                    </tr>
+                                `;
+                            });
+                            document.getElementById('view-modal').showModal();
+                        } else {
+                            alert('Đơn hàng này không có sản phẩm.');
+                        }
+                    } else {
+                        console.error('Error:', data.message);
+                        alert(`Lỗi: ${data.message}`);
                     }
                 })
-                .catch(error => console.error('Error:', error));
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Lỗi khi tải chi tiết sản phẩm. Vui lòng thử lại.');
+                });
         }
 
-        // Tự động gọi fetchTopCustomers() khi trang được tải
-        fetchTopCustomers();
+        // Tự động gọi fetchAllData() khi trang được tải
+        fetchAllData();
     });
     </script>
 </div>
 
 <?php include 'quanlidonhang/xemchitietdonhang.php'; // Modal xem chi tiết đơn hàng ?>
 </body>
-</html>
 
 <style>
-    /* thongke.css */
+/* thongke.css */
 
 /* Định dạng .data-table */
 .data-table {
@@ -272,6 +553,14 @@
     font-weight: var(--fw-bold);
 }
 
+/* Định dạng .sub-heading */
+.sub-heading {
+    margin-block: 1.5rem;
+    font-size: 1.25rem;
+    color: var(--clr-primary-300);
+    font-weight: var(--fw-bold);
+}
+
 /* Định dạng .toolbar */
 .toolbar {
     width: 100%;
@@ -285,28 +574,28 @@
 /* Định dạng .filters */
 .filters {
     display: flex;
-    align-items: center; /* Căn giữa các phần tử theo chiều dọc */
+    align-items: center;
     gap: 1rem;
     flex-wrap: nowrap;
-    min-width: 570px; /* Tăng min-width để chứa cả ba phần tử */
+    min-width: 570px;
     flex: 1;
 }
 
 /* Định dạng .filter-date-wrapper */
 .filter-date-wrapper {
     display: flex;
-    flex-direction: row; /* Đổi thành row để label và input nằm ngang */
-    align-items: center; /* Căn giữa label và input theo chiều dọc */
-    gap: 0.5rem; /* Khoảng cách giữa label và input */
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
     flex: 1;
-    min-width: 210px; /* Đủ chỗ cho label (60px) + input (150px) + gap (8px) */
+    min-width: 210px;
     max-width: 210px;
 }
 
 /* Định dạng label */
 .filter-date-wrapper .filter-label {
     font-weight: bold;
-    flex: 0 0 70px; /* Đặt chiều rộng cố định cho label */
+    flex: 0 0 70px;
 }
 
 /* Định dạng input type="date" */
@@ -316,8 +605,8 @@ input[type="date"] {
     border-radius: 0.35rem;
     background-color: hsl(0 0% 100%);
     color: #333;
-    flex: 1; /* Input chiếm phần không gian còn lại */
-    min-width: 140px; /* Đảm bảo input không bị quá nhỏ */
+    flex: 1;
+    min-width: 140px;
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -383,6 +672,18 @@ input[type="date"]:focus {
     background-color: #3a506b;
 }
 
+/* Định dạng .chart-container */
+.chart-container {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    margin-block: 1.25rem;
+    background-color: white;
+    box-shadow: 0 0 0.875rem 0 rgba(33, 37, 41, 0.05);
+    border-radius: 0.35rem;
+    padding: 1rem;
+}
+
 /* Định dạng .table-container */
 .table-container {
     position: relative;
@@ -395,7 +696,7 @@ input[type="date"]:focus {
 }
 
 /* Định dạng bảng */
-#top-customers-table {
+.table {
     width: 100%;
     border-collapse: collapse;
     position: relative;
@@ -529,6 +830,15 @@ dialog::backdrop {
     background-color: #dc3545;
 }
 
+/* Định dạng hình ảnh trong bảng chi tiết sản phẩm của modal */
+#order-items-body img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 4px;
+    display: block;
+}
+
 /* Responsive */
 @media (max-width: 67em) {
     .toolbar {
@@ -548,6 +858,9 @@ dialog::backdrop {
     .sort-buttons {
         width: 100%;
         justify-content: flex-start;
+    }
+    .chart-container {
+        height: 250px;
     }
 }
 
@@ -572,14 +885,25 @@ dialog::backdrop {
     #sort-desc {
         min-width: 100%;
     }
+    .chart-container {
+        height: 200px;
+    }
 }
 
 @media (max-width: 28em) {
     .data-table {
         padding-inline: 1.2rem;
     }
-    .heading {
+    .heading, .sub-heading {
         font-size: 1.2rem;
+    }
+    .chart-container {
+        height: 180px;
+    }
+    #order-items-body img {
+        width: 60px;
+        height: 60px;
     }
 }
 </style>
+</html>

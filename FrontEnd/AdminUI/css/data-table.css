@@ -7,6 +7,8 @@
 dialog {
   margin: auto;
   padding: 1rem;
+  padding-left: 2rem;
+  padding-right: 2rem;
   border: none;
   max-width: 40rem;
   width: calc(100% - 1rem);
@@ -172,7 +174,6 @@ dialog::backdrop {
 
 .modal-buttons .submit {
   padding-block: 0.825rem;
-  /* background-color: #28a745; */
   font-weight: bold;
 }
 
@@ -261,6 +262,7 @@ dialog::backdrop {
 #filter-options,
 .search input {
   padding: 0.6rem;
+  padding-right: 2rem;
   border: 1px solid #ccc;
   border-radius: 0.35rem;
   background-color: hsl(0 0% 100%);
@@ -598,6 +600,7 @@ tr:hover td.fixed-column {
 .arrow-up {
   bottom: 0.365rem;
 }
+
 .arrow-down {
   top: 0.365rem;
 }
@@ -616,94 +619,194 @@ tr:hover td.fixed-column {
   margin-block: 0.75rem;
 }
 
+/* Định dạng chung cho phần danh mục */
+.category-checkboxes {
+  margin-bottom: 1.25rem; /* Đồng bộ với margin-block trong .heading */
+}
+
+/* Tiêu đề "Categories" */
+.category-checkboxes span {
+  display: block;
+  font-weight: var(--fw-bold); /* Sử dụng biến font-weight giống các tiêu đề khác */
+  margin-bottom: 0.5rem; /* Giảm margin-bottom để đồng bộ */
+  color: var(--clr-neutral-900); /* Đồng bộ màu với .view-content span */
+}
+
+/* Khung chứa checkbox */
+#modal-add-category-checkboxes {
+  border: 1px solid #ccc; /* Giữ border giống input */
+  border-radius: 0.35rem; /* Đồng bộ border-radius với input */
+  padding: 0.6rem; /* Đồng bộ padding với input */
+  max-height: 150px; /* Giữ nguyên max-height */
+  overflow-y: auto; /* Thanh cuộn dọc khi cần */
+  background-color: hsl(0 0% 100%); /* Đồng bộ background với input */
+}
+
+/* Định dạng mỗi checkbox và label */
+#modal-add-category-checkboxes label {
+  display: flex;
+  align-items: center;
+  margin: 0.25rem 0; /* Giảm margin để giao diện gọn hơn */
+  font-size: 0.875rem; /* Font-size nhỏ hơn một chút, đồng bộ với modal-error */
+  color: #333; /* Đồng bộ màu chữ với input */
+  padding: 0.25rem 0.5rem; /* Thêm padding nhẹ để đẹp hơn */
+  transition: background-color 0.15s ease; /* Thêm hiệu ứng hover */
+}
+
+/* Checkbox */
+#modal-add-category-checkboxes input[type="checkbox"] {
+  margin-right: 0.5rem; /* Giảm margin-right để đồng bộ */
+  cursor: pointer;
+  accent-color: var(--clr-primary-300); /* Sử dụng màu chủ đạo của hệ thống */
+  width: 1rem; /* Đảm bảo checkbox có kích thước hợp lý */
+  height: 1rem;
+}
+
+/* Hover effect cho label */
+#modal-add-category-checkboxes label:hover {
+  background-color: #f1f1f1; /* Đồng bộ màu hover với table rows */
+  border-radius: 0.35rem; /* Đồng bộ border-radius */
+}
+
+/* Thông báo lỗi */
+#modal-add-category-error {
+  color: #dc3545; /* Giữ màu lỗi giống modal-error */
+  font-size: 0.75rem; /* Giữ font-size giống modal-error */
+  margin-top: 0.25rem; /* Đồng bộ margin-top */
+}
+
+/* Định dạng combobox (select) */
+select,
+#filter-options {
+  padding: 0.6rem; /* Đồng bộ padding với input */
+  padding-right: 2rem;
+  border: 1px solid #ccc; /* Đồng bộ border với input */
+  border-radius: 0.35rem; /* Đồng bộ border-radius với input */
+  background-color: hsl(0 0% 100%); /* Đồng bộ background với input */
+  color: #333; /* Đồng bộ màu chữ với input */
+  cursor: pointer; /* Thêm cursor để người dùng biết có thể chọn */
+  transition: border-color 0.15s ease, box-shadow 0.15s ease; /* Hiệu ứng khi focus */
+  appearance: none; /* Xóa kiểu dáng mặc định của trình duyệt */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23333' viewBox='0 0 16 16'%3E%3Cpath d='M8 12l-4-4h8l-4 4z'/%3E%3C/svg%3E"); /* Thêm icon mũi tên tùy chỉnh */
+  background-repeat: no-repeat;
+  background-position: right 0.6rem center; /* Đặt vị trí icon mũi tên */
+  background-size: 1rem; /* Kích thước icon */
+}
+
+/* Hiệu ứng khi hover */
+select:hover,
+#filter-options:hover {
+  border-color: var(--clr-primary-300); /* Đổi màu border khi hover, đồng bộ với màu chủ đạo */
+}
+
+/* Hiệu ứng khi focus */
+select:focus,
+#filter-options:focus {
+  outline: none;
+  border-color: var(--clr-primary-300); /* Đổi màu border khi focus */
+  box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25); /* Thêm box-shadow khi focus, đồng bộ với màu hệ thống */
+}
+
+/* Đảm bảo select trong toolbar có margin phù hợp */
+#filter-options {
+  margin-right: 0.5rem; /* Giữ margin-right như hiện tại */
+}
+
 @media (min-height: 58em) {
   .table-container {
-    max-height: calc(100vh - 10rem);
+      max-height: calc(100vh - 10rem);
   }
 }
 
 @media (max-height: 40em) {
   .table-container {
-    max-height: 280px;
+      max-height: 280px;
   }
 }
 
 @media (max-width: 67em) {
   .toolbar {
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 0.5rem;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0.5rem;
   }
   .filters {
-    display: flex;
-    width: 100%;
+      display: flex;
+      width: 100%;
   }
   .search {
-    width: 100%;
+      width: 100%;
   }
   .columns-dropdown-content {
-    right: 1.5rem;
+      right: 1.5rem;
   }
 }
 
 @media (max-width: 40em) {
   .filters {
-    flex-direction: column;
-    gap: 0.5rem;
+      flex-direction: column;
+      gap: 0.5rem;
   }
   #filter-options {
-    width: 100%;
-    margin-right: 0;
+      width: 100%;
+      margin-right: 0;
   }
 
   .toolbar {
-    align-items: center;
+      align-items: center;
   }
   .columns-dropdown-content {
-    right: 3rem;
+      right: 3rem;
   }
 
   .toolbar-button-wrapper {
-    flex-direction: column;
-    gap: 0.5rem;
-    margin-top: 1rem;
-    width: 100%;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      width: 100%;
   }
 
   .columns-dropdown-button {
-    width: 100%;
+      width: 100%;
+  }
+
+  /* Đảm bảo select full-width trên màn hình nhỏ */
+  select,
+  #filter-options {
+      width: 100%; /* Full-width trên màn hình nhỏ */
+      margin-right: 0; /* Xóa margin-right trên màn hình nhỏ */
   }
 }
 
 @media (max-width: 28em) {
   .data-table {
-    padding-inline: 1.2rem;
+      padding-inline: 1.2rem;
   }
   .heading {
-    font-size: 1.2rem;
+      font-size: 1.2rem;
   }
   .actionsTH {
-    position: relative;
+      position: relative;
   }
   .actions {
-    position: relative;
+      position: relative;
   }
   .fixed-column {
-    padding-inline: 0.2rem;
+      padding-inline: 0.2rem;
   }
 
   .columns-dropdown-content {
-    right: 1rem;
+      right: 1rem;
   }
 
   .success-message {
-    max-width: 70vw;
+      max-width: 70vw;
   }
 
   .delete-modal-text {
-    flex-direction: column;
-    gap: 1rem;
-    margin-top: 1rem;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: 1rem;
   }
 }
 
@@ -724,58 +827,4 @@ tr:hover td.fixed-column {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
-}
-
-
-
-
-/* Định dạng chung cho phần danh mục */
-.category-checkboxes {
-  margin-bottom: 15px;
-}
-
-/* Tiêu đề "Categories" */
-.category-checkboxes span {
-  display: block;
-  font-weight: bold;
-  margin-bottom: 8px;
-  color: #333;
-}
-
-/* Khung chứa checkbox */
-#modal-add-category-checkboxes {
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 10px;
-  max-height: 150px; /* Giới hạn chiều cao, cuộn nếu vượt quá */
-  overflow-y: auto; /* Thêm thanh cuộn dọc khi cần */
-  background-color: #fff;
-}
-
-/* Định dạng mỗi checkbox và label */
-#modal-add-category-checkboxes label {
-  display: flex;
-  align-items: center;
-  margin: 5px 0;
-  font-size: 14px;
-  color: #555;
-}
-
-/* Checkbox */
-#modal-add-category-checkboxes input[type="checkbox"] {
-  margin-right: 8px;
-  cursor: pointer;
-}
-
-/* Hover effect cho label */
-#modal-add-category-checkboxes label:hover {
-  background-color: #f5f5f5;
-  border-radius: 2px;
-}
-
-/* Thông báo lỗi */
-#modal-add-category-error {
-  color: red;
-  font-size: 12px;
-  margin-top: 5px;
 }

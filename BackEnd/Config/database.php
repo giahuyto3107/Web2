@@ -1,18 +1,23 @@
 <?php
 require_once 'pdo.php';
+
 class Database {
     private $conn;
+
     public function __construct() {
         global $pdo; // Sử dụng biến $pdo từ pdo.php
         $this->conn = $pdo;
     }
+
     public function getConnection() {
         return $this->conn;
     }
+
     public function closeConnection() {
         $this->conn = null;
     }
-    public function getMonthlyRevenue() {
+
+    public function getMonthlyRevenue($date_from = null, $date_to = null) {
         try {
             $query = "
                 SELECT 
@@ -24,44 +29,70 @@ class Database {
                     sales_report
                 WHERE 
                     status_category = 'Completed'
+            ";
+    
+            // Thêm điều kiện lọc theo khoảng thời gian nếu có
+            $params = [];
+            if ($date_from && $date_to) {
+                $query .= " AND CONCAT(sale_year, '-', LPAD(sale_month, 2, '0'), '-01') BETWEEN :date_from AND :date_to";
+                $params[':date_from'] = $date_from;
+                $params[':date_to'] = $date_to;
+            }
+    
+            $query .= "
                 GROUP BY 
                     sale_year, sale_month
                 ORDER BY 
-                    sale_year DESC, sale_month DESC
+                    sale_year ASC, sale_month ASC -- Sửa từ DESC thành ASC để tháng nhỏ nhất ở đầu
             ";
+    
             $stmt = $this->conn->prepare($query);
-            $stmt->execute();
+            $stmt->execute($params);
             return $stmt->fetchAll();
         } catch (PDOException $e) {
             error_log("Lỗi truy vấn getMonthlyRevenue: " . $e->getMessage());
             return [];
         }
     }
-public function getDailyRevenue() {
-    try {
-        $query = "
-            SELECT 
-                sale_date,
-                SUM(total_amount) AS daily_revenue,
-                COUNT(order_id) AS total_orders
-            FROM 
-                sales_report
-            WHERE 
-                status_category = 'Completed'
-            GROUP BY 
-                sale_date
-            ORDER BY 
-                sale_date DESC
-        ";
-        $stmt = $this->conn->prepare($query);
-        $stmt->execute();
-        return $stmt->fetchAll();
-    } catch (PDOException $e) {
-        error_log("Lỗi truy vấn getDailyRevenue: " . $e->getMessage());
-        return [];
+
+    public function getDailyRevenue($date_from = null, $date_to = null) {
+        try {
+            $query = "
+                SELECT 
+                    sale_date,
+                    SUM(total_amount) AS daily_revenue,
+                    COUNT(order_id) AS total_orders
+                FROM 
+                    sales_report
+                WHERE 
+                    status_category = 'Completed'
+            ";
+
+            // Thêm điều kiện lọc theo khoảng thời gian nếu có
+            $params = [];
+            if ($date_from && $date_to) {
+                $query .= " AND sale_date BETWEEN :date_from AND :date_to";
+                $params[':date_from'] = $date_from;
+                $params[':date_to'] = $date_to;
+            }
+
+            $query .= "
+                GROUP BY 
+                    sale_date
+                ORDER BY 
+                    sale_date DESC
+            ";
+
+            $stmt = $this->conn->prepare($query);
+            $stmt->execute($params);
+            return $stmt->fetchAll();
+        } catch (PDOException $e) {
+            error_log("Lỗi truy vấn getDailyRevenue: " . $e->getMessage());
+            return [];
+        }
     }
-}
-    public function getTopProducts($limit = 10) {
+
+    public function getTopProducts($date_from = null, $date_to = null, $limit = 10) {
         try {
             $query = "
                 SELECT 
@@ -72,8 +103,17 @@ public function getDailyRevenue() {
                 WHERE 
                     status_category = 'Completed'
             ";
+
+            // Thêm điều kiện lọc theo khoảng thời gian nếu có
+            $params = [];
+            if ($date_from && $date_to) {
+                $query .= " AND order_date BETWEEN :date_from AND :date_to";
+                $params[':date_from'] = $date_from;
+                $params[':date_to'] = $date_to;
+            }
+
             $stmt = $this->conn->prepare($query);
-            $stmt->execute();
+            $stmt->execute($params);
             $results = $stmt->fetchAll();
 
             $productSales = [];
@@ -92,16 +132,19 @@ public function getDailyRevenue() {
                     }
                 }
             }
+
             uasort($productSales, function($a, $b) {
                 return $b['total_sold'] - $a['total_sold'];
             });
+
             return array_slice($productSales, 0, $limit);
         } catch (PDOException $e) {
             error_log("Lỗi truy vấn getTopProducts: " . $e->getMessage());
             return [];
         }
     }
-    public function getPaymentMethodStats() {
+
+    public function getPaymentMethodStats($date_from = null, $date_to = null) {
         try {
             $query = "
                 SELECT 
@@ -113,11 +156,23 @@ public function getDailyRevenue() {
                     sales_report
                 WHERE 
                     status_category = 'Completed'
+            ";
+
+            // Thêm điều kiện lọc theo khoảng thời gian nếu có
+            $params = [];
+            if ($date_from && $date_to) {
+                $query .= " AND order_date BETWEEN :date_from AND :date_to";
+                $params[':date_from'] = $date_from;
+                $params[':date_to'] = $date_to;
+            }
+
+            $query .= "
                 GROUP BY 
                     payment_method
             ";
+
             $stmt = $this->conn->prepare($query);
-            $stmt->execute();
+            $stmt->execute($params);
             return $stmt->fetchAll();
         } catch (PDOException $e) {
             error_log("Lỗi truy vấn getPaymentMethodStats: " . $e->getMessage());
@@ -125,6 +180,7 @@ public function getDailyRevenue() {
         }
     }
 }
+
 $db = new Database();
 $conn = $db->getConnection();
 ?>
