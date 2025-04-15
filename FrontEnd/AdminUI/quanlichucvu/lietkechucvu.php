@@ -207,7 +207,7 @@
             // Define permission-specific actions
             const permissionActions = {
                 "Đặt hàng": ["Đặt hàng"],
-                "Quản lý đơn hàng": ["Xem", "Duyệt đơn/Hoàn tất", "Hủy"],
+                "Quản lý hóa đơn": ["Xem", "Duyệt đơn/Hoàn tất", "Hủy"],
                 "Quản lý phiếu nhập": ["Xem"],
                 "Quản lý đánh giá": ["Xem", "Xóa", "Sửa"],
                 "Thống kê" : ["Xem"],

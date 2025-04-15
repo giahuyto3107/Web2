@@ -92,7 +92,7 @@ function displayCurrentPermissions(roleId) {
     currentPermissionsList.innerHTML = '<p>Đang tải quyền hiện tại...</p>';
     
     // Fetch current permissions for the role
-    fetch(`../../BackEnd/Model/quanlichucvu/fetch_chucvu_phanquyen.php?role_id=${roleId}`)
+    fetch(`quanlichucvu/fetch_chucvu_phanquyen.php?role_id=${roleId}`)
         .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);

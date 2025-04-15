@@ -532,7 +532,7 @@ CREATE TABLE if not exists permission (
 INSERT INTO `permission` (`permission_name`, `permission_description`, `status_id`) 
 VALUES
     ('Quản lý sản phẩm', 'Cho phép thêm, sửa, xóa sản phẩm và danh mục sản phẩm', 1),
-    ('Quản lý đơn hàng', 'Cho phép xem, xử lý và hủy đơn hàng của khách hàng', 1),
+    ('Quản lý hóa đơn', 'Cho phép xem, xử lý và hủy hóa đơn của khách hàng', 1),
     ('Quản lý tài khoản', 'Cho phép quản lý tài khoản người dùng và phân quyền', 1),
     ('Quản lý đánh giá', 'Cho phép xem và kiểm duyệt các đánh giá sản phẩm', 1),
     ('Thống kê', 'Cho phép xem các báo cáo và thống kê doanh thu', 1),

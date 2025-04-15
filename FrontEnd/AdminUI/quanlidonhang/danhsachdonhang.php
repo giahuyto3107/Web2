@@ -5,11 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quản lý Đơn Hàng</title>
     <!-- Liên kết đến file style.css chính -->
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="../css/style.css">
     <!-- Liên kết đến file CSS riêng nếu có -->
-    <link rel="stylesheet" href="css/quanlidonhang.css">
+    <link rel="stylesheet" href="../css/data-table.css">
     <!-- Liên kết đến file chitietdonhang.css cho modal -->
-    <link rel="stylesheet" href="css/chitietdonhang.css">
+    <link rel="stylesheet" href="../css/chitietdonhang.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- Permission System -->
+    <script>
+        // Initialize permission system with default values
+        window.PermissionSystem = {
+            hasActionPermission: function(permissionId, action) {
+                console.log('Permission check:', {
+                    permissionId: permissionId,
+                    action: action,
+                    moduleLoaded: this.moduleLoaded,
+                    result: true
+                });
+                return true; // Default to allowing all actions until real permissions are loaded
+            },
+            moduleLoaded: false,
+            ready: Promise.resolve() // Default promise that resolves immediately
+        };
+    </script>
+    <script src="js/module_permission.js"></script>
 </head>
 <body>
 <div class="header"></div>
@@ -25,7 +45,7 @@
             <div class="progress-bar" id="progressBar"></div>
         </div>
     </div>
-    <h1 class="heading"> Quản lý <span>ĐƠN HÀNG</span></h1>
+    <h1 class="heading"> Quản lý <span>HÓA ĐƠN</span></h1>
     <div class="toolbar">
         <div class="filters">
             <div class="filter-options-wrapper">
@@ -103,7 +123,19 @@
 
     <!-- Script để fetch và hiển thị dữ liệu -->
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    // Wait for permission system to be ready
+    window.PermissionSystem.ready = new Promise((resolve) => {
+        if (window.PermissionSystem.moduleLoaded) {
+            resolve();
+        } else {
+            document.addEventListener('permissionsLoaded', () => resolve());
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', async function() {
+        // Wait for permission system to be ready before proceeding
+        await window.PermissionSystem.ready;
+        console.log('Permission system ready, initializing page...');
         // Biến toàn cục
         let orders = []; // Dữ liệu gốc, không thay đổi
         let filteredOrders = []; // Dữ liệu đã lọc
@@ -138,6 +170,12 @@
                 return;
             }
 
+            console.log('PermissionSystem status:', {
+                exists: !!window.PermissionSystem,
+                hasActionPermission: !!(window.PermissionSystem && window.PermissionSystem.hasActionPermission),
+                moduleLoaded: window.PermissionSystem && window.PermissionSystem.moduleLoaded
+            });
+
             tableBody.innerHTML = '';
             const activeOrders = displayedOrders;
 
@@ -146,16 +184,53 @@
                 activeOrders.forEach((order, index) => {
                     const row = document.createElement('tr');
                     let actionButtons = '';
-                    if (order.status_id === "3") {
-                        actionButtons = `
-                            <a href="#" class="updateStatus" data-order-id="${order.order_id}" data-status="4" data-permission-id="2" data-action="Duyệt đơn/Hoàn tất">Duyệt đơn <i class="fa fa-check"></i></a>
-                            <a href="#" class="cancelOrder" data-order-id="${order.order_id}" data-status="7" data-permission-id="2" data-action="Hủy">Hủy đơn <i class="fa fa-times"></i></a>
-                        `;
-                    } else if (order.status_id === "4") {
-                        actionButtons = `
-                            <a href="#" class="updateStatus" data-order-id="${order.order_id}" data-status="5" data-permission-id="2" data-action="Duyệt đơn/Hoàn tất">Hoàn tất <i class="fa fa-check-circle"></i></a>
-                            <a href="#" class="cancelOrder" data-order-id="${order.order_id}" data-status="7" data-permission-id="2" data-action="Hủy">Hủy đơn <i class="fa fa-times"></i></a>
-                        `;
+                    
+                    // Only show action buttons if PermissionSystem is loaded and user has permission
+                    if (window.PermissionSystem && window.PermissionSystem.hasActionPermission) {
+                        const hasViewPermission = window.PermissionSystem.hasActionPermission(2, "Xem");
+                        const hasApprovePermission = window.PermissionSystem.hasActionPermission(2, "Duyệt đơn/Hoàn tất");
+                        const hasCancelPermission = window.PermissionSystem.hasActionPermission(2, "Hủy");
+
+                        console.log('Permission check for order', order.order_id, {
+                            hasViewPermission,
+                            hasApprovePermission,
+                            hasCancelPermission,
+                            status: order.status_id,
+                            permissionSystem: {
+                                moduleLoaded: window.PermissionSystem.moduleLoaded,
+                                permissionActions: window.PermissionSystem.permissionActions
+                            }
+                        });
+
+                        // Build action buttons based on permissions and order status
+                        if (order.status_id === "3" || order.status_id === "4") {
+                            let buttons = [];
+                            
+                            // Add approve button if user has permission
+                            if (hasApprovePermission) {
+                                const approveText = order.status_id === "3" ? "Duyệt đơn" : "Hoàn tất";
+                                const approveIcon = order.status_id === "3" ? "fa-check" : "fa-check-circle";
+                                const nextStatus = order.status_id === "3" ? "4" : "5";
+                                buttons.push(`<a href="#" class="updateStatus" data-order-id="${order.order_id}" data-status="${nextStatus}" data-permission-id="2" data-action="Duyệt đơn/Hoàn tất">${approveText} <i class="fa ${approveIcon}"></i></a>`);
+                            }
+                            
+                            // Add cancel button if user has permission
+                            if (hasCancelPermission) {
+                                buttons.push(`<a href="#" class="cancelOrder" data-order-id="${order.order_id}" data-status="7" data-permission-id="2" data-action="Hủy">Hủy đơn <i class="fa fa-times"></i></a>`);
+                            }
+                            
+                            actionButtons = buttons.join('\n');
+                            console.log('Generated action buttons:', {
+                                orderId: order.order_id,
+                                status: order.status_id,
+                                buttons: buttons
+                            });
+                        }
+                    } else {
+                        console.warn('PermissionSystem not ready:', {
+                            exists: !!window.PermissionSystem,
+                            hasActionPermission: !!(window.PermissionSystem && window.PermissionSystem.hasActionPermission)
+                        });
                     }
 
                     row.innerHTML = `
@@ -171,7 +246,8 @@
                             <div class="dropdown">
                                 <button class="dropdownButton"><i class="fa fa-ellipsis-v dropIcon"></i></button>
                                 <div class="dropdown-content">
-                                    <a href="#" class="viewOrder" data-order-id="${order.order_id}">Xem <i class="fa fa-eye"></i></a>
+                                    ${window.PermissionSystem && window.PermissionSystem.hasActionPermission && window.PermissionSystem.hasActionPermission(2, "Xem") ? 
+                                        `<a href="#" class="viewOrder" data-order-id="${order.order_id}" data-permission-id="2" data-action="Xem">Xem <i class="fa fa-eye"></i></a>` : ''}
                                     ${actionButtons}
                                 </div>
                             </div>
