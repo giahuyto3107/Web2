@@ -209,7 +209,7 @@
                 "Đặt hàng": ["Đặt hàng"],
                 "Quản lý đơn hàng": ["Xem", "Duyệt đơn/Hoàn tất", "Hủy"],
                 "Quản lý phiếu nhập": ["Xem"],
-                "Quản lý bình luận": ["Xem", "Xóa", "Sửa"],
+                "Quản lý đánh giá": ["Xem", "Xóa", "Sửa"],
                 "Thống kê" : ["Xem"],
                 "Quản lý chức vụ": ["Xem", "Thêm", "Xóa", "Sửa", "Cập nhật phân quyền"]
             };
