@@ -207,14 +207,14 @@
             // Define permission-specific actions
             const permissionActions = {
                 "Đặt hàng": ["Đặt hàng"],
-                "Quản lý đơn hàng": ["Xem", "Hoàn tất", "Hủy"],
+                "Quản lý đơn hàng": ["Xem", "Duyệt đơn/Hoàn tất", "Hủy"],
                 "Quản lý phiếu nhập": ["Xem"],
                 "Quản lý bình luận": ["Xem", "Xóa", "Sửa"],
                 "Thống kê" : ["Xem"],
                 "Quản lý chức vụ": ["Xem", "Thêm", "Xóa", "Sửa", "Cập nhật phân quyền"]
             };
             const defaultActions = ["Xem", "Thêm", "Xóa", "Sửa"];
-            const allActions = ["Xem", "Thêm", "Xóa", "Sửa", "Cập nhật phân quyền", "Hoàn tất", "Hủy", "Đặt hàng"];
+            const allActions = ["Xem", "Thêm", "Xóa", "Sửa", "Cập nhật phân quyền", "Duyệt đơn/Hoàn tất", "Hủy", "Đặt hàng"];
 
             // Fetch all permissions from the server
             fetch('../../BackEnd/Model/quanlichucvu/fetch_quyen.php')

@@ -383,7 +383,7 @@ CREATE TABLE IF NOT EXISTS purchase_order (
     purchase_order_id INT AUTO_INCREMENT PRIMARY KEY,
     supplier_id INT,
     user_id INT,
-    order_date DATE DEFAULT CURRENT_DATE,
+    order_date DATE NOT NULL DEFAULT (CURRENT_DATE),
     approve_date DATE DEFAULT NULL,
     total_amount INT NOT NULL,
     total_price DECIMAL(10, 2),  
