@@ -331,6 +331,14 @@
                                 const tdSelectAll = document.createElement('td');
                                 tdSelectAll.style.padding = '8px';
                                 tdSelectAll.style.textAlign = 'center';
+                                
+                                // Create a container for the buttons
+                                const buttonContainer = document.createElement('div');
+                                buttonContainer.style.display = 'flex';
+                                buttonContainer.style.justifyContent = 'center';
+                                buttonContainer.style.gap = '5px';
+                                
+                                // Select All button
                                 const selectAllButton = document.createElement('button');
                                 selectAllButton.type = 'button';
                                 selectAllButton.textContent = 'Select All';
@@ -340,7 +348,21 @@
                                     const checkboxes = tr.querySelectorAll('input[type="checkbox"]:not(:disabled)');
                                     checkboxes.forEach(cb => cb.checked = true);
                                 });
-                                tdSelectAll.appendChild(selectAllButton);
+                                buttonContainer.appendChild(selectAllButton);
+                                
+                                // Uncheck All button
+                                const uncheckAllButton = document.createElement('button');
+                                uncheckAllButton.type = 'button';
+                                uncheckAllButton.textContent = 'Uncheck All';
+                                uncheckAllButton.style.padding = '4px 8px';
+                                uncheckAllButton.style.cursor = 'pointer';
+                                uncheckAllButton.addEventListener('click', () => {
+                                    const checkboxes = tr.querySelectorAll('input[type="checkbox"]:not(:disabled)');
+                                    checkboxes.forEach(cb => cb.checked = false);
+                                });
+                                buttonContainer.appendChild(uncheckAllButton);
+                                
+                                tdSelectAll.appendChild(buttonContainer);
                                 tr.appendChild(tdSelectAll);
 
                                 tbody.appendChild(tr);
