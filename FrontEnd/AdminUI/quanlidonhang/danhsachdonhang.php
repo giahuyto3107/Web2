@@ -148,13 +148,13 @@
                     let actionButtons = '';
                     if (order.status_id === "3") {
                         actionButtons = `
-                            <a href="#" class="updateStatus" data-order-id="${order.order_id}" data-status="4">Duyệt đơn <i class="fa fa-check"></i></a>
-                            <a href="#" class="cancelOrder" data-order-id="${order.order_id}" data-status="7">Hủy đơn <i class="fa fa-times"></i></a>
+                            <a href="#" class="updateStatus" data-order-id="${order.order_id}" data-status="4" data-permission-id="2" data-action="Duyệt đơn/Hoàn tất">Duyệt đơn <i class="fa fa-check"></i></a>
+                            <a href="#" class="cancelOrder" data-order-id="${order.order_id}" data-status="7" data-permission-id="2" data-action="Hủy">Hủy đơn <i class="fa fa-times"></i></a>
                         `;
                     } else if (order.status_id === "4") {
                         actionButtons = `
-                            <a href="#" class="updateStatus" data-order-id="${order.order_id}" data-status="5">Hoàn tất <i class="fa fa-check-circle"></i></a>
-                            <a href="#" class="cancelOrder" data-order-id="${order.order_id}" data-status="7">Hủy đơn <i class="fa fa-times"></i></a>
+                            <a href="#" class="updateStatus" data-order-id="${order.order_id}" data-status="5" data-permission-id="2" data-action="Duyệt đơn/Hoàn tất">Hoàn tất <i class="fa fa-check-circle"></i></a>
+                            <a href="#" class="cancelOrder" data-order-id="${order.order_id}" data-status="7" data-permission-id="2" data-action="Hủy">Hủy đơn <i class="fa fa-times"></i></a>
                         `;
                     }
 
