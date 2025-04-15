@@ -383,10 +383,10 @@ CREATE TABLE IF NOT EXISTS purchase_order (
     purchase_order_id INT AUTO_INCREMENT PRIMARY KEY,
     supplier_id INT,
     user_id INT,
-    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    approve_date TIMESTAMP default null,
-    total_amount int NOT NULL,
-    total_price decimal(10, 2), 
+    order_date DATE DEFAULT CURRENT_DATE,
+    approve_date DATE DEFAULT NULL,
+    total_amount INT NOT NULL,
+    total_price DECIMAL(10, 2),  
     status_id INT,
     import_status TINYINT(1) DEFAULT 0,
     FOREIGN KEY (supplier_id) REFERENCES supplier(supplier_id)
@@ -408,7 +408,7 @@ CREATE TABLE IF NOT EXISTS purchase_order_items (
     price DECIMAL(10, 2) NOT NULL,
     profit DECIMAL(10, 2) NOT NULL,
     import_status TINYINT(1) DEFAULT 0,
-    approve_date TIMESTAMP default null,
+    approve_date DATE DEFAULT NULL,
     FOREIGN KEY (purchase_order_id) REFERENCES purchase_order(purchase_order_id)
         ON DELETE CASCADE
         ON UPDATE CASCADE,

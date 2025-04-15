@@ -1,3 +1,4 @@
+
 <dialog data-modal id="view-modal">
     <div class="modal-header">
         <h2>Chi tiết Đơn Hàng</h2>
@@ -41,18 +42,20 @@
         <!-- Tách phần "Danh sách sản phẩm" ra khỏi .view-content -->
         <div class="order-items-section">
             <span class="section-title">Danh sách sản phẩm</span>
-            <table class="modal-table">
-                <thead>
-                    <tr>
-                        <th>Mã sản phẩm</th>
-                        <th>Tên sản phẩm</th>
-                        <th>Số lượng</th>
-                        <th>Giá</th>
-                        <th>Tổng</th>
-                    </tr>
-                </thead>
-                <tbody id="order-items-body"></tbody>
-            </table>
+            <div class="table-scroll-wrapper">
+                <table class="modal-table">
+                    <thead>
+                        <tr>
+                            <th>Mã sản phẩm</th>
+                            <th>Tên sản phẩm</th>
+                            <th>Số lượng</th>
+                            <th>Giá</th>
+                            <th>Tổng</th>
+                        </tr>
+                    </thead>
+                    <tbody id="order-items-body"></tbody>
+                </table>
+            </div>
         </div>
         <div class="modal-buttons">
             <button class="close" id="view-close-button">Đóng</button>
@@ -66,8 +69,10 @@
 dialog {
     margin: auto;
     padding: 1rem;
+    padding-left: 2rem;
+    padding-right: 2rem;
     border: none;
-    max-width: 40rem;
+    max-width: 43rem;
     width: calc(100% - 1rem);
     color: inherit;
     scroll-behavior: smooth;
@@ -149,6 +154,13 @@ dialog::backdrop {
     font-weight: var(--fw-bold);
     color: var(--clr-neutral-900);
     font-size: 1.1rem;
+}
+
+/* Định dạng div bao quanh bảng để hiển thị thanh cuộn */
+.table-scroll-wrapper {
+    max-height: 13rem; /* Chiều cao tối đa cho 5 sản phẩm */
+    overflow-y: auto; /* Thanh cuộn dọc chỉ xuất hiện khi vượt quá chiều cao */
+    overflow-x: hidden; /* Ẩn thanh cuộn ngang */
 }
 
 /* Định dạng bảng trong modal */

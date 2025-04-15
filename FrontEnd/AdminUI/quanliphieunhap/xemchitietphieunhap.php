@@ -1,59 +1,234 @@
+
 <dialog data-modal id="view-modal">
-    <div class="popup" id="popup">
-        <div class="overlay"></div>
-        <div class="popup-content">
-        <div class="modal-header">
+    <div class="modal-header">
         <h2>Chi tiết Phiếu nhập</h2>
         <button class="modal-close" data-id="view-modal">
             <i class="fa fa-times" style="font-size: 1.5rem; height: 1.5rem"></i>
         </button>
     </div>
-            
-            <table>
-                <tr>
-                    
-                    <td style="font-weight: bold; padding-top: 15px;" >Nhân viên</td>
-                    <td id="modal-view-user-name"></td>
-                </tr>
-                <tr>
-                    <td style="font-weight: bold; padding-top: 15px;">Nhà Xuất Bản</td>
-                    <td id="modal-view-supplier-name"></td>
-                </tr>
-                <tr>
-                    <td style="font-weight: bold; padding-top: 15px;">Ngày</td>
-                    <td id="modal-view-order-date"></td>
-                </tr>
-                <tr>
-                    <td style="font-weight: bold; padding-top: 15px;">Danh Sách Sản Phẩm</td>
-                </tr>
-                <tr>
-                    <td colspan="2">
-                        <!-- Thêm div bao quanh bảng để tạo thanh cuộn -->
-                        <div style="max-height: 300px; max-width: 100%; overflow-x: auto; overflow-y: auto;">
-                            <table class="product-table" style="min-width: 1000px;">
-                                <thead>
-                                    <tr>
-                                        <th>ID Sản phẩm</th>
-                                        <th>Tên Sản phẩm</th>
-                                        <th>Lợi nhuận (%)</th>
-                                        <th>Số lượng</th>
-                                        <th>Giá (VND)</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="purchase-order-items-body"></tbody>
-                            </table>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="2">
-                        <div style="display: flex; justify-content: flex-end;">
-                            <p style="font-weight: bold; font-size: 20px; margin-right: 10px;">Tổng tiền:</p>
-                            <span id="modal-view-total-value" style="color: #65e4dd; font-size: 20px;"></span>
-                        </div>
-                    </td>
-                </tr>
-            </table>
+    <div class="view-container">
+        <div class="view-content">
+            <span>Nhân viên</span>
+            <p id="modal-view-user-name">N/A</p>
+        </div>
+        <div class="view-content">
+            <span>Nhà Xuất Bản</span>
+            <p id="modal-view-supplier-name">N/A</p>
+        </div>
+        <div class="view-content">
+            <span>Ngày</span>
+            <p id="modal-view-order-date">N/A</p>
+        </div>
+        <div class="view-content">
+            <span>Tổng tiền</span>
+            <p id="modal-view-total-value" style="color: #65e4dd;">N/A</p>
+        </div>
+        <!-- Tách phần "Danh sách Sản phẩm" ra khỏi .view-content -->
+        <div class="order-items-section">
+            <span class="section-title">Danh sách sản phẩm</span>
+            <div class="table-scroll-wrapper">
+                <table class="modal-table" style="min-width: 100%;">
+                    <thead>
+                        <tr>
+                            <th>ID Sản phẩm</th>
+                            <th>Tên Sản phẩm</th>
+                            <th>Lợi nhuận (%)</th>
+                            <th>Số lượng</th>
+                            <th>Giá (VND)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="purchase-order-items-body"></tbody>
+                </table>
+            </div>
+        </div>
+        <div class="modal-buttons">
+            <button class="close" id="view-close-button">Đóng</button>
         </div>
     </div>
 </dialog>
+<style>
+/* chitietphieunhap.css */
+
+/* Định dạng dialog */
+dialog {
+    margin: auto;
+    padding: 1rem;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    border: none;
+    max-width: 43rem;
+    width: calc(100% - 1rem);
+    color: inherit;
+    scroll-behavior: smooth;
+}
+
+dialog::backdrop {
+    background-color: rgb(0 0 0 / 50%);
+}
+
+/* Định dạng modal-header */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-block: 1rem;
+    border-bottom: solid 1px #999999;
+}
+
+.modal-header h2 {
+    color: var(--clr-primary-300);
+    font-weight: var(--fw-bold);
+    font-size: 2rem;
+}
+
+/* Định dạng nút đóng */
+.modal-close {
+    cursor: pointer;
+    background: none;
+    border: none;
+}
+
+.modal-close:focus-visible {
+    outline: none;
+}
+
+.modal-close:hover {
+    opacity: 0.8;
+}
+
+/* Định dạng view-container */
+.view-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Hai cột cho các .view-content */
+    gap: 1.5rem;
+    row-gap: 1.25rem;
+}
+
+/* Định dạng view-content */
+.view-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.view-content span {
+    font-weight: var(--fw-bold);
+    color: var(--clr-neutral-900);
+}
+
+.view-content p {
+    width: 100%;
+    padding: 0.6rem;
+    background-color: hsl(0 0% 100%);
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+}
+
+/* Định dạng order-items-section */
+.order-items-section {
+    grid-column: span 2; /* Chiếm cả hai cột */
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+/* Định dạng tiêu đề "Danh sách sản phẩm" */
+.order-items-section .section-title {
+    font-weight: var(--fw-bold);
+    color: var(--clr-neutral-900);
+    font-size: 1.1rem;
+}
+
+/* Định dạng div bao quanh bảng để hiển thị thanh cuộn */
+.table-scroll-wrapper {
+    max-height: 13rem; /* Chiều cao tối đa cho 5 sản phẩm */
+    overflow-y: auto; /* Thanh cuộn dọc chỉ xuất hiện khi vượt quá chiều cao */
+    overflow-x: hidden; /* Ẩn thanh cuộn ngang */
+}
+
+/* Định dạng bảng trong modal */
+.modal-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.modal-table th,
+.modal-table td {
+    padding: 0.75rem;
+    border-bottom: 0.094rem solid #ddd;
+    text-align: left;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 12.5rem;
+}
+
+.modal-table th {
+    background-color: white;
+    color: var(--fs-table-header);
+    font-weight: var(--fw-bold);
+}
+
+.modal-table tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Định dạng modal-buttons */
+.modal-buttons {
+    text-align: center;
+    grid-column: span 2; /* Nút "Đóng" chiếm cả hai cột */
+    padding-top: 0.5rem;
+    padding-bottom: 2rem;
+}
+
+.modal-buttons button {
+    margin-inline: 0.25rem;
+    padding: 0.625rem 1.5rem;
+    border-radius: 100vmax;
+    border: none;
+    cursor: pointer;
+    color: #fff;
+}
+
+.modal-buttons button:hover {
+    opacity: 0.8;
+}
+
+.modal-buttons .close {
+    background-color: #dc3545;
+}
+
+/* Responsive */
+@media (max-width: 40em) {
+    .view-container {
+        grid-template-columns: 1fr; /* Chuyển thành một cột trên màn hình nhỏ */
+        gap: 1rem;
+    }
+
+    .modal-table th,
+    .modal-table td {
+        padding: 0.5rem;
+        max-width: none; /* Xóa giới hạn chiều rộng trên màn hình nhỏ */
+    }
+}
+
+@media (max-width: 28em) {
+    dialog {
+        padding: 0.5rem;
+        width: calc(100% - 0.5rem);
+    }
+
+    .modal-header h2 {
+        font-size: 1.5rem;
+    }
+
+    .modal-buttons button {
+        padding: 0.5rem 1rem;
+    }
+
+    .order-items-section .section-title {
+        font-size: 1rem;
+    }
+}
+</style>

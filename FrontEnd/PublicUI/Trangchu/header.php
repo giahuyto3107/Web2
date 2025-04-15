@@ -198,6 +198,46 @@ $featured_collection = $conn->query("SELECT p.* FROM product p JOIN product_cate
         .dropdown-menu a:hover i {
             color: rgb(53, 53, 53);
         }
+
+        .btn2 {
+            display: inline-block;
+            padding: 0.9rem 1.8rem;
+            font-size: 16px;
+            font-weight: 500;
+            color: black; /* Chữ màu đen */
+            border: 3px solid rgb(255, 255, 255);
+            cursor: pointer;
+            position: relative;
+            background-color: white; /* Nền màu trắng */
+            text-decoration: none;
+            overflow: hidden;
+            z-index: 1;
+            font-family: 'Poppins', sans-serif;
+            transition: color 0.3s; /* Thêm hiệu ứng chuyển màu chữ */
+            }
+
+            .btn2::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgb(255, 255, 255);
+            transform: translateX(-100%);
+            transition: all .3s;
+            z-index: -1;
+            }
+
+            .btn2:hover {
+            color: white; 
+            }
+
+            .btn2:hover::before {
+            transform: translateX(0);
+            background-color: black;
+            }
+
     </style>
 
 </head>
@@ -228,8 +268,10 @@ $featured_collection = $conn->query("SELECT p.* FROM product p JOIN product_cate
             <a href="http://localhost/Web2/FrontEnd/PublicUI/Trangchu/Pages/logout.php"><i class="fa-solid fa-sign-out-alt"></i> Đăng xuất</a>
         </div>
     <?php else: ?>
-        <a href="?page=login" data-page="login">Đăng nhập</a>
-        <a href="?page=signup" data-page="signup">Đăng ký</a>
+        <button>
+            <a href="?page=login" data-page="login" class="btn2">Đăng nhập</a>
+            <a href="?page=signup" data-page="signup" class="btn2">Đăng ký</a>
+        </button>
     <?php endif; ?>
 </div>
     </header>

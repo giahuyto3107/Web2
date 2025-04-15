@@ -4,7 +4,7 @@ include ('../../../BackEnd/Config/config.php');
 header('Content-Type: application/json');
 
 
-$query = "SELECT * FROM category_type";
+$query = "SELECT * FROM category_type WHERE status_id = 1";
 $result = $conn->query($query);
 $category_types = [];
 

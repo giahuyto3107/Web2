@@ -374,253 +374,470 @@ if (!$query_product_invoice) {
 
 
 <style>
-    body {
-        background-color: #f8f9fa;
-        display: flex;
-        min-height: 100vh;
-        padding: 20px;
-    }
+/* Định dạng body */
+body {
+    background-color: #f8f9fa; /* Giữ nguyên màu nền */
+    display: flex;
+    min-height: 100vh;
+    padding: 1.2rem; /* Đồng bộ với padding trong data-table.css */
+}
 
+/* Định dạng container chính */
+.form {
+    display: flex;
+    width: 100%;
+    background: hsl(0 0% 100%); /* Đồng bộ màu nền trắng */
+    padding: 1.5rem; /* Đồng bộ padding */
+    border-radius: 0.75rem; /* Đồng bộ border-radius */
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px; /* Đồng bộ box-shadow */
+}
+
+/* Định dạng import-block */
+.import-block {
+    width: 70%;
+    padding-right: 1rem; /* Thêm padding để tránh sát mép */
+}
+
+/* Định dạng tiêu đề form-title */
+.form-title {
+    text-align: center;
+    margin-bottom: 1.5rem; /* Đồng bộ margin với heading trong data-table.css */
+}
+
+.form-title h1 {
+    font-weight: var(--fw-bold); /* Đồng bộ font-weight */
+    color: var(--clr-primary-300); /* Đồng bộ màu với modal-header h2 */
+    font-size: 2rem; /* Đồng bộ font-size */
+}
+
+.form-title h6 {
+    color: #999999; /* Đồng bộ màu chữ phụ */
+    font-size: 0.875rem; /* Đồng bộ font-size nhỏ */
+}
+
+/* Định dạng bảng trong form-content */
+.form-content {
+    background-color: hsl(0 0% 100%);
+    border-radius: 0.75rem; /* Đồng bộ border-radius */
+    width: 100%;
+    margin: 0.5rem 0; /* Đồng bộ margin */
+    padding: 1rem; /* Đồng bộ padding */
+    overflow-x: auto; /* Thêm thanh cuộn ngang nếu cần */
+}
+
+.form-content table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.form-content th,
+.form-content td {
+    padding: 0.75rem; /* Đồng bộ padding với modal-table */
+    border-bottom: 0.094rem solid #ddd; /* Đồng bộ border-bottom */
+    text-align: left; /* Căn trái thay vì center để đồng bộ với modal-table */
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 12.5rem; /* Đồng bộ max-width */
+}
+
+.form-content th {
+    background-color: white;
+    color: var(--fs-table-header); /* Đồng bộ màu chữ tiêu đề bảng */
+    font-weight: var(--fw-bold); /* Đồng bộ font-weight */
+}
+
+.form-content tr:hover {
+    background-color: #f1f1f1; /* Đồng bộ hiệu ứng hover */
+}
+
+/* Định dạng nút "Chọn" */
+.select-button {
+    padding: 0.5rem 1rem; /* Đồng bộ padding với nút nhỏ */
+    border-radius: 100vmax; /* Đồng bộ border-radius */
+    border: none;
+    background-color: var(--clr-primary-300); /* Đồng bộ màu nút */
+    color: white;
+    font-weight: var(--fw-bold); /* Đồng bộ font-weight */
+    cursor: pointer;
+    transition: opacity 0.3s ease; /* Đồng bộ hiệu ứng */
+}
+
+.select-button:hover {
+    opacity: 0.8; /* Đồng bộ hiệu ứng hover */
+}
+
+/* Định dạng bill-block */
+.bill-block {
+    width: 30%;
+    border-left: 1px solid #999999; /* Đồng bộ màu border */
+    padding-left: 1rem; /* Thêm padding để tránh sát mép */
+}
+
+/* Định dạng tiêu đề bill-title */
+.bill-title {
+    text-align: center;
+    margin-bottom: 1.5rem; /* Đồng bộ margin */
+}
+
+.bill-title h3 {
+    font-weight: var(--fw-bold); /* Đồng bộ font-weight */
+    color: var(--clr-primary-300); /* Đồng bộ màu */
+    font-size: 1.5rem; /* Đồng bộ font-size với heading */
+}
+
+.bill-title label {
+    display: block;
+    font-weight: var(--fw-bold); /* Đồng bộ font-weight */
+    color: var(--clr-neutral-900); /* Đồng bộ màu */
+    margin-bottom: 0.5rem; /* Đồng bộ margin */
+}
+
+/* Định dạng select (combobox) */
+#supplier {
+    width: 100%;
+    padding: 0.6rem; /* Đồng bộ padding */
+    border: 1px solid #ccc; /* Đồng bộ border */
+    border-radius: 0.35rem; /* Đồng bộ border-radius */
+    background-color: hsl(0 0% 100%); /* Đồng bộ background */
+    color: #333; /* Đồng bộ màu chữ */
+    cursor: pointer;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease; /* Đồng bộ hiệu ứng */
+    appearance: none; /* Xóa kiểu dáng mặc định */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23333' viewBox='0 0 16 16'%3E%3Cpath d='M8 12l-4-4h8l-4 4z'/%3E%3C/svg%3E"); /* Thêm icon mũi tên */
+    background-repeat: no-repeat;
+    background-position: right 0.6rem center;
+    background-size: 1rem;
+}
+
+#supplier:hover {
+    border-color: var(--clr-primary-300); /* Đồng bộ hiệu ứng hover */
+}
+
+#supplier:focus {
+    outline: none;
+    border-color: var(--clr-primary-300); /* Đồng bộ hiệu ứng focus */
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25); /* Đồng bộ box-shadow */
+}
+
+/* Định dạng invoice-block */
+.invoice-block {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem; /* Đồng bộ gap */
+    width: 100%;
+}
+
+/* Định dạng invoice-content */
+.invoice-content {
+    background-color: hsl(0 0% 100%);
+    border-radius: 0.75rem; /* Đồng bộ border-radius */
+    width: 100%;
+    margin: 0.5rem 0; /* Đồng bộ margin */
+    padding: 1rem; /* Đồng bộ padding */
+    max-height: 300px; /* Giữ max-height */
+    overflow-y: auto; /* Thanh cuộn dọc */
+}
+
+/* Định dạng thanh cuộn */
+.invoice-content::-webkit-scrollbar {
+    width: 0.375rem; /* Đồng bộ với data-table.css */
+}
+
+.invoice-content::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Đồng bộ màu track */
+    border-radius: 1.875rem;
+}
+
+.invoice-content::-webkit-scrollbar-thumb {
+    background: #cecece; /* Đồng bộ màu thumb */
+    border-radius: 1.875rem;
+}
+
+.invoice-content::-webkit-scrollbar-thumb:hover {
+    background: #555; /* Đồng bộ màu hover */
+}
+
+/* Định dạng single-invoice-content */
+.single-invoice-content {
+    display: flex;
+    flex-direction: column; /* Sửa thành column để đồng bộ layout */
+    gap: 0.5rem; /* Đồng bộ gap */
+    padding: 0.5rem;
+    border-bottom: 0.094rem solid #ddd; /* Thêm border-bottom để phân cách */
+}
+
+/* Định dạng product-info-invoice */
+.product-info-invoice {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem; /* Đồng bộ gap */
+}
+
+.product-info-invoice h2 {
+    font-weight: var(--fw-bold); /* Đồng bộ font-weight */
+    font-size: 1rem; /* Font-size nhỏ hơn để phù hợp */
+    color: var(--clr-neutral-900); /* Đồng bộ màu */
+}
+
+.product-info-invoice h6 {
+    font-size: 0.875rem; /* Đồng bộ font-size */
+    color: #999999; /* Đồng bộ màu phụ */
+}
+
+/* Định dạng inline-container */
+.inline-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem; /* Đồng bộ gap */
+}
+
+.inline-container label {
+    font-weight: var(--fw-bold); /* Đồng bộ font-weight */
+    color: var(--clr-neutral-900); /* Đồng bộ màu */
+}
+
+/* Định dạng input giá nhập */
+.bill-product-price {
+    width: 100px;
+    padding: 0.6rem; /* Đồng bộ padding */
+    border: 1px solid #ccc; /* Đồng bộ border */
+    border-radius: 0.35rem; /* Đồng bộ border-radius */
+    background-color: hsl(0 0% 100%); /* Đồng bộ background */
+    color: #333; /* Đồng bộ màu chữ */
+    transition: border-color 0.15s ease; /* Đồng bộ hiệu ứng */
+}
+
+.bill-product-price:focus {
+    outline: none;
+    border-color: var(--clr-primary-300); /* Đồng bộ hiệu ứng focus */
+}
+
+/* Định dạng percent-container */
+.percent-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem; /* Đồng bộ gap */
+    margin-top: 0.5rem; /* Đồng bộ margin */
+}
+
+.percent-container label {
+    font-weight: var(--fw-bold); /* Đồng bộ font-weight */
+    color: var(--clr-neutral-900); /* Đồng bộ màu */
+}
+
+/* Định dạng percent-input */
+.percent-input {
+    width: 40px;
+    padding: 0.6rem; /* Đồng bộ padding */
+    border: 1px solid #ccc; /* Đồng bộ border */
+    border-radius: 0.35rem; /* Đồng bộ border-radius */
+    background-color: hsl(0 0% 100%); /* Đồng bộ background */
+    color: #333; /* Đồng bộ màu chữ */
+    text-align: center;
+    transition: border-color 0.15s ease; /* Đồng bộ hiệu ứng */
+}
+
+.percent-input:focus {
+    outline: none;
+    border-color: var(--clr-primary-300); /* Đồng bộ hiệu ứng focus */
+}
+
+/* Định dạng single-invoice-btns */
+.single-invoice-btns {
+    display: flex;
+    gap: 0.5rem; /* Đồng bộ gap */
+    align-items: center;
+}
+
+/* Định dạng quantity-container */
+.quantity-container {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc; /* Đồng bộ border */
+    border-radius: 0.35rem; /* Đồng bộ border-radius */
+    width: 120px;
+    justify-content: space-between;
+    padding: 0.25rem; /* Giảm padding để gọn hơn */
+}
+
+/* Định dạng nút quantity-btn */
+.quantity-btn {
+    background: none;
+    border: none;
+    font-size: 1rem; /* Giảm font-size để gọn */
+    color: var(--clr-primary-300); /* Đồng bộ màu */
+    cursor: pointer;
+    width: 30px;
+    text-align: center;
+    transition: opacity 0.3s ease; /* Đồng bộ hiệu ứng */
+}
+
+.quantity-btn:hover {
+    opacity: 0.8; /* Đồng bộ hiệu ứng hover */
+}
+
+/* Định dạng quantity-input */
+.quantity-input {
+    width: 40px;
+    text-align: center;
+    font-size: 0.875rem; /* Đồng bộ font-size */
+    border: none;
+    outline: none;
+    background-color: hsl(0 0% 100%); /* Đồng bộ background */
+    color: #333; /* Đồng bộ màu chữ */
+}
+
+/* Định dạng nút Remove */
+.remove {
+    padding: 0.5rem 1rem; /* Đồng bộ padding */
+    border-radius: 100vmax; /* Đồng bộ border-radius */
+    border: none;
+    background-color: #dc3545; /* Đồng bộ màu nút hủy */
+    color: white;
+    font-weight: var(--fw-bold); /* Đồng bộ font-weight */
+    cursor: pointer;
+    transition: opacity 0.3s ease; /* Đồng bộ hiệu ứng */
+}
+
+.remove:hover {
+    opacity: 0.8; /* Đồng bộ hiệu ứng hover */
+}
+
+/* Định dạng cart-info */
+.cart-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem; /* Đồng bộ gap */
+    padding: 1rem; /* Thêm padding để đẹp hơn */
+}
+
+/* Định dạng priceContainer */
+.priceContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.priceContainer h2 {
+    font-weight: var(--fw-bold); /* Đồng bộ font-weight */
+    font-size: 1.1rem; /* Font-size nhỏ hơn để phù hợp */
+    color: var(--clr-neutral-900); /* Đồng bộ màu */
+}
+
+.priceContainer .price {
+    color: #65e4dd; /* Giữ màu hiện tại */
+}
+
+/* Định dạng percentContainer */
+.percentContainer {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem; /* Đồng bộ gap */
+}
+
+/* Định dạng input #percent */
+#percent {
+    width: 80px; /* Tăng chiều rộng để dễ nhập */
+    padding: 0.6rem; /* Đồng bộ padding */
+    border: 1px solid #ccc; /* Đồng bộ border */
+    border-radius: 0.35rem; /* Đồng bộ border-radius */
+    background-color: hsl(0 0% 100%); /* Đồng bộ background */
+    color: #333; /* Đồng bộ màu chữ */
+    transition: border-color 0.15s ease; /* Đồng bộ hiệu ứng */
+}
+
+#percent::placeholder {
+    color: #999999; /* Đồng bộ màu placeholder */
+}
+
+#percent:focus {
+    outline: none;
+    border-color: var(--clr-primary-300); /* Đồng bộ hiệu ứng focus */
+}
+
+/* Định dạng nút Apply All */
+#applyAllBtn {
+    padding: 0.5rem 1rem; /* Đồng bộ padding */
+    border-radius: 100vmax; /* Đồng bộ border-radius */
+    border: none;
+    background-color: #4caf50; /* Đồng bộ màu nút thành công */
+    color: white;
+    font-weight: var(--fw-bold); /* Đồng bộ font-weight */
+    cursor: pointer;
+    transition: background-color 0.3s ease; /* Đồng bộ hiệu ứng */
+}
+
+#applyAllBtn:hover {
+    background-color: #45a049; /* Đồng bộ hiệu ứng hover */
+}
+
+/* Định dạng nút Đặt hàng */
+#confirmBtn {
+    margin-top: 1rem; /* Đồng bộ margin */
+    padding: 0.625rem 1.5rem; /* Đồng bộ padding */
+    border-radius: 100vmax; /* Đồng bộ border-radius */
+    border: none;
+    background-color: #2dd2c0; /* Giữ màu hiện tại */
+    color: white;
+    font-weight: var(--fw-bold); /* Đồng bộ font-weight */
+    cursor: pointer;
+    transition: opacity 0.3s ease; /* Đồng bộ hiệu ứng */
+}
+
+#confirmBtn[disabled] {
+    background-color: #c0c0c0; /* Giữ màu khi disabled */
+    cursor: default;
+}
+
+#confirmBtn:not([disabled]):hover {
+    opacity: 0.8; /* Đồng bộ hiệu ứng hover */
+}
+
+/* Responsive */
+@media (max-width: 40em) {
     .form {
-        display: flex;
-        width: 100%;
-        background: white;
-        padding: 30px;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        flex-direction: column; /* Chuyển thành cột trên màn hình nhỏ */
+        padding: 1rem; /* Giảm padding */
     }
 
-    .import-block {
-        width: 70%;
-    }
-
-    .form-title {
-        text-align: center;
-    }
-
-    .form-title h1 {
-        font-weight: bold;
-        color: black;
-    }
-
-    .form-title h6 {
-        color: #80858a;
-    }
-
-    .form-content {
-        background-color: white;
-        border-radius: 20px;
-        width: 100%;
-        margin: 10px;
-        padding: 20px;
-        display: flex;
-        flex-wrap: wrap;
-    }
-
-    .product-block {
-        display: flex;
-        gap: 10px;
-        cursor: pointer;
-        width: calc(100% / 3 - 10px); /* 4 columns per row */
-        align-items: center;
-        padding: 5px;
-    }
-
-    .invoice-content {
-        background-color: white;
-        border-radius: 20px;
-        width: 100%;
-        margin: 10px;
-        padding: 20px;
-        display: flex;
-        flex-wrap: wrap;
-        max-height: 300px; /* Ensure there's enough content to scroll */
-        overflow-y: auto; /* Enables vertical scrolling */
-    }
-
-    .invoice-block {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        width: 100%; /* 4 columns per row */
-        align-items: center;
-        padding: 5px;
-    }
-
-    .product-info-invoice-block {
-        width: 100%;
-        display: flex;
-    }
-
-    .product-block:hover {
-        background-color: #e4e4e4;
-    }
-
-    .product-image {
-        margin-bottom: 15px;
-    }
-
-    .product-info {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        font-weight: bold;
-        width: 100%;
-        justify-content: center;
-    }
-
-    .invoice-content::-webkit-scrollbar {
-        width: 10px;
-    }
-
-    /* Track */
-    .invoice-content::-webkit-scrollbar-track {
-    background: #f1f1f1; 
-    }
-    
-    /* Handle */
-    .invoice-content::-webkit-scrollbar-thumb {
-    background: #888; 
-    }
-
-    /* Handle on hover */
-    .invoice-content::-webkit-scrollbar-thumb:hover {
-    background: #555; 
-    }
-
-    .single-invoice-content {
-        display: flex;  
-        gap: 10px;
-        cursor: pointer;
-    }
-
-    .product-image-invoice {
-        margin-bottom: 15px;
-        width: 79px;
-        height: 122px;
-    }
-
-    .product-info-invoice {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        font-weight: bold;
-        width: 100%;
-    }
-
-    /* .product-info h4 {
-    } */
-
-    .product-info h6 {
-        color: #9e9790;
-        font-size: 12px;
-    }
-
-    .product-block img {
-        height: 122px;
-        width: 100px;
+    .import-block,
+    .bill-block {
+        width: 100%; /* Full-width trên màn hình nhỏ */
+        padding: 0; /* Xóa padding để tránh sát mép */
     }
 
     .bill-block {
-        display: flex;
-        flex-direction: column;
-        width: 30%;
-        border-left: 1px black solid;
+        border-left: none; /* Xóa border-left */
+        border-top: 1px solid #999999; /* Thêm border-top */
+        padding-top: 1rem; /* Thêm padding-top */
     }
 
-    .bill-title {
-        text-align: center;
-        font-weight: bold;
-        color: black;   
+    .form-content th,
+    .form-content td {
+        padding: 0.5rem; /* Giảm padding trên màn hình nhỏ */
+        max-width: none; /* Xóa giới hạn chiều rộng */
+    }
+}
+
+@media (max-width: 28em) {
+    .form {
+        padding: 0.5rem; /* Giảm padding thêm */
     }
 
-    #supplier {
-        border: 1px solid black;
+    .form-title h1 {
+        font-size: 1.5rem; /* Giảm font-size */
     }
 
-    table tr td{
-        text-align: center;
-    }
-    
-    #percent {
-        background-color: #e2e2e2;
+    .bill-title h3 {
+        font-size: 1.2rem; /* Giảm font-size */
     }
 
-    #percent::placeholder { color: #919191; }
-
-    #confirmBtn {
-        margin-top: 10px;
-        border: 1px black solid;
-        padding: 5px 15px;
-        color: white;
-        font-weight: bold;
+    #confirmBtn,
+    #applyAllBtn,
+    .select-button,
+    .remove {
+        padding: 0.5rem 1rem; /* Giảm padding */
     }
-
-    .cart-info {
-    }
-
-    .quantity-container {
-        display: flex;
-        align-items: center;
-        border: 1px solid #000;
-        width: 120px;
-        justify-content: space-between;
-        padding: 5px;
-        border-radius: 5px;
-    }
-
-    .quantity-btn {
-        background: none;
-        border: none;
-        font-size: 20px;
-        cursor: pointer;
-        width: 30px;
-    }
-
-    .quantity-input {
-        width: 40px;
-        text-align: center;
-        font-size: 16px;
-        border: none;
-        outline: none;
-    }
-
-    .percent-container {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        margin-top: 10px; /* Adds spacing between quantity buttons and percentage input */
-    }
-
-    #applyAllBtn {
-        padding: 5px 10px;
-        background-color: #4CAF50; /* Green color, adjust as needed */
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-    }
-
-    #applyAllBtn:hover {
-        background-color: #45a049; /* Darker green on hover */
-    }
-
-    .percent-input {
-        width: 40px;
-        text-align: center;
-        border: 1px solid #000;
-        border-radius: 3px;
-        padding: 2px;
-    }
-
-    .single-invoice-btns {
-        display: flex;
-        gap: 5px;
-    }
-
-    .inline-container {
-        display: flex;
-        align-items: center; /* Aligns input and label */
-        gap: 5px; /* Adjust spacing */
-    }
+}
 </style>

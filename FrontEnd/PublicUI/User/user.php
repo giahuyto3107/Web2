@@ -383,7 +383,7 @@ body {
                                         <p><strong>Ngày sinh:</strong> <?php echo $row_user_data['date_of_birth']; ?></p>
                                     </div>
                                     <div class="col-md-6 bio-row">
-                                        <p><strong>Địa chỉ</strong> <?php echo $row_user_data['address']; ?></p>
+                                        <p><strong>Địa chỉ:</strong> <?php echo $row_user_data['address']; ?></p>
                                     </div>
                                 </div>
                             </div>
@@ -441,33 +441,38 @@ body {
                 </button>
             </div>
             <div class="modal-body">
-                <form id="editProfileForm">
-                    <div class="form-group">
-                        <label for="fullName">Tên đầy đủ:</label>
-                        <input type="text" class="form-control" id="fullName" name="fullName" value="<?php echo $row_user_data['full_name']; ?>" required>
-                        <span class="error-message text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email:</label>
-                        <input type="email" class="form-control" id="email" name="email" value="<?php echo $row_user_data['email']; ?>" required>
-                        <span class="error-message text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label for="dob">Ngày sinh:</label>
-                        <input type="date" class="form-control" id="dob" name="dob" value="<?php echo $row_user_data['date_of_birth']; ?>" required>
-                        <span class="error-message text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label for="address">Địa chỉ</label>
-                        <input type="address" class="form-control" id="address" name="address" value="<?php echo $row_user_data['address']; ?>" required>
-                        <span class="error-message text-danger"></span>
-                    </div>
+    <form id="editProfileForm" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="fullName">Tên đầy đủ:</label>
+            <input type="text" class="form-control" id="fullName" name="fullName" value="<?php echo $row_user_data['full_name']; ?>" required>
+            <span class="error-message text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" class="form-control" id="email" name="email" value="<?php echo $row_user_data['email']; ?>" required>
+            <span class="error-message text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label for="dob">Ngày sinh:</label>
+            <input type="date" class="form-control" id="dob" name="dob" value="<?php echo $row_user_data['date_of_birth']; ?>" required>
+            <span class="error-message text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label for="address">Địa chỉ:</label>
+            <input type="text" class="form-control" id="address" name="address" value="<?php echo $row_user_data['address']; ?>" required>
+            <span class="error-message text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label for="profilePicture">Ảnh đại diện:</label>
+            <input type="file" class="form-control" id="profilePicture" name="profilePicture" accept="image/*">
+            <span class="error-message text-danger"></span>
+        </div>
 
-                    <div id="errorContainer" class="mt-2"></div>
+        <div id="errorContainer" class="mt-2"></div>
 
-                    <button type="submit" id="saveChanges" class="btn btn-primary w-100" disabled>💾 Lưu thay đổi</button>
-                </form>
-            </div>
+        <button type="submit" id="saveChanges" class="btn btn-primary w-100" disabled>💾 Lưu thay đổi</button>
+    </form>
+</div>
         </div>
     </div>
 </div>
@@ -613,6 +618,7 @@ body {
         let dob = $("#dob");
         let saveBtn = $("#saveChanges");
         let address = $("#address");
+        let profilePicture = $("#profilePicture");
         let errorContainer = $("#errorContainer"); 
 
         function validateForm() {
@@ -626,6 +632,10 @@ body {
             let nameRegex = /^[a-zA-ZÀ-Ỹà-ỹ\s]{3,50}$/;
             let emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
             let dobRegex = /^\d{4}-\d{2}-\d{2}$/;
+
+            let imageRegex = /\.(jpg|jpeg|png|gif)$/i;
+            let allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
+            let maxFileSize = 5 * 1024 * 1024;
 
             if (!nameRegex.test(fullNameVal)) {
                 $("#fullName").next(".error-message").text("❌ Họ tên không hợp lệ (3-50 chữ).");
@@ -650,6 +660,8 @@ body {
                 $("#dob").next(".error-message").text("");
             }
 
+            
+
             $("#saveChanges").prop("disabled", !isValid);
         }
 
@@ -660,44 +672,71 @@ body {
         $("#editProfileForm").on("submit", function (e) {
             e.preventDefault();
 
+
+            let formData = new FormData();
+
+
+            let fullName = $("#fullName").val().trim(); 
+            let email = $("#email").val().trim();
+            let dob = $("#dob").val().trim();
+            let address = $("#address").val().trim();
+            let profilePicture = $("#profilePicture")[0].files[0]; 
+
+
+            formData.append("fullName", fullName);
+            formData.append("email", email);
+            formData.append("dob", dob);
+            formData.append("address", address);
+            if (profilePicture) {
+                formData.append("profilePicture", profilePicture);
+            }
+
             $.ajax({
                 url: "http://localhost/Web2/FrontEnd/PublicUI/User/update_profile.php",
                 type: "POST",
-                data: { 
-                    fullName: fullName.val().trim(),
-                    email: email.val().trim(),
-                    dob: dob.val().trim(),
-                    address: address.val().trim(),
-                },
+                data: formData,
+                contentType: false, // Không tự set Content-Type
+                processData: false, // Không serialize dữ liệu
                 success: function (response) {
                     console.log("Server response:", response);
-                    let result = JSON.parse(response);
-                    if (result.status === "success") {
-                        Swal.fire({
-                            icon: "success",
-                            title: "Thành công!",
-                            text: "Thông tin của bạn đã được cập nhật.",
-                            confirmButtonText: "OK",
-                        }).then(() => {
-                            location.reload();
-                        });
-                    } else {
+                    try {
+                        let result = JSON.parse(response);
+                        if (result.status === "success") {
+                            Swal.fire({
+                                icon: "success",
+                                title: "Thành công!",
+                                text: "Thông tin của bạn đã được cập nhật.",
+                                confirmButtonText: "OK",
+                            }).then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: "error",
+                                title: "Lỗi!",
+                                text: result.message,
+                                confirmButtonText: "Thử lại",
+                            });
+                        }
+                    } catch (e) {
+                        console.error("Lỗi parse JSON:", e);
                         Swal.fire({
                             icon: "error",
                             title: "Lỗi!",
-                            text: result.message,
-                            confirmButtonText: "Thử lại",
+                            text: "Phản hồi từ server không hợp lệ.",
+                            confirmButtonText: "OK",
                         });
                     }
                 },
-                error: function () {
+                error: function (xhr, status, error) {
+                    console.error("AJAX error:", status, error);
                     Swal.fire({
                         icon: "error",
                         title: "Lỗi hệ thống!",
                         text: "Không thể gửi dữ liệu, vui lòng thử lại sau.",
                         confirmButtonText: "OK",
                     });
-                }
+                },
             });
         });
 

@@ -60,6 +60,13 @@
         ?>
 
         <script>
+        // Hàm làm sạch chuỗi tiền tệ và chuyển thành số
+        function parseCurrency(value) {
+            if (typeof value === 'number') return value;
+            const cleanValue = value.replace(/[^\d.]/g, '');
+            return parseFloat(cleanValue) || 0;
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             // Biến toàn cục
             let purchaseOrders = [];
@@ -126,7 +133,7 @@
                         <td>${order.user_name || 'N/A'}</td>
                         <td>${order.order_date || 'N/A'}</td>
                         <td>${order.amount || '0'}</td>
-                        <td>${order.total_price || '0'}</td>
+                        <td>${parseCurrency(order.total_price).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
                         <td class="actions">
                             <div class="dropdown">
                                 <button class="dropdownButton"><i class="fa fa-ellipsis-v dropIcon"></i></button>
@@ -180,7 +187,7 @@
                         document.getElementById('modal-view-user-name').textContent = orderInfo.user_name || 'N/A';
                         document.getElementById('modal-view-supplier-name').textContent = orderInfo.supplier_name || 'N/A';
                         document.getElementById('modal-view-order-date').textContent = orderInfo.order_date || 'N/A';
-                        document.getElementById('modal-view-total-value').textContent = totalValue.toLocaleString() + ' VND';
+                        document.getElementById('modal-view-total-value').textContent = parseCurrency(totalValue).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
 
                         // Hiển thị danh sách sản phẩm
                         const tableBody = document.getElementById('purchase-order-items-body');
@@ -194,7 +201,7 @@
                                         <td>${item.product_name || 'N/A'}</td>
                                         <td>${item.profit || '0'}</td>
                                         <td>${item.quantity || '0'}</td>
-                                        <td>${item.price || '0'}</td>
+                                        <td>${parseCurrency(item.price).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
                                     </tr>
                                 `;
                                 tableBody.innerHTML += row;
