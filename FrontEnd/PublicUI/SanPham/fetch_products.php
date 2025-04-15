@@ -11,7 +11,7 @@ $max_price = $_GET['max_price'] ?? '';
 $query = "SELECT p.* FROM product p 
           LEFT JOIN product_category pc ON p.product_id = pc.product_id 
           LEFT JOIN category c ON pc.category_id = c.category_id 
-          WHERE 1=1 and p.stock_quantity>0 and p.status_id=1";
+          WHERE 1=1 and p.stock_quantity>0 and p.status_id=1 and c.status_id=1";
 if ($search_name) {
     $query .= " AND p.product_name LIKE '%" . $conn->real_escape_string($search_name) . "%'";
 }
