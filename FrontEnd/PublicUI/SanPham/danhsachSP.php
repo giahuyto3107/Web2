@@ -319,7 +319,7 @@ $(document).ready(function () {
                             <ul class="category-list" id="category-list-${type.category_type_id}"></ul>
                         </li>`;
                 });
-                window.scrollTo(0, 0);
+                
                 $("#category-type-list").html(html);
             },
             error: function (xhr, status, error) {
@@ -431,9 +431,9 @@ $(document).ready(function () {
         if (categoryList.children().length === 0) { 
             loadCategories(typeId);
         } 
-        // else {
-        //     categoryList.slideToggle(300); 
-        // }
+        else {
+            categoryList.slideToggle(300); 
+        }
     });
 
 

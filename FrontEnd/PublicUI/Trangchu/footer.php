@@ -1,6 +1,6 @@
 <footer>
     <div class="row1">
-        <div class="col">
+        <div class="col smaller-col">
             <div class="logo">
                 <a href=""><span>Góc Sách Nhỏ</span></a>
             </div>
@@ -14,7 +14,7 @@
             <p class="email-id">imnotgay@yahoo.com</p>
             <h4>+84 22 2222 2222</h4>
         </div>
-        <div class="col smaller-col">
+        <div class="col smallest-col">
             <h3>Links <div class="underline"><span></span></div></h3>
             <ul>
                 <li><a href=""><strong>Home</strong></a></li>
@@ -24,7 +24,7 @@
                 <li><a href=""><strong>Policy</strong></a></li>
             </ul>
         </div>
-        <div class="col">
+        <div class="col biggest-col">
             <h3>Chăm sóc KH <div class="underline"><span></span></div></h3>
             <div class="box-two__call mb-3 box-content">
                 <ul class="list-link">
@@ -33,7 +33,7 @@
                     <li class="link"><div><strong>Gọi bảo hành</strong> <a href="tel:18002064">1800.2064</a> (8h00 - 21h00)</div></li>
                 </ul>
             </div>
-            <div class="payment-methods">
+            <!-- <div class="payment-methods">
                 <div class="pay-gate-way__title">
                     <p class="mb-3 title"><strong>Phương thức thanh toán</strong></p>
                 </div>
@@ -50,7 +50,7 @@
                         </li>
                     </ul>
                 </div>
-            </div>
+            </div> -->
         </div>
         <div class="col">
             <h3>NewsLetter <div class="underline"><span></span></div></h3>
@@ -97,8 +97,20 @@
         flex-basis: 15%;
     }
 
+    .smallest-col{
+        flex-basis: 10%;
+    }
+
+    .biggest-col{
+        flex-basis: 25%;
+    }
+
     .logo a {
         text-decoration: none;
+    }
+
+    ul{
+        padding-left: 0rem;
     }
 
     .logo span {
@@ -159,6 +171,7 @@
 
     ul li {
         margin-bottom: 10px;
+        border: none !important;
     }
 
     ul li a {
@@ -167,6 +180,7 @@
         color: #ffffff;
         text-decoration: none;
         transition: color 0.3s ease;
+        border: none !important;
     }
 
     ul li a:hover {

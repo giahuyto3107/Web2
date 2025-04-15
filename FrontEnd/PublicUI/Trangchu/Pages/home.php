@@ -29,6 +29,12 @@ $featured_collection = $conn->query("SELECT p.* FROM product p JOIN product_cate
 
 <style>
     /* Hero Section */
+
+    body {
+        font-family: 'Poppins', sans-serif;
+        margin: 0;
+        padding: 0;
+    }
     .hero {
         height: 90vh;
         position: relative;
@@ -94,7 +100,7 @@ $featured_collection = $conn->query("SELECT p.* FROM product p JOIN product_cate
     }
 
     .hero .cta-btn:hover {
-        background: #5e2d0d;
+        background:rgb(74, 74, 74);
         transform: translateY(-3px);
     }
 
@@ -366,61 +372,117 @@ $featured_collection = $conn->query("SELECT p.* FROM product p JOIN product_cate
 
     /* Reviews */
     .reviews-section {
-        background: #f9f9f9;
-    }
+    background: white
+    padding: 60px 20px;
+}
 
-    .reviews-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 40px;
+.reviews-section h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1a2a44;
+    text-align: center;
+    margin-bottom: 50px;
+    letter-spacing: 1px;
+}
+
+.reviews-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.review-card {
+    position: relative;
+    text-align: center;
+    padding: 30px 25px;
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    transition: all 0.4s ease;
+}
+
+.review-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin: 0 auto 15px;
+    border: 2px solid #ffffff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.review-card p {
+    font-family: 'Poppins', sans-serif;
+    height: 70px;
+    font-size: 1rem;
+    font-style: italic;
+    color: #4a4a4a;
+    margin-bottom: 15px;
+    line-height: 1.7;
+}
+
+.review-card span {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1a2a44;
+    letter-spacing: 0.5px;
+}
+
+.review-card .stars {
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+}
+
+.review-card .stars i {
+    font-size: 1.1rem;
+    color: #d4a017;
+    transition: transform 0.3s ease;
+}
+
+.review-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.review-card:hover .review-avatar {
+    transform: scale(1.15);
+}
+
+.review-card:hover .stars i {
+    transform: scale(1.2);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .reviews-section h2 {
+        font-size: 2rem;
     }
 
     .review-card {
-        text-align: center;
-        padding: 30px;
-        background: #ffffff;
-        border-radius: 12px;
-        border: 1px solid #e0e0e0;
-        transition: all 0.3s ease;
+        padding: 25px 20px;
+    }
+
+    .review-avatar {
+        width: 50px;
+        height: 50px;
     }
 
     .review-card p {
-        font-family: 'Georgia', serif;
-        font-size: 1.2rem;
-        font-style: italic;
-        color: #333333;
-        margin-bottom: 15px;
-        line-height: 1.6;
+        font-size: 0.9rem;
     }
 
     .review-card span {
         font-size: 1rem;
-        font-weight: 600;
-        color: rgb(0, 0, 0);
-        letter-spacing: 1px;
     }
-
-    .review-card .stars {
-        margin-top: 10px;
-        display: flex;
-        justify-content: center;
-        gap: 6px;
-    }
-
-    .review-card .stars i {
-        font-size: 1.3rem;
-        color: #ffd700;
-        transition: transform 0.3s ease;
-    }
-
-    .review-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-    }
-
-    .review-card:hover .stars i {
-        transform: scale(1.1);
-    }
+}
     .product-card .product-link{
         text-decoration: none;
         
@@ -434,7 +496,7 @@ $featured_collection = $conn->query("SELECT p.* FROM product p JOIN product_cate
     <div class="hero-content">
         <h1>Góc Sách Nhỏ</h1>
         <p>Khám phá thế giới tri thức</p>
-        <a href="?page=product" data-page="product" class="cta-btn">Khám phá ngay</a>
+        <a href="?page=product" data-page="product" class="cta-btn">Bộ sưu tập</a>
     </div>
 </section>
 
@@ -532,19 +594,40 @@ $featured_collection = $conn->query("SELECT p.* FROM product p JOIN product_cate
     <h2>Khách hàng nói gì</h2>
     <div class="reviews-grid">
         <div class="review-card">
-            <p>“Giao hàng nhanh, sách đẹp và chất lượng”</p>
-            <span>Anh da đen</span>
-            <div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+            <img src="../../../BackEnd/Uploads/xavier.jpg" alt="Xavier" class="review-avatar">
+            <p>“यह किताबों की दुकान बहुत विचारशील और सस्ती है।”</p>
+            <span>Xavier</span>
+            <div class="stars">
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+            </div>
         </div>
         <div class="review-card">
-            <p>“Nhiều sách hay, giá cả hợp lý.”</p>
-            <span>Trần B</span>
-            <div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-alt"></i></div>
+            <img src="../../../BackEnd/Uploads/trump.jpg" alt="Donal Trump" class="review-avatar">
+            <p>“Tôi sẽ giảm thuế để các bạn nhập hàng vào Mỹ”</p>
+            <span>Donal Trump</span>
+            <div class="stars">
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star-half-alt"></i>
+            </div>
         </div>
         <div class="review-card">
-            <p>“Trải nghiệm mua sắm tuyệt vời!”</p>
-            <span>Lê C</span>
-            <div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+            <img src="../../../BackEnd/Uploads/pnv.jpg" alt="Phạm Nhật Vượng" class="review-avatar">
+            <p>“Nhờ đọc sách ở đây mà tôi đã có thêm kinh nghiệm để thành lập ra Vingroup”</p>
+            <span>Phạm Nhật Vượng</span>
+            <div class="stars">
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+            </div>
         </div>
     </div>
 </section>

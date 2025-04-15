@@ -543,7 +543,7 @@ $avg_rating = $result_avg_rating->fetch_assoc()['avg_rating'];
             } else if (val > maxStock) {
                 this.value = maxStock;
                 document.getElementById('hidden-quantity').value = maxStock;
-                showWarning("Vượt quá số lượng tồn kho! Số lượng tối đa là " + maxStock);
+                showWarning("Vượt quá số lượng tồn kho! Hiện tại bạn chỉ có thể mua " + maxStock + " sản phẩm này thôi!");
             }
         });
 
@@ -556,7 +556,7 @@ $avg_rating = $result_avg_rating->fetch_assoc()['avg_rating'];
             
             setTimeout(() => {
                 warningBox.innerHTML = '';
-            }, 3000);
+            }, 3500);
         }
         document.getElementById("add-to-cart-form").addEventListener("submit", function (e) {
             e.preventDefault();
