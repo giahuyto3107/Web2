@@ -29,7 +29,7 @@ $featured_collection = $conn->query("SELECT p.* FROM product p JOIN product_cate
 
 <style>
     /* Hero Section */
-
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Georgia&display=swap');
     body {
         font-family: 'Poppins', sans-serif;
         margin: 0;
@@ -58,7 +58,7 @@ $featured_collection = $conn->query("SELECT p.* FROM product p JOIN product_cate
         width: 100%;
         height: 100%;
         object-fit: cover;
-        filter: brightness(0.95);
+        /* filter: brightness(0.95); */
     }
 
     .hero-content {
@@ -340,7 +340,9 @@ $featured_collection = $conn->query("SELECT p.* FROM product p JOIN product_cate
     }
 
     .collection-card .collection-info {
+        width: 87%;
         position: absolute;
+        height: 100px;
         bottom: 20px;
         left: 20px;
         padding: 15px;
@@ -491,7 +493,7 @@ $featured_collection = $conn->query("SELECT p.* FROM product p JOIN product_cate
 
 <section class="hero">
     <div class="hero-background">
-        <!-- <img src="../../../BackEnd/Uploads/Background.jpg" alt="Hero"> -->
+        <img src="../../../BackEnd/Uploads/Background1.png" alt="Hero">
     </div>
     <div class="hero-content">
         <h1>Góc Sách Nhỏ</h1>
@@ -500,22 +502,21 @@ $featured_collection = $conn->query("SELECT p.* FROM product p JOIN product_cate
     </div>
 </section>
 
-<section class="categories-section">
-    <div class="categories-bg">
-        <img src="../../../BackEnd/Uploads/Background1.jpg" alt="Background">
-    </div>
-    <h2>Danh mục phổ biến</h2>
-    <div class="categories-list">
-        <?php 
-        if ($categories && $categories->num_rows > 0) {
-            while ($category = $categories->fetch_assoc()): ?>
-                <a href="#" class="category-item"><?php echo htmlspecialchars($category['category_name']); ?></a>
-            <?php endwhile; 
-        } else {
-            echo "<p>Không có danh mục nào.</p>";
-        } ?>
-    </div>
-</section>
+<section class="py-16 bg-white">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-12 animate-fadeInUp">Danh Mục Phổ Biến</h2>
+            <div class="flex flex-wrap justify-center gap-6">
+                <?php 
+                if ($categories && $categories->num_rows > 0) {
+                    while ($category = $categories->fetch_assoc()): ?>
+                        <a href="#" class="px-6 py-3 bg-gray-100 text-gray-900 rounded-md text-lg font-medium hover:bg-gray-900 hover:text-white transition animate-fadeInUp"><?php echo htmlspecialchars($category['category_name']); ?></a>
+                    <?php endwhile; 
+                } else {
+                    echo "<p class='text-gray-600 text-center'>Không có danh mục nào.</p>";
+                } ?>
+            </div>
+        </div>
+    </section>
 
 <section class="products-section">
     <h2>Sách bán chạy</h2>

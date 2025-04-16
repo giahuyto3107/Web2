@@ -192,7 +192,7 @@ $user_id = $_SESSION['user_id'];
     <div class="container">
         <h1>Lịch Sử Mua Hàng</h1>
         <div class="filters">
-            <input type="text" class="form-control" id="search-input" placeholder="Tìm kiếm theo mã đơn hàng">
+            <input type="text" class="form-control" id="search-input1" placeholder="Tìm kiếm theo mã đơn hàng">
             <select class="form-select" id="status-filter">
                 <option value="">Tất cả trạng thái</option>
                 <option value="4">Đã duyệt</option>
@@ -268,7 +268,7 @@ $(document).ready(function(){
     let totalPages = 1;
 
     function loadPage(page){
-        let search = $('#search-input').val();
+        let search = $('#search-input1').val();
         let status = $('#status-filter').val();
 
         $.ajax({
@@ -344,7 +344,7 @@ $(document).ready(function(){
         });
     }
 
-    $("#search-input, #status-filter").on("change keyup", function() {
+    $("#search-input1, #status-filter").on("change keyup", function() {
         currentPage = 1;
         loadPage(currentPage);
     });
