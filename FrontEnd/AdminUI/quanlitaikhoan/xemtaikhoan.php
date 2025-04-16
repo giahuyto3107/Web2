@@ -23,6 +23,10 @@
             <p id="modal-view-full-name">N/A</p>
         </div>
         <div class="view-content">
+            <span>Địa chỉ</span>
+            <p id="modal-view-address">N/A</p>
+        </div>
+        <div class="view-content">
             <span>Chức vụ</span>
             <p id="modal-view-role-id">N/A</p>
         </div>

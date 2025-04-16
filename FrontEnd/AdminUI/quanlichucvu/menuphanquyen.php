@@ -22,57 +22,77 @@
 </dialog>
 
 <style>
+/* Current Permissions Section */
 .current-permissions-section {
-    margin-bottom: 20px;
-    padding: 15px;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
     background-color: #f8f9fa;
-    border-radius: 5px;
-    border: 1px solid #e9ecef;
+    border-radius: 0.25rem;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .current-permissions-section h3 {
     margin-top: 0;
-    margin-bottom: 10px;
-    font-size: 16px;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
     color: #495057;
 }
 
 .current-permissions-list {
     max-height: 200px;
     overflow-y: auto;
+    padding-right: 0.5rem;
 }
 
+/* Permission Item */
 .permission-item {
-    margin-bottom: 8px;
-    padding: 8px;
+    margin-bottom: 0.5rem;
+    padding: 0.5rem;
     background-color: #fff;
-    border-radius: 4px;
-    border: 1px solid #e9ecef;
+    border-radius: 0.25rem;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    transition: background-color 0.2s ease;
+}
+
+.permission-item:hover {
+    background-color: rgba(0, 123, 255, 0.05);
 }
 
 .permission-name {
-    font-weight: bold;
-    margin-bottom: 5px;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: #333;
+    font-size: 0.9rem;
 }
 
 .permission-actions {
     display: flex;
     flex-wrap: wrap;
-    gap: 5px;
+    gap: 0.25rem;
 }
 
+/* Action Tag */
 .action-tag {
     display: inline-block;
-    padding: 2px 8px;
+    padding: 0.25rem 0.5rem;
     background-color: #e9ecef;
     border-radius: 12px;
-    font-size: 12px;
+    font-size: 0.75rem;
     color: #495057;
+    transition: background-color 0.2s ease;
 }
 
-/* Styles for checkboxes */
+.action-tag:hover {
+    background-color: #dee2e6;
+}
+
+/* Styles for Checkboxes */
 .permission-checkbox {
-    margin-right: 5px;
+    margin-right: 0.25rem;
+    vertical-align: middle;
 }
 
 .permission-checkbox:disabled {
@@ -82,6 +102,25 @@
 
 .permission-checkbox:disabled + label {
     color: #adb5bd;
+    cursor: not-allowed;
+}
+
+/* Checkbox Label */
+.permission-checkbox + label {
+    font-weight: 500;
+    color: #333;
+    font-size: 0.9rem;
+    vertical-align: middle;
+}
+
+/* Permission Modal */
+#permission-modal {
+    max-width: 64rem; /* Thiết lập max-width theo yêu cầu */
+    width: 100%; /* Đảm bảo modal không vượt quá max-width */
+    border: none; /* Loại bỏ viền mặc định của dialog */
+    border-radius: 0.5rem; /* Đồng bộ với modal-content trong admin.css */
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15); /* Đồng bộ với modal-content trong admin.css */
+    background-color: white; /* Đảm bảo nền trắng */
 }
 </style>
 
@@ -92,7 +131,7 @@ function displayCurrentPermissions(roleId) {
     currentPermissionsList.innerHTML = '<p>Đang tải quyền hiện tại...</p>';
     
     // Fetch current permissions for the role
-    fetch(`../../BackEnd/Model/quanlichucvu/fetch_chucvu_phanquyen.php?role_id=${roleId}`)
+    fetch(`quanlichucvu/fetch_chucvu_phanquyen.php?role_id=${roleId}`)
         .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);

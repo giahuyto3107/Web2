@@ -13,7 +13,7 @@ if ($role_id <= 0) {
 }
 
 // Lấy danh sách quyền đã gán cho chức vụ
-$sql = "SELECT permission_id FROM role_permission WHERE role_id = ?";
+$sql = "SELECT permission_id, action FROM role_permission WHERE role_id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $role_id);
 $stmt->execute();

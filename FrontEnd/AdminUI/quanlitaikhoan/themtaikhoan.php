@@ -28,18 +28,14 @@
                 <p class="modal-error" id="modal-add-full-name-error"></p>
             </div>
             <div class="modal-input">
+                <span>Địa chỉ</span>
+                <input type="text" id="modal-add-address" name="address" required />
+                <p class="modal-error" id="modal-add-address-error"></p>
+            </div>
+            <div class="modal-input">
                 <span>Chức vụ</span>
                 <select id="modal-add-role-id" name="role_id" required>
-                    <?php
-                    // Lấy danh sách chức vụ từ bảng role
-                    include("../../../BackEnd/Config/config.php");
-                    $sql_roles = "SELECT id, role_name FROM role WHERE status_id != 6";
-                    $query_roles = mysqli_query($conn, $sql_roles);
-                    while ($role = mysqli_fetch_assoc($query_roles)) {
-                        echo "<option value='{$role['id']}'>{$role['role_name']}</option>";
-                    }
-                    mysqli_close($conn);
-                    ?>
+                    <option value="">Chọn chức vụ</option>
                 </select>
                 <p class="modal-error" id="modal-add-role-id-error"></p>
             </div>
@@ -60,6 +56,7 @@
                 <span>Ảnh đại diện</span>
                 <input type="file" id="modal-add-profile-picture" name="profile_picture" accept="image/*" />
                 <p class="modal-error" id="modal-add-profile-picture-error"></p>
+                <img id="modal-add-profile-picture-preview" style="display: none; max-width: 100px; margin-top: 10px;" alt="Preview">
             </div>
             <div class="modal-buttons">
                 <button class="close" id="add-close-button">Hủy</button>

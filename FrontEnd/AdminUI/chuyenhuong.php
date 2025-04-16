@@ -29,7 +29,7 @@
     }elseif ($action === 'quanlichungloai') {
         include "quanlichungloai/lietkechungloai.php";
      } else {
-        include "thongke/thongke.php"; // Include thongke.php làm nội dung mặc định
+        include "trangchu.php"; // Mặc định hiển thị danh sách sản phẩm
     }
     ?>
 </main>

@@ -24,9 +24,14 @@
                 <p class="modal-error" id="modal-edit-full-name-error"></p>
             </div>
             <div class="modal-input">
+                <span>Địa chỉ</span>
+                <input type="text" id="modal-edit-address" name="address" required />
+                <p class="modal-error" id="modal-edit-address-error"></p>
+            </div>
+            <div class="modal-input">
                 <span>Chức vụ</span>
                 <select id="modal-edit-role-id" name="role_id" required>
-
+                    <option value="">Chọn chức vụ</option>
                 </select>
                 <p class="modal-error" id="modal-edit-role-id-error"></p>
             </div>
@@ -47,6 +52,7 @@
                 <span>Ảnh đại diện</span>
                 <input type="file" id="modal-edit-profile-picture" name="profile_picture" accept="image/*" />
                 <p class="modal-error" id="modal-edit-profile-picture-error"></p>
+                <img id="modal-edit-profile-picture-preview" style="display: none; max-width: 100px; margin-top: 10px;" alt="Preview">
             </div>
             <div class="modal-buttons">
                 <button class="close" id="edit-close-button">Hủy</button>

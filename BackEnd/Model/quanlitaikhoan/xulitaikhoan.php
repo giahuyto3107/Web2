@@ -7,6 +7,7 @@ $account_id = $_POST['account_id'] ?? null;
 $account_name = trim($_POST['account_name'] ?? '');
 $email = trim($_POST['email'] ?? '');
 $full_name = trim($_POST['full_name'] ?? '');
+$address = trim($_POST['address'] ?? ''); // Thêm trường address
 $role_id = (int)($_POST['role_id'] ?? 0);
 $status_id = (int)($_POST['status_id'] ?? 1);
 $password = $_POST['password'] ?? null;
@@ -119,11 +120,11 @@ if ($account_id) {
         $stmt_account = $conn->prepare($sql_account);
         $stmt_account->bind_param("ssiii", $account_name, $email, $role_id, $status_id, $account_id);
 
-        // Cập nhật bảng user
-        $sql_user = "UPDATE user SET full_name = ?, date_of_birth = ?, profile_picture = ?, updated_at = NOW() WHERE account_id = ?";
+        // Cập nhật bảng user (bao gồm address)
+        $sql_user = "UPDATE user SET full_name = ?, address = ?, date_of_birth = ?, profile_picture = ?, updated_at = NOW() WHERE account_id = ?";
         $stmt_user = $conn->prepare($sql_user);
         $date_of_birth = $date_of_birth ?: null; // Nếu không có ngày sinh, đặt là NULL
-        $stmt_user->bind_param("sssi", $full_name, $date_of_birth, $profile_picture, $account_id);
+        $stmt_user->bind_param("ssssi", $full_name, $address, $date_of_birth, $profile_picture, $account_id);
 
         // Thực thi cả hai truy vấn
         $conn->begin_transaction();
@@ -223,12 +224,12 @@ if ($account_id) {
             // Lấy account_id vừa thêm
             $new_account_id = $conn->insert_id;
 
-            // Thêm thông tin vào bảng user
-            $sql_user = "INSERT INTO user (full_name, account_id, profile_picture, date_of_birth, created_at, updated_at) 
-                         VALUES (?, ?, ?, ?, NOW(), NOW())";
+            // Thêm thông tin vào bảng user (bao gồm address)
+            $sql_user = "INSERT INTO user (full_name, address, account_id, profile_picture, date_of_birth, created_at, updated_at) 
+                         VALUES (?, ?, ?, ?, ?, NOW(), NOW())";
             $stmt_user = $conn->prepare($sql_user);
             $date_of_birth = $date_of_birth ?: null; // Nếu không có ngày sinh, đặt là NULL
-            $stmt_user->bind_param("siss", $full_name, $new_account_id, $profile_picture, $date_of_birth);
+            $stmt_user->bind_param("ssiss", $full_name, $address, $new_account_id, $profile_picture, $date_of_birth);
 
             if ($stmt_user->execute()) {
                 $conn->commit();

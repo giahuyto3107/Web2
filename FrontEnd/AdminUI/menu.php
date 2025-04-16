@@ -1,18 +1,65 @@
 <head>
-<link rel="stylesheet" href="css/sidebar.css" />
+    <link rel="stylesheet" href="css/sidebar.css" />
 </head>
+<?php
+include '../../BackEnd/Config/config.php';
+
+// Kiểm tra xem $conn có phải là đối tượng mysqli không
+if (!isset($conn) || !($conn instanceof mysqli)) {
+    die("Lỗi: Không thể kết nối đến cơ sở dữ liệu. Vui lòng kiểm tra file config.php hoặc đường dẫn include.");
+}
+
+// Kiểm tra lỗi kết nối
+if ($conn->connect_error) {
+    die("Lỗi kết nối cơ sở dữ liệu: " . $conn->connect_error);
+}
+
+// Lấy thông tin người dùng từ session
+$userId = isset($_SESSION['user_id']) ? intval($_SESSION['user_id']) : 0;
+$userEmail = isset($_SESSION['user_email']) ? htmlspecialchars($_SESSION['user_email']) : 'No email';
+$fullName = 'Guest'; // Giá trị mặc định
+$profilePicture = '/Web2/BackEnd/Uploads/Profile Picture/default.jpg'; // Ảnh mặc định
+
+// Lấy full_name và profile_picture từ bảng user
+if ($userId > 0) {
+    $sql = "SELECT u.full_name, u.profile_picture 
+            FROM user u 
+            WHERE u.account_id = ?";
+    $stmt = $conn->prepare($sql);
+    if ($stmt === false) {
+        die("Lỗi chuẩn bị truy vấn: " . $conn->error);
+    }
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    if ($result->num_rows === 1) {
+        $user = $result->fetch_assoc();
+        $fullName = !empty($user['full_name']) ? htmlspecialchars($user['full_name']) : 'Guest';
+        if (!empty($user['profile_picture'])) {
+            $profilePicture = "/Web2/BackEnd/Uploads/Profile Picture/" . htmlspecialchars($user['profile_picture']);
+        }
+    } else {
+        error_log("Không tìm thấy user với account_id: $userId");
+    }
+    $stmt->close();
+}
+
+$conn->close();
+?>
+
 <div class="sidebar">
     <div class="top">
         <div class="logo">
-            <span>Product Management</span>
+            <span>Điện Thoại Nhỏ</span>
         </div>
         <i class="bx bx-menu" id="sidebar-menu-btn"></i>
     </div>
     <div class="user">
-        <i class="bx bxs-user-rectangle user-img"></i>
+        <img src="<?php echo $profilePicture; ?>" alt="User Avatar" class="user-img" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
         <div class="user-info">
-            <p class="bold" id="sidebar-username"></p>
-            <p id="sidebar-user-email"></p>
+            <p class="bold" id="sidebar-username"><?php echo $fullName; ?></p>
+            <p id="sidebar-user-email"><?php echo $userEmail; ?></p>
         </div>
     </div>
     <ul>
