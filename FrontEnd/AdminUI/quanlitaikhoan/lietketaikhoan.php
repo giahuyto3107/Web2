@@ -20,6 +20,7 @@
           <option value="account_name">Tên tài khoản</option>
           <option value="email">Email</option>
           <option value="full_name">Họ tên</option>
+          <option value="address">Địa chỉ</option>
           <option value="role_id">Chức vụ</option>
           <option value="status_id">Trạng thái</option>
         </select>
@@ -50,6 +51,7 @@
           <th data-id="account_name">Tên tài khoản</th>
           <th data-id="email">Email</th>
           <th data-id="full_name">Họ tên</th>
+          <th data-id="address">Địa chỉ</th>
           <th data-id="role_id">Chức vụ</th>
           <th data-id="status_id">Trạng thái</th>
           <th class="actionsTH">Actions</th>
@@ -64,6 +66,7 @@
   document.addEventListener('DOMContentLoaded', function() {
     // Biến toàn cục
     let accounts = []; // Dữ liệu gốc, không thay đổi
+    let roles = []; // Danh sách chức vụ
 
     // Hàm chuyển status_id thành văn bản
     function getStatusText(statusId) {
@@ -74,6 +77,31 @@
       }
     }
 
+    // Hàm điền danh sách chức vụ vào dropdown
+    function populateRoleDropdown() {
+      const addRoleSelect = document.getElementById('modal-add-role-id');
+      const editRoleSelect = document.getElementById('modal-edit-role-id');
+
+      if (addRoleSelect) {
+        addRoleSelect.innerHTML = '<option value="">Chọn chức vụ</option>';
+        roles.forEach(role => {
+          const option = document.createElement('option');
+          option.value = role.id;
+          option.textContent = role.role_name;
+          addRoleSelect.appendChild(option);
+        });
+      }
+
+      if (editRoleSelect) {
+        editRoleSelect.innerHTML = '<option value="">Chọn chức vụ</option>';
+        roles.forEach(role => {
+          const option = document.createElement('option');
+          option.value = role.id;
+          option.textContent = role.role_name;
+          editRoleSelect.appendChild(option);
+        });
+      }
+    }
 
     // Hàm thêm sự kiện lọc và tìm kiếm
     function addFilterEventListener() {
@@ -132,6 +160,7 @@
             <td>${account.account_name || 'N/A'}</td>
             <td>${account.email || 'N/A'}</td>
             <td>${account.full_name || 'N/A'}</td>
+            <td>${account.address || 'N/A'}</td>
             <td>${account.role_name}</td>
             <td>${getStatusText(account.account_status_id)}</td>
             <td class="actions">
@@ -149,11 +178,27 @@
         });
       } else {
         noProductsEl.style.display = 'flex';
-        tableBody.innerHTML = '<tr><td colspan="7">Không tìm thấy tài khoản nào.</td></tr>';
+        tableBody.innerHTML = '<tr><td colspan="8">Không tìm thấy tài khoản nào.</td></tr>';
       }
     }
 
-    // Fetch dữ liệu ban đầu từ server
+    // Fetch danh sách chức vụ từ server
+    fetch('quanlichucvu/fetch_chucvu.php')
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === 'success') {
+          roles = data.data;
+          console.log('Initial roles:', roles);
+          populateRoleDropdown();
+        } else {
+          console.error('Error fetching roles:', data.message);
+        }
+      })
+      .catch(error => {
+        console.error('Fetch roles error:', error);
+      });
+
+    // Fetch dữ liệu tài khoản ban đầu từ server
     fetch('quanlitaikhoan/fetch_taikhoan.php')
       .then(response => response.json())
       .then(data => {
@@ -164,12 +209,12 @@
           addFilterEventListener();
         } else {
           console.error('Error:', data.message);
-          document.getElementById('table-body').innerHTML = '<tr><td colspan="7">Lỗi khi tải danh sách tài khoản.</td></tr>';
+          document.getElementById('table-body').innerHTML = '<tr><td colspan="8">Lỗi khi tải danh sách tài khoản.</td></tr>';
         }
       })
       .catch(error => {
         console.error('Fetch error:', error);
-        document.getElementById('table-body').innerHTML = '<tr><td colspan="7">Lỗi khi tải danh sách tài khoản.</td></tr>';
+        document.getElementById('table-body').innerHTML = '<tr><td colspan="8">Lỗi khi tải danh sách tài khoản.</td></tr>';
       });
 
     // Sử dụng event delegation để xử lý các hành động
@@ -188,31 +233,61 @@
 
       if (target.classList.contains('viewAccount')) {
         const viewModalEl = document.getElementById("view-modal");
-        addModalData(viewModalEl, account, "innerHTML");
-        viewModalEl.showModal();
+        if (viewModalEl) {
+          addModalData(viewModalEl, account, "innerHTML");
+          viewModalEl.showModal();
+        } else {
+          console.error('View modal with id "view-modal" not found in DOM!');
+        }
       } else if (target.classList.contains('editAccount')) {
         const editModalEl = document.getElementById("edit-modal");
-        openEditModal(account);
+        if (editModalEl) {
+          openEditModal(account);
+        } else {
+          console.error('Edit modal with id "edit-modal" not found in DOM!');
+        }
       } else if (target.classList.contains('deleteAccount')) {
         const deleteModalEl = document.getElementById("delete-modal");
-        deleteModalEl.setAttribute("data-account-id", accountId);
-        deleteModalEl.showModal();
+        if (deleteModalEl) {
+          deleteModalEl.setAttribute("data-account-id", accountId);
+          deleteModalEl.showModal();
+        } else {
+          console.error('Delete modal with id "delete-modal" not found in DOM!');
+        }
       }
     });
 
     // Hàm mở modal chỉnh sửa
     function openEditModal(account) {
-      console.log('account.status_id:', account.status_id, 'type:', typeof account.status_id);
       const editModal = document.getElementById('edit-modal');
       const form = document.getElementById('modal-edit-form');
+
+      if (!editModal || !form) {
+        console.error('Edit modal or form not found!');
+        return;
+      }
 
       document.getElementById('modal-edit-account-id').value = account.account_id;
       document.getElementById('modal-edit-account-name').value = account.account_name || '';
       document.getElementById('modal-edit-email').value = account.email || '';
       document.getElementById('modal-edit-full-name').value = account.full_name || '';
+      document.getElementById('modal-edit-address').value = account.address || '';
       document.getElementById('modal-edit-role-id').value = account.role_id;
       document.getElementById('modal-edit-status').value = account.account_status_id;
       document.getElementById('modal-edit-date-of-birth').value = account.date_of_birth || '';
+
+      // Hiển thị ảnh hiện tại (nếu có)
+      const previewImg = document.getElementById('modal-edit-profile-picture-preview');
+      const profilePicture = account.profile_picture ? `/Web2/BackEnd/Uploads/Profile Picture/${account.profile_picture}` : '';
+      if (previewImg) {
+        if (profilePicture) {
+          previewImg.src = profilePicture;
+          previewImg.style.display = 'block';
+        } else {
+          previewImg.src = '';
+          previewImg.style.display = 'none';
+        }
+      }
 
       clearFormErrors(form);
       form.removeEventListener('submit', handleEditSubmit);
@@ -354,7 +429,9 @@
               accounts = data.data;
               renderTable(accounts);
               const deleteModalEl = document.getElementById('delete-modal');
-              deleteModalEl.close();
+              if (deleteModalEl) {
+                deleteModalEl.close();
+              }
               const successMessage = document.getElementById('success-message');
               successMessage.querySelector('.success-text p').textContent = result.message || 'Tài khoản đã được đánh dấu xóa';
               successMessage.style.display = 'block';
@@ -389,11 +466,19 @@
 
     // Event listener cho nút xóa trong delete-modal
     const deleteModalEl = document.getElementById('delete-modal');
-    const deleteDeleteButton = deleteModalEl.querySelector('#delete-delete-button');
-    deleteDeleteButton.addEventListener('click', () => {
-      const accountId = parseInt(deleteModalEl.getAttribute('data-account-id'));
-      deleteAccount(accountId);
-    });
+    if (deleteModalEl) {
+      const deleteDeleteButton = deleteModalEl.querySelector('#delete-delete-button');
+      if (deleteDeleteButton) {
+        deleteDeleteButton.addEventListener('click', () => {
+          const accountId = parseInt(deleteModalEl.getAttribute('data-account-id'));
+          deleteAccount(accountId);
+        });
+      } else {
+        console.error('Delete button with id "delete-delete-button" not found in delete-modal!');
+      }
+    } else {
+      console.error('Delete modal with id "delete-modal" not found in DOM!');
+    }
 
     // Hàm xử lý modal Add
     function addViewAccountModalEventListener() {
@@ -401,6 +486,11 @@
       const formEl = document.getElementById("modal-add-form");
       const addCloseButton = addAccountModal.querySelector("#add-close-button");
       const addAccountToolbar = document.querySelector("#add-product-toolbar");
+
+      if (!addAccountModal || !formEl || !addCloseButton || !addAccountToolbar) {
+        console.error('Required elements for add modal not found!');
+        return;
+      }
 
       addAccountToolbar.addEventListener("click", () => {
         addAccountModal.showModal();
@@ -468,14 +558,22 @@
         }
 
         if (input.id === 'modal-edit-full-name') {
-          if (!/^[a-zA-Z\s-]+$/.test(value)) {
+          if (!/^[\p{L}\s]+$/u.test(value)) {
             isError = true;
             input.style.border = '1px solid var(--clr-error)';
-            if (errorEl) errorEl.textContent = 'Họ tên chỉ chứa chữ cái, khoảng trắng, và dấu gạch ngang';
+            if (errorEl) errorEl.textContent = 'Họ tên chỉ chứa chữ cái tiếng Việt và khoảng trắng (VD: Nguyễn Văn A)';
           } else if (value.length > 100) {
             isError = true;
             input.style.border = '1px solid var(--clr-error)';
             if (errorEl) errorEl.textContent = 'Họ tên không được vượt quá 100 ký tự';
+          }
+        }
+
+        if (input.id === 'modal-edit-address') {
+          if (value.length > 100) {
+            isError = true;
+            input.style.border = '1px solid var(--clr-error)';
+            if (errorEl) errorEl.textContent = 'Địa chỉ không được vượt quá 100 ký tự';
           }
         }
 
@@ -486,6 +584,14 @@
             isError = true;
             input.style.border = '1px solid var(--clr-error)';
             if (errorEl) errorEl.textContent = 'Ngày sinh phải trước ngày hiện tại';
+          }
+        }
+
+        if (input.id === 'modal-edit-role-id') {
+          if (!roles.some(role => role.id === value)) {
+            isError = true;
+            input.style.border = '1px solid var(--clr-error)';
+            if (errorEl) errorEl.textContent = 'Vui lòng chọn một chức vụ hợp lệ!';
           }
         }
       });
@@ -532,14 +638,22 @@
         }
 
         if (input.id === 'modal-add-full-name') {
-          if (!/^[a-zA-Z\s-]+$/.test(value)) {
+          if (!/^[\p{L}\s]+$/u.test(value)) {
             isError = true;
             input.style.border = '1px solid var(--clr-error)';
-            if (errorEl) errorEl.textContent = 'Họ tên chỉ chứa chữ cái, khoảng trắng, và dấu gạch ngang';
+            if (errorEl) errorEl.textContent = 'Họ tên chỉ chứa chữ cái tiếng Việt và khoảng trắng (VD: Nguyễn Văn A)';
           } else if (value.length > 100) {
             isError = true;
             input.style.border = '1px solid var(--clr-error)';
             if (errorEl) errorEl.textContent = 'Họ tên không được vượt quá 100 ký tự';
+          }
+        }
+
+        if (input.id === 'modal-add-address') {
+          if (value.length > 100) {
+            isError = true;
+            input.style.border = '1px solid var(--clr-error)';
+            if (errorEl) errorEl.textContent = 'Địa chỉ không được vượt quá 100 ký tự';
           }
         }
 
@@ -560,6 +674,14 @@
             if (errorEl) errorEl.textContent = 'Mật khẩu phải có ít nhất 6 ký tự';
           }
         }
+
+        if (input.id === 'modal-add-role-id') {
+          if (!roles.some(role => role.id === value)) {
+            isError = true;
+            input.style.border = '1px solid var(--clr-error)';
+            if (errorEl) errorEl.textContent = 'Vui lòng chọn một chức vụ hợp lệ!';
+          }
+        }
       });
 
       return isError;
@@ -572,12 +694,14 @@
         modalEl.querySelector("#modal-view-account-name").textContent = account.account_name || 'N/A';
         modalEl.querySelector("#modal-view-email").textContent = account.email || 'N/A';
         modalEl.querySelector("#modal-view-full-name").textContent = account.full_name || 'N/A';
+        modalEl.querySelector("#modal-view-address").textContent = account.address || 'N/A';
         modalEl.querySelector("#modal-view-role-id").textContent = account.role_name;
         modalEl.querySelector("#modal-view-status-id").textContent = getStatusText(account.account_status_id);
         modalEl.querySelector("#modal-view-date-of-birth").textContent = account.date_of_birth || 'N/A';
         const profilePicture = account.profile_picture ? `/Web2/BackEnd/Uploads/Profile Picture/${account.profile_picture}` : 'default.jpg';
         modalEl.querySelector("#modal-view-profile-picture").src = profilePicture;
-
+        modalEl.querySelector("#modal-view-created-at").textContent = account.account_created_at || 'N/A';
+        modalEl.querySelector("#modal-view-updated-at").textContent = account.account_updated_at || 'N/A';
       }
     }
 
@@ -593,6 +717,7 @@
             const formEl = modalEl.querySelector('form.modal-form');
             if (formEl) {
               clearFormErrors(formEl);
+              resetImagePreview(modalId);
             }
           }
         }
@@ -611,8 +736,77 @@
         const formEl = modalEl.querySelector('form.modal-form');
         if (formEl) {
           clearFormErrors(formEl);
+          resetImagePreview(modalEl.id);
         }
       });
+    }
+
+    // Hàm reset ảnh preview
+    function resetImagePreview(modalId) {
+      let previewImg;
+      if (modalId === 'add-modal') {
+        previewImg = document.getElementById('modal-add-profile-picture-preview');
+      } else if (modalId === 'edit-modal') {
+        previewImg = document.getElementById('modal-edit-profile-picture-preview');
+      }
+
+      if (previewImg) {
+        previewImg.src = '';
+        previewImg.style.display = 'none';
+      }
+
+      // Reset input file
+      const fileInput = modalId === 'add-modal' 
+        ? document.getElementById('modal-add-profile-picture')
+        : document.getElementById('modal-edit-profile-picture');
+      if (fileInput) {
+        fileInput.value = ''; // Xóa giá trị input file
+      }
+    }
+
+    // Thêm sự kiện preview ảnh
+    function addImagePreviewListeners() {
+      // Preview ảnh cho modal thêm
+      const addFileInput = document.getElementById('modal-add-profile-picture');
+      const addPreviewImg = document.getElementById('modal-add-profile-picture-preview');
+
+      if (addFileInput && addPreviewImg) {
+        addFileInput.addEventListener('change', (e) => {
+          const file = e.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+              addPreviewImg.src = event.target.result;
+              addPreviewImg.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+          } else {
+            addPreviewImg.src = '';
+            addPreviewImg.style.display = 'none';
+          }
+        });
+      }
+
+      // Preview ảnh cho modal sửa
+      const editFileInput = document.getElementById('modal-edit-profile-picture');
+      const editPreviewImg = document.getElementById('modal-edit-profile-picture-preview');
+
+      if (editFileInput && editPreviewImg) {
+        editFileInput.addEventListener('change', (e) => {
+          const file = e.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+              editPreviewImg.src = event.target.result;
+              editPreviewImg.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+          } else {
+            editPreviewImg.src = '';
+            editPreviewImg.style.display = 'none';
+          }
+        });
+      }
     }
 
     // Gọi hàm để thêm sự kiện
@@ -626,6 +820,9 @@
     if (viewModal) addModalCancelButtonEventListener(viewModal);
     const deleteModal = document.getElementById('delete-modal');
     if (deleteModal) addModalCancelButtonEventListener(deleteModal);
+
+    // Thêm sự kiện preview ảnh
+    addImagePreviewListeners();
   });
   </script>
 </div>

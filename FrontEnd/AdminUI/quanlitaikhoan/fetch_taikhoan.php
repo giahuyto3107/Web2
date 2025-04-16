@@ -8,7 +8,7 @@ header('Content-Type: application/json');
 $sql = "
     SELECT a.account_id, a.account_name, a.email, a.status_id AS account_status_id, a.role_id, 
            a.last_login, a.created_at AS account_created_at, a.updated_at AS account_updated_at,
-           u.full_name, u.profile_picture, u.date_of_birth, 
+           u.full_name, u.address, u.profile_picture, u.date_of_birth, 
            u.created_at AS user_created_at, u.updated_at AS user_updated_at,
            r.id AS role_id, r.role_name, r.role_description, r.status_id AS role_status_id,
            s.id AS status_id, s.status_name, s.status_description
@@ -37,6 +37,7 @@ while ($row = mysqli_fetch_assoc($result)) {
         'account_created_at' => $row['account_created_at'],
         'account_updated_at' => $row['account_updated_at'],
         'full_name' => $row['full_name'],
+        'address' => $row['address'], // Thêm trường address
         'profile_picture' => $row['profile_picture'],
         'date_of_birth' => $row['date_of_birth'],
         'user_created_at' => $row['user_created_at'],
