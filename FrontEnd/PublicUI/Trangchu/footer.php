@@ -73,245 +73,400 @@
 
 <style>
     /* Footer Styles */
-    footer {
-        margin-top:20px;
-        background: #111111; /* Nền đen đồng bộ với header */
-        color: #ffffff; /* Chữ trắng */
-        padding: 40px 0 20px;
-        width: 100%;
-    }
+footer {
+    margin-top: 20px;
+    background: #111111;
+    color: #ffffff;
+    padding: 40px 0 20px;
+    width: 100%;
+}
 
+.row1 {
+    width: 85%;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap; /* Cho phép wrap khi màn hình nhỏ */
+}
+
+.col {
+    flex-basis: 20%;
+    padding: 10px;
+}
+
+.smaller-col {
+    flex-basis: 15%;
+}
+
+.smallest-col {
+    flex-basis: 10%;
+}
+
+.biggest-col {
+    flex-basis: 25%;
+}
+
+.logo a {
+    text-decoration: none;
+}
+
+ul {
+    padding-left: 0;
+}
+
+.logo span {
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.col p {
+    font-size: 0.9rem;
+    font-weight: 300;
+    color: #ffffff;
+    margin-top: 15px;
+}
+
+.col h3 {
+    font-size: 1rem;
+    font-weight: 400;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    position: relative;
+    margin-bottom: 25px;
+}
+
+.underline {
+    width: 40px;
+    height: 1px;
+    background: #cccccc;
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+}
+
+.underline span {
+    display: none;
+}
+
+.email-id {
+    font-size: 0.9rem;
+    color: #ffffff;
+    border-bottom: 1px solid #cccccc;
+    padding-bottom: 2px;
+}
+
+h4 {
+    font-size: 0.9rem;
+    font-weight: 300;
+    color: #ffffff;
+    margin-top: 5px;
+}
+
+ul {
+    list-style: none;
+}
+
+ul li {
+    margin-bottom: 10px;
+    border: none !important;
+}
+
+ul li a {
+    font-size: 0.9rem;
+    font-weight: 300;
+    color: #ffffff;
+    text-decoration: none;
+    transition: color 0.3s ease;
+    border: none !important;
+}
+
+ul li a:hover {
+    color: #cccccc;
+}
+
+ul li a strong {
+    font-weight: 400;
+}
+
+.box-two__call .list-link li {
+    margin-bottom: 15px;
+}
+
+.payment-methods {
+    margin-top: 20px;
+}
+
+.payment-methods .title {
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: #ffffff;
+    margin-bottom: 15px;
+}
+
+.payment-methods .list-link {
+    display: flex;
+    gap: 10px;
+}
+
+.payment-methods .link {
+    flex: 1;
+    text-align: center;
+}
+
+.border {
+    border-width: 0px;
+}
+
+.payment-methods img {
+    width: 50px;
+    height: auto;
+    border-radius: 4px;
+    transition: border-color 0.3s ease;
+}
+
+footer form {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #cccccc;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+}
+
+footer form .fa-envelope {
+    font-size: 16px;
+    color: #ffffff;
+    margin-right: 10px;
+}
+
+footer form input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 0.9rem;
+    font-weight: 300;
+    color: #ffffff;
+}
+
+footer form input::placeholder {
+    color: #cccccc;
+}
+
+footer form button {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+footer form .fa-arrow-right {
+    font-size: 16px;
+    color: #ffffff;
+    transition: color 0.3s ease;
+}
+
+footer form button:hover .fa-arrow-right {
+    color: #cccccc;
+}
+
+.social-icons {
+    display: flex;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.social-icons a {
+    text-decoration: none;
+}
+
+.social-icons .fa-brands {
+    font-size: 20px;
+    color: #ffffff;
+    transition: color 0.3s ease;
+}
+
+.social-icons .fa-brands:hover {
+    color: #cccccc;
+}
+
+hr {
+    width: 90%;
+    border: none;
+    border-bottom: 1px solid #cccccc;
+    margin: 30px auto;
+    opacity: 0.5;
+}
+
+.copyright {
+    text-align: center;
+    font-size: 0.9rem;
+    font-weight: 300;
+    color: #ffffff;
+}
+
+.copyright span {
+    color: #ffffff;
+    font-weight: 400;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
     .row1 {
-        width: 85%;
-        margin: 0 auto;
-        display: flex;
-        justify-content: space-between;
+        width: 90%;
     }
 
-    .col {
-        flex-basis: 20%;
-        padding: 10px;
-    }
-
-    .smaller-col {
-        flex-basis: 15%;
-    }
-
-    .smallest-col{
-        flex-basis: 10%;
-    }
-
-    .biggest-col{
-        flex-basis: 25%;
-    }
-
-    .logo a {
-        text-decoration: none;
-    }
-
-    ul{
-        padding-left: 0rem;
+    .col, .smaller-col, .smallest-col, .biggest-col {
+        flex-basis: 50%; /* 2 cột trên tablet */
+        margin-bottom: 20px;
     }
 
     .logo span {
-        font-size: 1.5rem;
-        font-weight: 400;
-        color: #ffffff; /* Trắng */
-        text-transform: uppercase;
-        letter-spacing: 2px;
-    }
-
-    .col p {
-        font-size: 0.9rem;
-        font-weight: 300;
-        color: #ffffff;
-        margin-top: 15px;
+        font-size: 1.4rem;
     }
 
     .col h3 {
-        font-size: 1rem;
-        font-weight: 400;
-        color: #ffffff;
-        text-transform: uppercase;
-        letter-spacing: 1.5px;
-        position: relative;
-        margin-bottom: 25px;
+        font-size: 0.95rem;
     }
 
-    .underline {
-        width: 40px;
-        height: 1px;
-        background: #cccccc; /* Xám nhạt đồng bộ */
-        position: absolute;
-        bottom: -8px;
-        left: 0;
-    }
-
-    .underline span {
-        display: none; /* Loại bỏ animation để tối giản */
-    }
-
-    .email-id {
-        font-size: 0.9rem;
-        color: #ffffff;
-        border-bottom: 1px solid #cccccc; /* Xám nhạt */
-        padding-bottom: 2px;
-    }
-
-    h4 {
-        font-size: 0.9rem;
-        font-weight: 300;
-        color: #ffffff;
-        margin-top: 5px;
-    }
-
-    ul {
-        list-style: none;
-    }
-
-    ul li {
-        margin-bottom: 10px;
-        border: none !important;
-    }
-
-    ul li a {
-        font-size: 0.9rem;
-        font-weight: 300;
-        color: #ffffff;
-        text-decoration: none;
-        transition: color 0.3s ease;
-        border: none !important;
-    }
-
-    ul li a:hover {
-        color: #cccccc; /* Xám nhạt khi hover */
-    }
-
-    ul li a strong {
-        font-weight: 400; /* Nhấn mạnh nhẹ */
-    }
-
-    .box-two__call .list-link li {
-        margin-bottom: 15px;
-    }
-
-    .payment-methods {
-        margin-top: 20px;
-    }
-
-    .payment-methods .title {
-        font-size: 0.9rem;
-        font-weight: 400;
-        color: #ffffff;
-        margin-bottom: 15px;
-    }
-
-    .payment-methods .list-link {
-        display: flex;
-        gap: 10px;
-    }
-
-    .payment-methods .link {
-        flex: 1;
-        text-align: center;
-    }
-    .border{
-        border-width:0px;
+    .col p, .email-id, h4, ul li a, .payment-methods .title {
+        font-size: 0.85rem;
     }
 
     .payment-methods img {
-        width: 50px; /* Kích thước nhỏ gọn */
-        height: auto;
-        
-        border-radius: 4px; /* Bo góc nhẹ */
-        transition: border-color 0.3s ease;
-    }
-
-    .payment-methods .link:hover img {
-        
-    }
-
-    footer form {
-        display: flex;
-        align-items: center;
-        border-bottom: 1px solid #cccccc; /* Xám nhạt */
-        padding-bottom: 5px;
-        margin-bottom: 15px;
-    }
-
-    footer form .fa-envelope {
-        font-size: 16px;
-        color: #ffffff;
-        margin-right: 10px;
-    }
-
-    footer form input {
-        flex: 1;
-        background: transparent;
-        border: none;
-        outline: none;
-        font-size: 0.9rem;
-        font-weight: 300;
-        color: #ffffff;
-    }
-
-    footer form input::placeholder {
-        color: #cccccc; /* Xám nhạt */
-    }
-
-    footer form button {
-        background: transparent;
-        border: none;
-        cursor: pointer;
-    }
-
-    footer form .fa-arrow-right {
-        font-size: 16px;
-        color: #ffffff;
-        transition: color 0.3s ease;
-    }
-
-    footer form button:hover .fa-arrow-right {
-        color: #cccccc; /* Xám nhạt khi hover */
-    }
-
-    .social-icons {
-        display: flex;
-        gap: 15px;
-        margin-top: 15px;
-    }
-
-    .social-icons a {
-        text-decoration: none;
+        width: 45px;
     }
 
     .social-icons .fa-brands {
-        font-size: 20px;
-        color: #ffffff;
-        transition: color 0.3s ease;
+        font-size: 18px;
+    }
+}
+
+@media (max-width: 768px) {
+    footer {
+        padding: 30px 0 15px;
     }
 
-    .social-icons .fa-brands:hover {
-        color: #cccccc; /* Xám nhạt khi hover */
+    .row1 {
+        width: 95%;
+        flex-direction: column; /* Xếp chồng thành 1 cột */
+    }
+
+    .col, .smaller-col, .smallest-col, .biggest-col {
+        flex-basis: 100%;
+        padding: 8px;
+        margin-bottom: 15px;
+    }
+
+    .logo span {
+        font-size: 1.3rem;
+    }
+
+    .col h3 {
+        font-size: 0.9rem;
+        margin-bottom: 20px;
+    }
+
+    .underline {
+        width: 35px;
+    }
+
+    .col p, .email-id, h4, ul li a, .payment-methods .title {
+        font-size: 0.8rem;
+    }
+
+    .payment-methods img {
+        width: 40px;
+    }
+
+    .payment-methods .list-link {
+        gap: 8px;
+    }
+
+    footer form .fa-envelope, footer form .fa-arrow-right {
+        font-size: 14px;
+    }
+
+    footer form input {
+        font-size: 0.8rem;
+    }
+
+    .social-icons {
+        gap: 12px;
+        margin-top: 10px;
+    }
+
+    .social-icons .fa-brands {
+        font-size: 16px;
     }
 
     hr {
-        width: 90%;
-        border: none;
-        border-bottom: 1px solid #cccccc; /* Xám nhạt */
-        margin: 30px auto;
-        opacity: 0.5;
+        margin: 20px auto;
     }
 
     .copyright {
-        text-align: center;
-        font-size: 0.9rem;
-        font-weight: 300;
-        color: #ffffff;
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    footer {
+        padding: 20px 0 10px;
     }
 
-    .copyright span {
-        color: #ffffff;
-        font-weight: 400;
+    .row1 {
+        width: 100%;
+        padding: 0 10px;
     }
+
+    .logo span {
+        font-size: 1.2rem;
+    }
+
+    .col h3 {
+        font-size: 0.85rem;
+    }
+
+    .col p, .email-id, h4, ul li a, .payment-methods .title {
+        font-size: 0.75rem;
+    }
+
+    .payment-methods img {
+        width: 35px;
+    }
+
+    .payment-methods .list-link {
+        gap: 6px;
+    }
+
+    footer form {
+        margin-bottom: 10px;
+    }
+
+    footer form .fa-envelope, footer form .fa-arrow-right {
+        font-size: 12px;
+    }
+
+    footer form input {
+        font-size: 0.75rem;
+    }
+
+    .social-icons {
+        gap: 10px;
+    }
+
+    .social-icons .fa-brands {
+        font-size: 14px;
+    }
+
+    hr {
+        margin: 15px auto;
+    }
+
+    .copyright {
+        font-size: 0.75rem;
+    }
+}
 </style>
