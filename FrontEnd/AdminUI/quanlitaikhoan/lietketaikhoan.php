@@ -323,6 +323,12 @@
     // Hàm cập nhật tài khoản
     function updateAccount(form) {
       const formData = new FormData(form);
+      // Lấy role_id từ form và chuyển thành chuỗi
+      const roleId = formData.get('role_id');
+      if (roleId !== null) {
+        formData.set('role_id', String(roleId)); // Chuyển role_id thành chuỗi
+      }
+
       fetch('../../BackEnd/Model/quanlitaikhoan/xulitaikhoan.php', {
         method: 'POST',
         body: formData
@@ -368,6 +374,12 @@
     // Hàm thêm tài khoản
     function addAccount(formEl) {
       const formData = new FormData(formEl);
+      // Lấy role_id từ form và chuyển thành chuỗi
+      const roleId = formData.get('role_id');
+      if (roleId !== null) {
+        formData.set('role_id', String(roleId)); // Chuyển role_id thành chuỗi
+      }
+
       fetch('../../BackEnd/Model/quanlitaikhoan/xulitaikhoan.php', {
         method: 'POST',
         body: formData
@@ -588,7 +600,7 @@
         }
 
         if (input.id === 'modal-edit-role-id') {
-          if (!roles.some(role => role.id === value)) {
+          if (!roles.some(role => String(role.id) === String(value))) {
             isError = true;
             input.style.border = '1px solid var(--clr-error)';
             if (errorEl) errorEl.textContent = 'Vui lòng chọn một chức vụ hợp lệ!';
@@ -676,7 +688,7 @@
         }
 
         if (input.id === 'modal-add-role-id') {
-          if (!roles.some(role => role.id === value)) {
+          if (!roles.some(role => String(role.id) === String(value))) {
             isError = true;
             input.style.border = '1px solid var(--clr-error)';
             if (errorEl) errorEl.textContent = 'Vui lòng chọn một chức vụ hợp lệ!';
