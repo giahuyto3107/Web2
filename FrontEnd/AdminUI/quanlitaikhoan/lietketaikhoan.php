@@ -398,6 +398,10 @@
             .then(data => {
               accounts = data.data;
               renderTable(accounts);
+              // Reset form trước khi đóng modal
+              clearFormErrors(formEl);
+              resetImagePreview('add-modal');
+              formEl.reset(); // Reset tất cả các trường trong form
               addAccountModal.close();
               const successMessage = document.getElementById('success-message');
               successMessage.querySelector('.success-text p').textContent = result.message || 'Tài khoản thêm thành công';

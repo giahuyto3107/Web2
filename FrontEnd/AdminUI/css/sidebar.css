@@ -104,10 +104,11 @@
 .sidebar ul li {
     position: relative;
     list-style-type: none;
-    height: 3.125rem;
+    height: 3.125rem; /* 50px */
     width: 90%;
     margin: 0.8rem auto;
     line-height: 3.125rem;
+    overflow: hidden; /* Ngăn nội dung tràn ra ngoài */
 }
 
 .sidebar ul li a {
@@ -116,6 +117,9 @@
     align-items: center;
     text-decoration: none;
     border-radius: 0.8rem;
+    width: 100%; /* Đảm bảo <a> chiếm toàn bộ chiều rộng của <li> */
+    height: 100%; /* Đảm bảo <a> chiếm toàn bộ chiều cao của <li> */
+    overflow: hidden; /* Ngăn nội dung tràn ra ngoài */
 }
 
 .sidebar ul li a:hover {
@@ -135,6 +139,7 @@
     height: 3.125rem;
     border-radius: 0.75rem;
     line-height: 3.125rem;
+    flex-shrink: 0; /* Ngăn biểu tượng bị co lại */
 }
 
 .sidebar .nav-item {
@@ -153,11 +158,11 @@
     box-shadow: 0 0.5rem 0.8rem rgba(0, 0, 0, 0.2);
     border-radius: 0.6rem;
     padding: 0.4rem 1.2rem;
-    line-height: 1.8rem;
     z-index: 200;
     display: none;
     background-color: white;
     color: black;
+    white-space: nowrap;
 }
 
 .sidebar ul li a:hover + .tooltip {

@@ -166,6 +166,7 @@ dialog::backdrop {
   border: none;
   cursor: pointer;
   color: #fff;
+  background-color: #4caf50;
 }
 
 .modal-buttons button:hover {
