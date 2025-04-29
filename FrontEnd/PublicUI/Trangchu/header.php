@@ -290,6 +290,75 @@ $featured_collection = $conn->query("SELECT p.* FROM product p JOIN product_cate
             color: #888888;
             font-size: 0.9rem;
         }
+        @media (max-width: 1024px) {
+            header {
+                padding: 15px 30px;
+                flex-wrap: wrap;
+            }
+
+            header .search-bar {
+                margin: 15px 0;
+                width: 100%;
+                max-width: 100%;
+                order: 3;
+            }
+
+            header .user-actions {
+                gap: 15px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 15px 20px;
+            }
+
+            header .logo h1 {
+                font-size: 1.5rem;
+            }
+
+            header .search-bar {
+                order: 2;
+                margin-top: 10px;
+            }
+
+            header .user-actions {
+                order: 3;
+                width: 100%;
+                justify-content: space-between;
+                margin-top: 10px;
+            }
+
+            header .user-actions .icon-link,
+            header .user-actions .profile-icon {
+                font-size: 18px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header {
+                padding: 10px 15px;
+            }
+
+            header .logo h1 {
+                font-size: 1.3rem;
+            }
+
+            header input[type="text"] {
+                font-size: 0.8rem;
+            }
+
+            .btn2 {
+                padding: 0.6rem 1.2rem;
+                font-size: 14px;
+            }
+
+            .search-results .result-item span {
+                font-size: 0.8rem;
+            }
+        }
     </style>
 </head>
 <body>

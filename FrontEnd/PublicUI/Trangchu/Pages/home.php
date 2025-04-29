@@ -489,6 +489,147 @@ $featured_collection = $conn->query("SELECT p.* FROM product p JOIN product_cate
         text-decoration: none;
         
     }
+/* Responsive Layout Enhancements */
+@media (max-width: 1024px) {
+    .hero {
+        padding: 0 60px;
+    }
+
+    .products-grid {
+        grid-template-columns: repeat(3, 1fr);
+        justify-items: center;
+    }
+
+    .collections-carousel {
+        padding: 0 60px 20px;
+    }
+
+    .categories-section,
+    .products-section,
+    .collections-section,
+    .reviews-section {
+        padding: 80px 60px;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero {
+        flex-direction: column;
+        justify-content: center;
+        text-align: center;
+        padding: 0 30px;
+        height: auto;
+        min-height: 80vh;
+    }
+
+    .hero h1 {
+        font-size: 3rem;
+    }
+
+    .hero p {
+        font-size: 1.2rem;
+    }
+
+    .hero .cta-btn {
+        padding: 10px 30px;
+        font-size: 1rem;
+    }
+
+    .products-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 30px;
+        justify-items: center;
+    }
+
+    .product-card {
+        width: 160px;
+        height: 320px;
+    }
+
+    .product-image {
+        width: 130px;
+        height: 180px;
+    }
+
+    .collections-carousel {
+        padding: 0 30px 20px;
+        gap: 30px;
+    }
+
+    .collection-card {
+        flex: 1 1 240px; /* Cho phép co giãn linh hoạt */
+        min-width: 220px;
+        max-width: 100%;
+        height: auto; /* Không cần cố định chiều cao */
+    }
+
+    .categories-list {
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .category-item {
+        font-size: 1rem;
+        padding: 10px 25px;
+    }
+
+    .categories-section,
+    .products-section,
+    .collections-section,
+    .reviews-section {
+        padding: 60px 30px;
+    }
+
+    h2 {
+        font-size: 2rem;
+        margin-bottom: 40px;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero h1 {
+        font-size: 2.2rem;
+    }
+
+    .hero p {
+        font-size: 1rem;
+    }
+
+    .products-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .product-card {
+        width: 90%;
+    }
+
+    .collection-card {
+        width: 100%;
+        height: auto;
+    }
+
+    .collection-card .collection-info {
+        width: 90%;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .categories-list {
+        gap: 15px;
+        justify-content: flex-start;
+    }
+
+    .category-item {
+        font-size: 0.9rem;
+        padding: 8px 20px;
+    }
+}
+.collections-carousel {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
 </style>
 
 <section class="hero">
