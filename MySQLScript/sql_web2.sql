@@ -58,23 +58,26 @@ CREATE TABLE IF NOT EXISTS account (
         ON UPDATE CASCADE    
 );
 
-INSERT INTO `account` (`account_name`, `email`, `password_hash`, `status_id`, `last_login`, `role_id`, `created_at`, `updated_at`) 
+
+	INSERT INTO `account` (`account_name`, `email`, `password_hash`, `status_id`, `last_login`, `role_id`, `created_at`, `updated_at`) 
 VALUES
-    ('nguyen_van_a', 'nguyenvana@gmail.com', '123', 1, NULL, 1, '2025-02-05 03:00:08', '2025-02-08 09:32:04'), -- Quản trị viên
-    ('tran_thi_b', 'tranthib@gmail.com', '123', 1, NULL, 2, '2025-02-05 03:00:08', '2025-02-08 09:32:07'), -- Khách hàng
-    ('le_van_c', 'levanc@gmail.com', '123', 1, NULL, 3, '2025-02-05 03:00:08', '2025-02-08 09:32:09'), -- Nhà cung cấp
-    ('pham_thi_d', 'phamthid@gmail.com', '123', 1, NULL, 4, '2025-02-05 03:00:08', '2025-02-08 09:32:12'), -- Quản lý
-    ('hoang_van_e', 'hoangvane@gmail.com', '123', 1, NULL, 2, '2025-02-05 03:00:08', '2025-02-08 09:32:15'), -- Khách hàng
-    ('ngo_thi_f', 'ngothif@gmail.com', '123', 1, NULL, 2, '2025-02-05 03:00:08', '2025-02-08 09:32:18'), -- Khách hàng
-    ('vu_van_g', 'vuvang@gmail.com', '123', 1, NULL, 3, '2025-02-05 03:00:08', '2025-02-08 09:32:21'), -- Nhà cung cấp
-    ('do_thi_h', 'dothih@gmail.com', '123', 1, NULL, 2, '2025-02-05 03:00:08', '2025-02-08 09:32:24'), -- Khách hàng
-    ('bui_van_i', 'buivani@gmail.com', '123', 1, NULL, 2, '2025-02-05 03:00:08', '2025-02-08 09:32:27'), -- Khách hàng
-    ('dang_thi_k', 'dangthik@gmail.com', '123', 1, NULL, 4, '2025-02-05 03:00:08', '2025-02-08 09:32:30'), -- Quản lý
-    ('tran_van_l', 'tranvanl@gmail.com', '123', 1, NULL, 2, '2025-02-05 03:00:08', '2025-02-08 09:32:33'), -- Khách hàng
-    ('le_thi_m', 'lethim@gmail.com', '123', 1, NULL, 2, '2025-02-05 03:00:08', '2025-02-08 09:32:36'), -- Khách hàng
-    ('pham_van_n', 'phamvann@gmail.com', '123', 1, NULL, 3, '2025-02-05 03:00:08', '2025-02-08 09:32:39'), -- Nhà cung cấp
-    ('nguyen_thi_p', 'nguyenthip@gmail.com', '123', 1, NULL, 2, '2025-02-05 03:00:08', '2025-02-08 09:32:42'), -- Khách hàng
-    ('hoang_thi_q', 'hoangthiq@gmail.com', '123', 1, NULL, 2, '2025-02-05 03:00:08', '2025-02-08 09:32:45'); -- Khách hàng
+    ('taikhoan1', 'taikhoan1@gmail.com', '$2y$10$e/PBg6HlcflH462D0cSgtuLQCEeYTgAl9wjvQhGydRo.wNvyok0ge', 1, NULL, 1, '2025-04-20 08:11:58', '2025-04-20 08:11:58'), -- Quản trị viên
+    ('taikhoan2', 'taikhoan2@gmail.com', '$2y$10$3d0o5XxM2WGpCQyTroTFgOwyiq74D8r.1Yb454to4yrF7S2jaAD4K', 1, NULL, 2, '2025-04-20 08:14:10', '2025-04-20 08:14:10'), -- Khách hàng
+    ('taikhoan3', 'taikhoan3@gmail.com', '$2y$10$KP3Yc9x0AMGFk1nFv7eUtuQlSZyxI.U9sNTIlU78G7Y6Bx2ZrFPiy', 1, NULL, 3, '2025-04-20 08:14:36', '2025-04-20 08:14:36'), -- Nhà cung cấp
+    ('taikhoan4', 'taikhoan4@gmail.com', '$2y$10$7JhyqctOcveZGxfD4Zka6eIys8.iXCL5po3zrAPDaHHbOF3nN6m/O', 1, NULL, 4, '2025-04-20 08:15:45', '2025-04-20 08:15:45'), -- Quản lý
+    ('taikhoan5', 'taikhoan5@gmail.com', '$2y$10$bseQTK2cJIlOqME/ydBjRu4c8fELqHmvTrTVj1qJSsPTMR7qJC2Zm', 1, NULL, 2, '2025-04-20 08:16:10', '2025-04-20 08:16:10'), -- Khách hàng
+    ('taikhoan6', 'taikhoan6@gmail.com', '$2y$10$chRF/iKO3iLAhZKmCx1/pe5kv9uwWvDV3GArN5x7gxF500J//Xrhu', 1, NULL, 2, '2025-04-20 08:16:27', '2025-04-20 08:16:27'), -- Khách hàng
+    ('taikhoan7', 'taikhoan7@gmail.com', '$2y$10$pGFOxsZda1/FdNOVAjWK9Oe3jNrgTbDm37yIPCtqrehtAd/5P.mXO', 1, NULL, 3, '2025-04-20 08:16:53', '2025-04-20 08:16:53'), -- Nhà cung cấp
+    ('taikhoan8', 'taikhoan8@gmail.com', '$2y$10$v0fpQsnJJuWzr8p.Rwxv2eEsKSp4jVwXr/gyZxVh.m8sYGGTiDX1K', 1, NULL, 2, '2025-04-20 08:17:11', '2025-04-20 08:17:11'), -- Khách hàng
+    ('taikhoan9', 'taikhoan9@gmail.com', '$2y$10$79OGBUfdrwoxs38gbWlCvePYnzGU8fo8APm.pGMdy9yKXmU3dNbW6', 1, NULL, 2, '2025-04-20 08:17:30', '2025-04-20 08:17:30'), -- Khách hàng
+    ('taikhoan10', 'taikhoan10@gmail.com', '$2y$10$CEr71AE0mZBkrIXzkgFV0.h8Zjuor3BIIDEFNbWvQJ0RgydLIMJQ.', 1, NULL, 4, '2025-04-20 08:17:41', '2025-04-20 08:17:41'), -- Quản lý
+    ('taikhoan11', 'taikhoan11@gmail.com', '$2y$10$Oe7f.lahBiqaoVkoyj1Sbe9I7pkpymhvcNQIowz3CKGiWHlH.Rtae', 1, NULL, 2, '2025-04-20 08:17:51', '2025-04-20 08:17:51'), -- Khách hàng
+    ('taikhoan12', 'taikhoan12@gmail.com', '$2y$10$oqXTtS3NRNxd.EfMSTM86.X.hELS9KXaBSwWP1Ho7FCwZMzj1RsXe', 1, NULL, 2, '2025-04-20 08:17:59', '2025-04-20 08:17:59'), -- Khách hàng
+    ('taikhoan13', 'taikhoan13@gmail.com', '$2y$10$85MOwmB35ZdXQUPJ3Aht/.qP56.jax0nQnje9f2K4AJB0ejIZv0cK', 1, NULL, 3, '2025-04-20 08:18:07', '2025-04-20 08:18:07'), -- Nhà cung cấp
+    ('taikhoan14', 'taikhoan14@gmail.com', '$2y$10$SkrBaIBPnK1TrmutvJr1KubVRqAz5yAv43nhVcK6hhV4.OQehf6TC', 1, NULL, 2, '2025-04-20 08:18:18', '2025-04-20 08:18:18'), -- Khách hàng
+    ('taikhoan15', 'taikhoan15@gmail.com', '$10$K4uCTePQOEVCvlQmN2vgH.uo89p7wQsBjJxVKSfvEvAruv3dhRlKe', 1, NULL, 2, '2025-04-20 08:18:34', '2025-04-20 08:18:34'), -- Khách hàng
+    
+    
 
 CREATE TABLE IF NOT EXISTS category_type (
     category_type_id INT AUTO_INCREMENT PRIMARY KEY,

@@ -161,6 +161,7 @@ $conn->close();
 document.addEventListener('DOMContentLoaded', function() {
     const sidebarBtn = document.querySelector("#sidebar-menu-btn");
     const sidebar = document.querySelector(".sidebar");
+    const menuItems = document.querySelectorAll(".sidebar ul li");
 
     // Sidebar toggle functionality
     sidebarBtn.addEventListener("click", () => {
@@ -184,8 +185,6 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(data => {
             if (data.success) {
                 const userPermissions = data.permissions;
-                const menuItems = document.querySelectorAll('.sidebar ul li');
-
                 menuItems.forEach(item => {
                     const permissionId = item.getAttribute('data-permission-id');
                     // Show item if it has no permission ID (e.g., Logout) or if user has the permission
@@ -200,5 +199,30 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         })
         .catch(error => console.error('Fetch error:', error));
+
+    // Highlight active menu item on click
+    menuItems.forEach(item => {
+        const link = item.querySelector('a');
+        link.addEventListener('click', (e) => {
+            // Remove 'active' class from all menu items
+            menuItems.forEach(i => i.classList.remove('active'));
+            // Add 'active' class to the clicked menu item
+            item.classList.add('active');
+        });
+    });
+
+    // Set active menu item based on current URL
+    const currentAction = new URLSearchParams(window.location.search).get('action');
+    menuItems.forEach(item => {
+        const link = item.querySelector('a');
+        const href = link.getAttribute('href');
+        const actionMatch = href.match(/action=([^&]+)/);
+        if (actionMatch && actionMatch[1] === currentAction) {
+            item.classList.add('active');
+        } else if (href.includes('logout') && !currentAction) {
+            // Do not auto-highlight logout
+            item.classList.remove('active');
+        }
+    });
 });
 </script>

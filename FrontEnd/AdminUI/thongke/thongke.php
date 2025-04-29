@@ -112,6 +112,10 @@
         const topProductsBody = document.getElementById('top-products-body');
         const orderDetailsBody = document.getElementById('order-details-body');
         const orderDetailsModal = document.getElementById('order-details-modal');
+        const orderDetailsCloseIcon = document.querySelector('#order-details-modal .modal-close');
+        const viewModal = document.getElementById('view-modal');
+        const viewCloseButton = document.getElementById('view-close-button');
+        const viewCloseIcon = document.querySelector('#view-modal .modal-close');
         let customersData = []; // Lưu dữ liệu khách hàng để sắp xếp
         let chartInstance = null; // Lưu instance của biểu đồ top khách hàng
         let revenueChartInstance = null; // Lưu instance của biểu đồ doanh thu
@@ -229,7 +233,7 @@
                 row.innerHTML = `
                     <td>${customer.user_name || 'N/A'}</td>
                     <td>${customer.order_count || '0'}</td>
-                    <td>${parseFloat(customer.total_spent || 0).toLocaleString()}</td>
+                    <td>${parseFloat(customer.total_spent || 0).toLocaleString()} VND</td>
                     <td>
                         <button class="view-details" data-user-id="${customer.user_id}">Xem chi tiết</button>
                     </td>
@@ -284,6 +288,11 @@
                             title: {
                                 display: true,
                                 text: 'Tổng tiền mua (VND)'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toLocaleString() + ' VND';
+                                }
                             }
                         },
                         y1: {
@@ -311,7 +320,16 @@
                         },
                         tooltip: {
                             mode: 'index',
-                            intersect: false
+                            intersect: false,
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label === 'Tổng tiền mua (VND)') {
+                                        return label + ': ' + context.parsed.y.toLocaleString() + ' VND';
+                                    }
+                                    return label + ': ' + context.parsed.y;
+                                }
+                            }
                         }
                     }
                 }
@@ -352,6 +370,11 @@
                             title: {
                                 display: true,
                                 text: 'Doanh thu (VND)'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toLocaleString() + ' VND';
+                                }
                             }
                         },
                         x: {
@@ -368,7 +391,13 @@
                         },
                         tooltip: {
                             mode: 'index',
-                            intersect: false
+                            intersect: false,
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    return label + ': ' + context.parsed.y.toLocaleString() + ' VND';
+                                }
+                            }
                         }
                     }
                 }
@@ -383,7 +412,7 @@
                 row.innerHTML = `
                     <td>${product.product_name || 'N/A'}</td>
                     <td>${product.total_sold || '0'}</td>
-                    <td>${parseFloat(product.total_revenue || 0).toLocaleString()}</td>
+                    <td>${parseFloat(product.total_revenue || 0).toLocaleString()} VND</td>
                 `;
                 topProductsBody.appendChild(row);
             });
@@ -420,12 +449,23 @@
                 row.innerHTML = `
                     <td>${order.order_id || 'N/A'}</td>
                     <td>${order.order_date || 'N/A'}</td>
-                    <td>${parseFloat(order.total_amount || 0).toLocaleString()}</td>
-                    <td>${getStatusText(order.status_id)}</td>
+                    <td>${parseFloat(order.total_amount || 0).toLocaleString()} VND</td>
+                    <td>${getStatusText2(order.status_id)}</td>
                     <td><button class="view-order" data-order-id="${order.order_id}">Xem chi tiết</button></td>
                 `;
                 orderDetailsBody.appendChild(row);
             });
+        }
+
+        // Hàm chuyển status_id thành văn bản
+        function getStatusText2(statusId) {
+            switch (statusId) {
+                case 3: return 'Chờ duyệt';
+                case 4: return 'Đã duyệt';
+                case 5: return 'Đã giao';
+                case 7: return 'Đã hủy';
+                default: return statusId; // Hiển thị dữ liệu gốc thay vì 'N/A'
+            }
         }
 
         // Hàm chuyển status_id thành văn bản
@@ -435,7 +475,7 @@
                 case "4": return 'Đã duyệt';
                 case "5": return 'Đã giao';
                 case "7": return 'Đã hủy';
-                default: return 'N/A';
+                default: return statusId; // Hiển thị dữ liệu gốc thay vì 'N/A'
             }
         }
 
@@ -450,29 +490,6 @@
             renderTable(sortedData);
             renderChart(sortedData);
         }
-
-        // Event listener cho các nút
-        applyFilterBtn.addEventListener('click', fetchAllData);
-        sortAscBtn.addEventListener('click', () => sortData('asc'));
-        sortDescBtn.addEventListener('click', () => sortData('desc'));
-
-        tableBody.addEventListener('click', (e) => {
-            if (e.target.classList.contains('view-details')) {
-                const userId = e.target.getAttribute('data-user-id');
-                fetchOrderDetails(userId);
-            }
-        });
-
-        orderDetailsBody.addEventListener('click', (e) => {
-            if (e.target.classList.contains('view-order')) {
-                const orderId = e.target.getAttribute('data-order-id');
-                loadOrderItems(orderId);
-            }
-        });
-
-        document.getElementById('order-details-close-button').addEventListener('click', () => {
-            orderDetailsModal.close();
-        });
 
         // Hàm hiển thị chi tiết sản phẩm trong đơn hàng
         function loadOrderItems(orderId) {
@@ -502,9 +519,8 @@
                                         <td>${item.product_id || 'N/A'}</td>
                                         <td>${item.product_name || 'N/A'}</td>
                                         <td>${item.quantity || '0'}</td>
-                                        <td>${item.price || '0'}</td>
-                                        <td>${(item.quantity * item.price).toLocaleString()} VND</td>
-                                        <td><img src="${item.image_url || 'path/to/default-image.jpg'}" alt="${item.product_name || 'Sản phẩm'}" loading="lazy" /></td>
+                                        <td>${parseFloat(item.price || 0).toLocaleString()} VND</td>
+                                        <td>${(parseFloat(item.quantity || 0) * parseFloat(item.price || 0)).toLocaleString()} VND</td>
                                     </tr>
                                 `;
                             });
@@ -522,6 +538,45 @@
                     alert('Lỗi khi tải chi tiết sản phẩm. Vui lòng thử lại.');
                 });
         }
+
+        // Event listener cho các nút
+        applyFilterBtn.addEventListener('click', fetchAllData);
+        sortAscBtn.addEventListener('click', () => sortData('asc'));
+        sortDescBtn.addEventListener('click', () => sortData('desc'));
+
+        tableBody.addEventListener('click', (e) => {
+            if (e.target.classList.contains('view-details')) {
+                const userId = e.target.getAttribute('data-user-id');
+                fetchOrderDetails(userId);
+            }
+        });
+
+        orderDetailsBody.addEventListener('click', (e) => {
+            if (e.target.classList.contains('view-order')) {
+                const orderId = e.target.getAttribute('data-order-id');
+                loadOrderItems(orderId);
+            }
+        });
+
+        // Đóng modal order-details-modal khi nhấp vào nút "Đóng"
+        document.getElementById('order-details-close-button').addEventListener('click', () => {
+            orderDetailsModal.close();
+        });
+
+        // Đóng modal order-details-modal khi nhấp vào nút "X"
+        orderDetailsCloseIcon.addEventListener('click', () => {
+            orderDetailsModal.close();
+        });
+
+        // Đóng modal view-modal khi nhấp vào nút "Đóng"
+        viewCloseButton.addEventListener('click', () => {
+            viewModal.close();
+        });
+
+        // Đóng modal view-modal khi nhấp vào nút "X"
+        viewCloseIcon.addEventListener('click', () => {
+            viewModal.close();
+        });
 
         // Tự động gọi fetchAllData() khi trang được tải
         fetchAllData();
@@ -753,7 +808,7 @@ dialog {
     margin: auto;
     padding: 1rem;
     border: none;
-    max-width: 40rem;
+    max-width: 44rem;
     width: calc(100% - 1rem);
     color: inherit;
     scroll-behavior: smooth;
@@ -830,15 +885,6 @@ dialog::backdrop {
     background-color: #dc3545;
 }
 
-/* Định dạng hình ảnh trong bảng chi tiết sản phẩm của modal */
-#order-items-body img {
-    width: 80px;
-    height: 80px;
-    object-fit: cover;
-    border-radius: 4px;
-    display: block;
-}
-
 /* Responsive */
 @media (max-width: 67em) {
     .toolbar {
@@ -899,10 +945,6 @@ dialog::backdrop {
     }
     .chart-container {
         height: 180px;
-    }
-    #order-items-body img {
-        width: 60px;
-        height: 60px;
     }
 }
 </style>
