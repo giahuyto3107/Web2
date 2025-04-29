@@ -24,16 +24,33 @@ if ($category_id) {
     }
 
     if (isset($_POST['status_id']) && $_POST['status_id'] == 6) {
-        // Trường hợp xóa (cập nhật status_id thành 6)
-        $sql = "UPDATE category SET status_id = ? WHERE category_id = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ii", $status_id, $category_id);
+        // Trường hợp xóa (cập nhật status_id thành 6 và xóa các bản ghi liên quan trong product_category)
+        
+        // Bắt đầu giao dịch
+        $conn->begin_transaction();
 
-        if ($stmt->execute()) {
-            echo json_encode(['status' => 'success', 'message' => 'Thể loại đã được đánh dấu xóa!']);
-        } else {
-            echo json_encode(['status' => 'error', 'message' => 'Có lỗi khi đánh dấu xóa: ' . $conn->error]);
+        try {
+            // Xóa các bản ghi trong bảng product_category liên quan đến category_id
+            $delete_product_category_sql = "DELETE FROM product_category WHERE category_id = ?";
+            $stmt = $conn->prepare($delete_product_category_sql);
+            $stmt->bind_param("i", $category_id);
+            $stmt->execute();
+
+            // Cập nhật status_id trong bảng category
+            $update_category_sql = "UPDATE category SET status_id = ? WHERE category_id = ?";
+            $stmt = $conn->prepare($update_category_sql);
+            $stmt->bind_param("ii", $status_id, $category_id);
+            $stmt->execute();
+
+            // Commit giao dịch nếu không có lỗi
+            $conn->commit();
+            echo json_encode(['status' => 'success', 'message' => 'Thể loại đã được đánh dấu xóa và các liên kết sản phẩm đã được xóa!']);
+        } catch (Exception $e) {
+            // Rollback giao dịch nếu có lỗi
+            $conn->rollback();
+            echo json_encode(['status' => 'error', 'message' => 'Có lỗi khi xóa thể loại: ' . $e->getMessage()]);
         }
+
         $stmt->close();
     } else {
         // Trường hợp sửa (cập nhật thông tin)
@@ -125,6 +142,7 @@ if ($category_id) {
     }
 
     // Kiểm tra trùng lặp tên
+
     $check_sql = "SELECT category_name FROM category WHERE category_name = ?";
     $stmt = $conn->prepare($check_sql);
     $stmt->bind_param("s", $category_name);
