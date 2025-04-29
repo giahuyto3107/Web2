@@ -1,6 +1,6 @@
 <?php
 session_start();
-include ('../../../BackEnd/Config/config.php');
+include('../../../BackEnd/Config/config.php');
 $user_name = isset($_SESSION['dangky']) ? $_SESSION['dangky'] : (isset($_SESSION['user_name']) ? $_SESSION['user_name'] : null);
 if (isset($_GET['page']) && $_GET['page'] === 'logout') {
     session_destroy();
@@ -81,6 +81,7 @@ $featured_collection = $conn->query("SELECT p.* FROM product p JOIN product_cate
             flex: 1;
             max-width: 400px;
             margin: 0 40px;
+            position: relative;
         }
 
         header input[type="text"] {
@@ -204,19 +205,19 @@ $featured_collection = $conn->query("SELECT p.* FROM product p JOIN product_cate
             padding: 0.9rem 1.8rem;
             font-size: 16px;
             font-weight: 500;
-            color: black; /* Chữ màu đen */
+            color: black;
             border: 3px solid rgb(255, 255, 255);
             cursor: pointer;
             position: relative;
-            background-color: white; /* Nền màu trắng */
+            background-color: white;
             text-decoration: none;
             overflow: hidden;
             z-index: 1;
             font-family: 'Poppins', sans-serif;
-            transition: color 0.3s; /* Thêm hiệu ứng chuyển màu chữ */
-            }
+            transition: color 0.3s;
+        }
 
-            .btn2::before {
+        .btn2::before {
             content: "";
             position: absolute;
             left: 0;
@@ -227,61 +228,116 @@ $featured_collection = $conn->query("SELECT p.* FROM product p JOIN product_cate
             transform: translateX(-100%);
             transition: all .3s;
             z-index: -1;
-            }
+        }
 
-            .btn2:hover {
-            color: white; 
-            }
+        .btn2:hover {
+            color: white;
+        }
 
-            .btn2:hover::before {
+        .btn2:hover::before {
             transform: translateX(0);
             background-color: black;
-            }
+        }
 
+        /* Search Results Styles */
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1001;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .search-results.active {
+            display: block;
+        }
+
+        .search-results .result-item {
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: #333333;
+            transition: background 0.3s ease;
+        }
+
+        .search-results .result-item:hover {
+            background: #f5f5f5;
+        }
+
+        .search-results .result-item img {
+            width: 40px;
+            height: 60px;
+            object-fit: cover;
+            margin-right: 10px;
+            border-radius: 4px;
+        }
+
+        .search-results .result-item span {
+            font-size: 0.9rem;
+            font-weight: 400;
+        }
+
+        .search-results .no-results {
+            padding: 10px 20px;
+            color: #888888;
+            font-size: 0.9rem;
+        }
     </style>
-
 </head>
 <body>
-<header class="site-header">
+    <header class="site-header">
         <div class="logo">
             <a href="?page=home"><h1>Góc Sách Nhỏ</h1></a>
         </div>
         <div class="search-bar">
             <input type="text" id="search-input" placeholder="Tìm kiếm sách...">
+            <div class="search-results" id="search-results"></div>
         </div>
         <div class="user-actions">
-    <?php if (isset($_SESSION['user_id'])): ?>
-        <a href="?page=cart" class="icon-link" data-page="cart">
-            <i class="fa-solid fa-cart-shopping"></i>
-            <?php if ($cart_count > 0): ?>
-                <span class="cart-badge"><?php echo $cart_count; ?></span>
+            <?php if (isset($_SESSION['user_id'])): ?>
+                <a href="?page=cart" class="icon-link" data-page="cart">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <?php if ($cart_count > 0): ?>
+                        <span class="cart-badge"><?php echo $cart_count; ?></span>
+                    <?php endif; ?>
+                </a>
             <?php endif; ?>
-        </a>
-    <?php endif; ?>
-    <?php if (isset($_SESSION['user_id'])): ?>
-        <div class="profile-icon">
-            <i class="fa-solid fa-user"></i>
+            <?php if (isset($_SESSION['user_id'])): ?>
+                <div class="profile-icon">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+                <div class="dropdown-menu">
+                    <a href="?page=profile" data-page="profile"><i class="fa-solid fa-user"></i> Hồ sơ</a>
+                    <a href="?page=orders" data-page="orders"><i class="fa-solid fa-box"></i> Đơn hàng</a>
+                    <a href="http://localhost/Web2/FrontEnd/PublicUI/Trangchu/Pages/logout.php"><i class="fa-solid fa-sign-out-alt"></i> Đăng xuất</a>
+                </div>
+            <?php else: ?>
+                <button>
+                    <a href="?page=login" data-page="login" class="btn2">Đăng nhập</a>
+                    <a href="?page=signup" data-page="signup" class="btn2">Đăng ký</a>
+                </button>
+            <?php endif; ?>
         </div>
-        <div class="dropdown-menu">
-            <a href="?page=profile" data-page="profile"><i class="fa-solid fa-user"></i> Hồ sơ</a>
-            <a href="?page=orders" data-page="orders"><i class="fa-solid fa-box"></i> Đơn hàng</a>
-            <a href="http://localhost/Web2/FrontEnd/PublicUI/Trangchu/Pages/logout.php"><i class="fa-solid fa-sign-out-alt"></i> Đăng xuất</a>
-        </div>
-    <?php else: ?>
-        <button>
-            <a href="?page=login" data-page="login" class="btn2">Đăng nhập</a>
-            <a href="?page=signup" data-page="signup" class="btn2">Đăng ký</a>
-        </button>
-    <?php endif; ?>
-</div>
     </header>
 
+    <div id="main-content"></div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const profileIcon = document.querySelector('.profile-icon');
             const dropdown = document.querySelector('.dropdown-menu');
             const homeLink = document.getElementById('home-link');
             const searchInput = document.getElementById('search-input');
+            const searchResults = document.getElementById('search-results');
             const mainContent = document.getElementById('main-content');
 
             // Xử lý dropdown menu
@@ -307,19 +363,6 @@ $featured_collection = $conn->query("SELECT p.* FROM product p JOIN product_cate
                 });
             }
 
-            // Xử lý tìm kiếm
-            if (searchInput) {
-                searchInput.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') {
-                        const query = searchInput.value.trim();
-                        if (query) {
-                            console.log('Search query:', query);
-                            loadPage('/Web2/FrontEnd/PublicUI/Trangchu/Pages/search.php?query=' + encodeURIComponent(query));
-                        }
-                    }
-                });
-            }
-
             // Hàm load nội dung bằng AJAX
             function loadPage(url) {
                 console.log('Attempting to load:', url);
@@ -332,13 +375,68 @@ $featured_collection = $conn->query("SELECT p.* FROM product p JOIN product_cate
                     })
                     .then(data => {
                         console.log('Data received:', data);
-                        mainContent.innerHTML = data; // Chỉ load nội dung chính
+                        mainContent.innerHTML = data;
                     })
                     .catch(error => {
                         console.error('Error loading page:', error);
                         mainContent.innerHTML = '<p>Có lỗi xảy ra khi tải trang. Vui lòng thử lại.</p>';
                     });
             }
+
+            let searchTimeout;
+                searchInput.addEventListener('input', () => {
+                    clearTimeout(searchTimeout);
+                    searchTimeout = setTimeout(() => {
+                        const query = searchInput.value.trim();
+                        if (query.length > 0) {
+                            $.ajax({
+                                url: 'http://localhost/Web2/FrontEnd/PublicUI/Trangchu/search.php', // Sửa URL đúng
+                                method: 'POST',
+                                data: { query: query },
+                                dataType: 'json',
+                                success: (response) => {
+                                    console.log('Search response (JSON):', response);
+                                    console.log('JSON stringified:', JSON.stringify(response, null, 2));
+                                    searchResults.innerHTML = '';
+                                    if (response.success && response.results.length > 0) {
+                                        response.results.forEach(book => {
+                                            const imagePath = book.image_url 
+                                                ? `/Web2/BackEnd/Uploads/Product Picture/${book.image_url}` 
+                                                : '/Web2/FrontEnd/PublicUI/assets/images/default-book.jpg';
+                                            const resultItem = `
+                                                <a href="?page=product_details&id=${book.product_id}" data-page="product_details&id=${book.product_id}" class="result-item">
+                                                    <img src="${imagePath}" alt="${book.product_name}">
+                                                    <span>${book.product_name}</span>
+                                                </a>`;
+                                            searchResults.innerHTML += resultItem;
+                                        });
+                                        searchResults.classList.add('active');
+                                    } else {
+                                        searchResults.innerHTML = '<div class="no-results">Không tìm thấy sách nào.</div>';
+                                        searchResults.classList.add('active');
+                                    }
+                                },
+                                error: (xhr, status, error) => {
+                                    console.error('Search error:', error);
+                                    console.log('Response:', xhr.responseText); // In phản hồi để debug
+                                    searchResults.innerHTML = '<div class="no-results">Có lỗi xảy ra khi tìm kiếm.</div>';
+                                    searchResults.classList.add('active');
+                                }
+                            });
+                        } else {
+                            searchResults.innerHTML = '';
+                            searchResults.classList.remove('active');
+                        }
+                    }, 300);
+                });
+
+                // Ẩn kết quả tìm kiếm khi click ra ngoài
+                document.addEventListener('click', (e) => {
+                    if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+                        searchResults.classList.remove('active');
+                    }
+                });
         });
     </script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</body>
+</html>

@@ -374,6 +374,8 @@ $(document).ready(function () {
             data: { search_name, category, min_price, max_price, page },
             dataType: "json",
             success: function (response) {
+                console.log('Search response (JSON):', response);
+                console.log('JSON stringified:', JSON.stringify(response, null, 2));
                 let productsHtml = "";
                 if (response.products.length > 0) {
                     response.products.forEach(product => {
@@ -431,9 +433,6 @@ $(document).ready(function () {
         if (categoryList.children().length === 0) { 
             loadCategories(typeId);
         } 
-        else {
-            categoryList.slideToggle(300); 
-        }
     });
 
 

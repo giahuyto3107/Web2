@@ -277,6 +277,8 @@ $(document).ready(function(){
             data: {page: page, search: search, status: status},
             dataType: "json",
             success: function(response){
+                console.log('Search response (JSON):', response);
+                console.log('JSON stringified:', JSON.stringify(response, null, 2));
                 let orders = response.orders;
                 totalPages = response.total_pages;
                 let html = "";
