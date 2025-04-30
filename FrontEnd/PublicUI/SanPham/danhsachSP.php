@@ -240,29 +240,119 @@ include ('../../../BackEnd/Config/config.php');
             color: #fff;
             border-color: #1a1a1a;
         }
-
-
         @media (max-width: 768px) {
             .sidebar {
                 width: 100%;
                 margin-right: 0;
                 margin-bottom: 20px;
             }
+
             .main-content {
                 width: 100%;
             }
+
             .filters {
                 flex-direction: column;
             }
+
             .filters .col-md-6, .filters .col-md-3 {
                 width: 100%;
                 margin-bottom: 10px;
             }
+
             #product-list {
                 grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
             }
+
             .card-img-top {
                 height: 200px;
+            }
+
+            .card-body {
+                padding: 10px; /* Giảm padding trong các card để tiết kiệm không gian */
+            }
+
+            .card-title {
+                font-size: 0.9rem; /* Thu nhỏ font chữ */
+            }
+
+            .pagination {
+                justify-content: center;
+                margin-top: 20px;
+            }
+
+            .pagination .page-item .page-link {
+                padding: 8px 12px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .filters .col-md-6, .filters .col-md-3 {
+                width: 100%;
+                margin-bottom: 15px;
+            }
+
+            .sidebar {
+                padding: 15px;
+            }
+
+            .main-content {
+                padding: 15px;
+            }
+
+            .filters input {
+                font-size: 0.85rem;
+            }
+
+            .category-item {
+                font-size: 0.85rem;
+            }
+
+            .card-title {
+                font-size: 0.85rem;
+            }
+
+            .card-img-top {
+                height: 180px; /* Thu nhỏ ảnh */
+            }
+        }
+        @media (min-width: 576px) and (max-width: 768px) {
+            .content {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                margin-bottom: 15px;
+            }
+
+            .main-content {
+                width: 100%;
+            }
+
+            #product-list {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+                gap: 16px;
+            }
+
+            .filters {
+                flex-direction: column;
+            }
+
+            .filters .col-md-6,
+            .filters .col-md-3 {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            .card-img-top {
+                height: 200px;
+            }
+
+            .pagination {
+                justify-content: center;
+                margin-top: 20px;
             }
         }
     </style>
