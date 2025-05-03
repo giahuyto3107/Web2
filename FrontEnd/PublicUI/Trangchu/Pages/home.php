@@ -22,7 +22,16 @@ if (isset($_SESSION['user_id'])) {
 }
 
 $categories = $conn->query("SELECT * FROM category WHERE status_id = 1 LIMIT 4");
-$best_sellers = $conn->query("SELECT * FROM product WHERE status_id = 1 ORDER BY stock_quantity ASC LIMIT 5");
+$best_sellers = $conn->query("
+    SELECT p.product_name, p.price, p.image_url, oi.product_id, p.product_name, SUM(oi.quantity) as total_sold
+    FROM order_items oi
+    INNER JOIN orders o ON oi.order_id = o.order_id
+    INNER JOIN product p ON oi.product_id = p.product_id
+    WHERE o.status_id = 5 AND p.status_id = 1
+    GROUP BY oi.product_id, p.product_name
+    ORDER BY total_sold DESC
+    LIMIT 5
+");
 $new_releases = $conn->query("SELECT * FROM product WHERE status_id = 1 ORDER BY created_at DESC LIMIT 5");
 $featured_collection = $conn->query("SELECT p.* FROM product p JOIN product_category pc ON p.product_id = pc.product_id WHERE pc.category_id = 1 AND p.status_id = 1 LIMIT 3");
 ?>
@@ -284,92 +293,77 @@ $featured_collection = $conn->query("SELECT p.* FROM product p JOIN product_cate
 
     /* Collections */
     .collections-section {
-        background: #ffffff;
-        padding: 120px 0;
+        padding: 120px 8%;
+        background: var(--white);
+        position: relative;
+        overflow: hidden;
     }
-
-    .collections-bg {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 60%;
-        height: 80%;
-        transform: translate(-50%, -50%);
-        opacity: 0.1;
-    }
-
-    .collections-bg img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        filter: sepia(0.3);
-    }
-
+    
     .collections-carousel {
         display: flex;
-        gap: 50px;
+        gap: 30px;
+        padding: 20px 0;
+        scroll-snap-type: x mandatory;
         overflow-x: auto;
-        padding: 0 120px 20px;
+        scrollbar-width: none;
     }
-
+    
     .collections-carousel::-webkit-scrollbar {
-        height: 8px;
+        display: none;
     }
-
-    .collections-carousel::-webkit-scrollbar-thumb {
-        background: rgb(0, 0, 0);
-        border-radius: 4px;
-    }
-
+    
     .collection-card {
-        position: relative;
-        flex: 0 0 320px;
-        width: 320px;
-        height: 420px;
+        flex: 0 0 calc(33.333% - 20px);
+        scroll-snap-align: start;
+        height: 500px;
+        border-radius: 20px;
         overflow: hidden;
-        border-radius: 10px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        position: relative;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+        transition: var(--transition);
     }
-
+    
     .collection-card img {
         width: 100%;
         height: 100%;
         object-fit: cover;
-        filter: brightness(0.85);
         transition: transform 0.5s ease;
     }
-
-    .collection-card .collection-info {
-        width: 87%;
+    
+    .collection-overlay {
         position: absolute;
-        height: 100px;
-        bottom: 20px;
-        left: 20px;
-        padding: 15px;
-        background: rgba(255, 255, 255, 0.95);
-        border-radius: 8px;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        padding: 40px;
+        background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
+        color: var(--white);
+        transform: translateY(100px);
+        opacity: 0;
+        transition: var(--transition);
     }
-
+    
     .collection-card h3 {
-        font-family: 'Georgia', serif;
-        font-size: 1.3rem;
-        font-weight: 600;
-        color: #111111;
-        margin-bottom: 5px;
-        word-wrap: break-word;
-        max-height: 50px;
-        overflow: hidden;
-        line-height: 1.2;
+        font-size: 1.8rem;
+        margin-bottom: 10px;
     }
-
+    
     .collection-card p {
         font-size: 1.1rem;
-        font-weight: 500;
-        color: rgb(0, 0, 0);
+        margin-bottom: 20px;
     }
-
+    
+    .collection-card:hover {
+        transform: translateY(-10px);
+    }
+    
     .collection-card:hover img {
         transform: scale(1.1);
+    }
+    
+    .collection-card:hover .collection-overlay {
+        transform: translateY(0);
+        opacity: 1;
     }
 
     /* Reviews */
@@ -643,21 +637,22 @@ $featured_collection = $conn->query("SELECT p.* FROM product p JOIN product_cate
     </div>
 </section>
 
-<section class="py-16 bg-white">
+<!-- <section class="py-16 bg-white">
         <div class="container mx-auto px-6">
             <h2 class="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-12 animate-fadeInUp">Danh Mục Phổ Biến</h2>
             <div class="flex flex-wrap justify-center gap-6">
                 <?php 
                 if ($categories && $categories->num_rows > 0) {
                     while ($category = $categories->fetch_assoc()): ?>
-                        <a href="#" class="px-6 py-3 bg-gray-100 text-gray-900 rounded-md text-lg font-medium hover:bg-gray-900 hover:text-white transition animate-fadeInUp"><?php echo htmlspecialchars($category['category_name']); ?></a>
+                        <a href="" style="text-decoration: none;" class="px-6 py-3 bg-gray-100 text-gray-900 rounded-md text-lg font-medium hover:bg-gray-900 hover:text-white transition animate-fadeInUp">
+                        <?php echo htmlspecialchars($category['category_name']); ?></a>
                     <?php endwhile; 
                 } else {
                     echo "<p class='text-gray-600 text-center'>Không có danh mục nào.</p>";
                 } ?>
             </div>
         </div>
-    </section>
+    </section> -->
 
 <section class="products-section">
     <h2>Sách bán chạy</h2>
@@ -674,7 +669,7 @@ $featured_collection = $conn->query("SELECT p.* FROM product p JOIN product_cate
                     <h3><?php echo htmlspecialchars($product['product_name']); ?></h3>
                     <p class="price"><?php echo number_format($product['price'], 0, ',', '.') . ' VNĐ'; ?></p>
                     </a>
-                    <a href="#" class="add-to-cart"><i class="fa-solid fa-cart-plus"></i></a>
+                    <!-- <a href="#" class="add-to-cart"><i class="fa-solid fa-cart-plus"></i></a> -->
                 </div>
             <?php endwhile; 
         } else {
@@ -684,22 +679,21 @@ $featured_collection = $conn->query("SELECT p.* FROM product p JOIN product_cate
 </section>
 
 <section class="collections-section">
-    <div class="collections-bg">
-        <!-- <img src="../../../BackEnd/Uploads/Product Picture/book-bg2.jpg" alt="Background"> -->
+    <div class="section-heading">
+        <h2>Bộ Sưu Tập Nổi Bật</h2>
     </div>
-    <h2>Bộ sưu tập nổi bật</h2>
+    
     <div class="collections-carousel">
         <?php 
         if ($featured_collection && $featured_collection->num_rows > 0) {
             while ($product = $featured_collection->fetch_assoc()): ?>
                 <div class="collection-card">
-                    <a href="index.php?page=product_details&id=<?php echo $product['product_id']; ?>" class="product-link">
                     <img src="../../../BackEnd/Uploads/Product Picture/<?php echo htmlspecialchars($product['image_url'] ?: 'placeholder.jpg'); ?>" alt="<?php echo htmlspecialchars($product['product_name']); ?>">
-                    <div class="collection-info">
+                    <div class="collection-overlay">
                         <h3><?php echo htmlspecialchars($product['product_name']); ?></h3>
                         <p><?php echo number_format($product['price'], 0, ',', '.') . ' VNĐ'; ?></p>
+                        <a style="text-decoration: none;" href="index.php?page=product_details&id=<?php echo $product['product_id']; ?>" class="view-details">Khám phá</a>
                     </div>
-                    </a>
                 </div>
             <?php endwhile; 
         } else {

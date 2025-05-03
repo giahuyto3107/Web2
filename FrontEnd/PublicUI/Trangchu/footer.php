@@ -61,9 +61,9 @@
             </form>
             <p>Đăng ký nhận tin khuyến mãi để nhận voucher 10%</p>
             <div class="social-icons">
-                <a href="#"><i class="fa-brands fa-facebook"></i></a>
-                <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
-                <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                <a href="https://www.facebook.com/truong.mau.ien"><i class="fa-brands fa-facebook"></i></a>
+                <a href="https://x.com/notifications"><i class="fa-brands fa-x-twitter"></i></a>
+                <a href="https://www.instagram.com/cristiano/?hl=en"><i class="fa-brands fa-instagram"></i></a>
             </div>
         </div>
     </div>

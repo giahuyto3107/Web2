@@ -390,8 +390,8 @@ $featured_collection = $conn->query("SELECT p.* FROM product p JOIN product_cate
                 </div>
             <?php else: ?>
                 <button>
-                    <a href="?page=login" data-page="login" class="btn2">Đăng nhập</a>
-                    <a href="?page=signup" data-page="signup" class="btn2">Đăng ký</a>
+                    <a style="text-decoration: none;" href="?page=login" data-page="login" class="btn2">Đăng nhập</a>
+                    <a style="text-decoration: none;" href="?page=signup" data-page="signup" class="btn2">Đăng ký</a>
                 </button>
             <?php endif; ?>
         </div>
