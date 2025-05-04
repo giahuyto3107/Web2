@@ -15,7 +15,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $response["message"] = "Vui lòng nhập đầy đủ thông tin.";
     } else {
         // Kiểm tra tài khoản trong database
-        $sql = "SELECT account_id, account_name, email, password_hash FROM account WHERE email = ?";
+        $sql = "SELECT account_id, account_name, email, password_hash, role_id FROM account WHERE email = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("s", $email);
         $stmt->execute();
@@ -24,15 +24,20 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         if ($result->num_rows === 1) {
             $user = $result->fetch_assoc();
             
-            // if ($password == $user['password_hash']){
+            // Kiểm tra mật khẩu
             if (password_verify($password, $user['password_hash'])) {
-                // Đăng nhập thành công, lưu session
-                $_SESSION["user_id"] = $user["account_id"];
-                $_SESSION["user_name"] = $user["account_name"];
-                $_SESSION["user_email"] = $user["email"];
-                $response["success"] = true;
-                $response["message"] = "Đăng nhập thành công!";
-                $response["redirect"] = "index.php"; // Chuyển hướng đến trang chủ
+                // Kiểm tra role_id
+                if ($user['role_id'] == 2) {
+                    $response["message"] = "Tài khoản không có quyền truy cập.";
+                } else {
+                    // Đăng nhập thành công, lưu session
+                    $_SESSION["user_id"] = $user["account_id"];
+                    $_SESSION["user_name"] = $user["account_name"];
+                    $_SESSION["user_email"] = $user["email"];
+                    $response["success"] = true;
+                    $response["message"] = "Đăng nhập thành công!";
+                    $response["redirect"] = "index.php"; // Chuyển hướng đến trang chủ
+                }
             } else {
                 $response["message"] = "Mật khẩu không đúng.";
             }
