@@ -30,26 +30,26 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $response["message"] = "Email không hợp lệ!";
     } elseif (strlen($password) < 6) {
         $response["message"] = "Mật khẩu phải có ít nhất 6 ký tự!";
-    } elseif ($password !== $confirm_password) {
-        $response["message"] = "Mật khẩu xác nhận không khớp.";
     } else {
-        //  Kiểm tra email đã tồn tại
-        $stmt_check_email = $conn->prepare("SELECT account_id FROM account WHERE email = ?");
-        $stmt_check_email->bind_param("s", $email);
-        $stmt_check_email->execute();
-        $stmt_check_email->store_result();
+        //  Kiểm tra tên tài khoản đã tồn tại trước
+        $stmt_check_name = $conn->prepare("SELECT account_id FROM account WHERE account_name = ?");
+        $stmt_check_name->bind_param("s", $name);
+        $stmt_check_name->execute();
+        $stmt_check_name->store_result();
 
-        if ($stmt_check_email->num_rows > 0) {
-            $response["message"] = "Email đã được sử dụng.";
+        if ($stmt_check_name->num_rows > 0) {
+            $response["message"] = "Tên người dùng đã được sử dụng. Vui lòng chọn tên khác.";
         } else {
-            //  Kiểm tra tên tài khoản đã tồn tại
-            $stmt_check_name = $conn->prepare("SELECT account_id FROM account WHERE account_name = ?");
-            $stmt_check_name->bind_param("s", $name);
-            $stmt_check_name->execute();
-            $stmt_check_name->store_result();
+            //  Kiểm tra email đã tồn tại
+            $stmt_check_email = $conn->prepare("SELECT account_id FROM account WHERE email = ?");
+            $stmt_check_email->bind_param("s", $email);
+            $stmt_check_email->execute();
+            $stmt_check_email->store_result();
 
-            if ($stmt_check_name->num_rows > 0) {
-                $response["message"] = "Tên người dùng đã được sử dụng. Vui lòng chọn tên khác.";
+            if ($stmt_check_email->num_rows > 0) {
+                $response["message"] = "Email đã được sử dụng.";
+            } elseif ($password !== $confirm_password) {
+                $response["message"] = "Mật khẩu xác nhận không khớp.";
             } else {
                 // Thực hiện đăng ký
                 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
@@ -76,10 +76,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 $stmt_insert->close();
             }
 
-            $stmt_check_name->close();
+            $stmt_check_email->close();
         }
 
-        $stmt_check_email->close();
+        $stmt_check_name->close();
     }
 }
 

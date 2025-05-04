@@ -138,6 +138,25 @@ include ('../../../BackEnd/Config/config.php');
             color: #1a1a1a; 
             background: #e6f0e6;
         }
+        .password-wrapper {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            top: 36%;
+            right: 12px;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 1.5rem; /* Tăng kích thước */
+            color: #777;
+            user-select: none;
+            line-height: 1;
+        }
+        .password-toggle:hover {
+            color: #d4af37;
+        }
+
     </style>
 </head>
 <body>
@@ -152,8 +171,15 @@ include ('../../../BackEnd/Config/config.php');
                 <input type="text" id="name" name="name" placeholder="Tên tài khoản" required>
                 <input type="email" id="email" name="email" placeholder="Email" required>
                 <input type="text" id="address" name="address" placeholder="Địa chỉ" required>
-                <input type="password" id="password" name="password" placeholder="Mật khẩu" required>
-                <input type="password" id="confirm_password" name="confirm_password" placeholder="Xác nhận mật khẩu" required>
+                <div class="password-wrapper">
+                    <input type="password" id="password" name="password" placeholder="Mật khẩu" required>
+                    <span class="password-toggle" data-target="password">👁️</span>
+                </div>
+
+                <div class="password-wrapper">
+                    <input type="password" id="confirm_password" name="confirm_password" placeholder="Xác nhận mật khẩu" required>
+                    <span class="password-toggle" data-target="confirm_password">👁️</span>
+                </div>
                 <button type="submit">Đăng ký</button>
             </form>
 
@@ -204,6 +230,21 @@ include ('../../../BackEnd/Config/config.php');
             })
             .catch(error => console.error("Lỗi:", error));
         });
+
+        document.querySelectorAll('.password-toggle').forEach(toggle => {
+            toggle.addEventListener('click', function () {
+                const targetId = this.getAttribute('data-target');
+                const input = document.getElementById(targetId);
+                if (input.type === "password") {
+                    input.type = "text";
+                    this.textContent = "🙈";
+                } else {
+                    input.type = "password";
+                    this.textContent = "👁️";
+                }
+            });
+        });
+
     </script>
 </body>
 </html>
