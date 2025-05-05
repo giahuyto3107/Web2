@@ -75,7 +75,7 @@ VALUES
     ('taikhoan12', 'taikhoan12@gmail.com', '$2y$10$oqXTtS3NRNxd.EfMSTM86.X.hELS9KXaBSwWP1Ho7FCwZMzj1RsXe', 1, NULL, 2, '2025-04-20 08:17:59', '2025-04-20 08:17:59'), -- Khách hàng
     ('taikhoan13', 'taikhoan13@gmail.com', '$2y$10$85MOwmB35ZdXQUPJ3Aht/.qP56.jax0nQnje9f2K4AJB0ejIZv0cK', 1, NULL, 3, '2025-04-20 08:18:07', '2025-04-20 08:18:07'), -- Nhà cung cấp
     ('taikhoan14', 'taikhoan14@gmail.com', '$2y$10$SkrBaIBPnK1TrmutvJr1KubVRqAz5yAv43nhVcK6hhV4.OQehf6TC', 1, NULL, 2, '2025-04-20 08:18:18', '2025-04-20 08:18:18'), -- Khách hàng
-    ('taikhoan15', 'taikhoan15@gmail.com', '$10$K4uCTePQOEVCvlQmN2vgH.uo89p7wQsBjJxVKSfvEvAruv3dhRlKe', 1, NULL, 2, '2025-04-20 08:18:34', '2025-04-20 08:18:34'), -- Khách hàng
+    ('taikhoan15', 'taikhoan15@gmail.com', '$10$K4uCTePQOEVCvlQmN2vgH.uo89p7wQsBjJxVKSfvEvAruv3dhRlKe', 1, NULL, 2, '2025-04-20 08:18:34', '2025-04-20 08:18:34'); -- Khách hàng
     
     
 
