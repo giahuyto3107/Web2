@@ -197,21 +197,12 @@ include ('../../../BackEnd/Config/config.php');
     let confirmPassword = document.getElementById("confirm_password").value;
     let messageBox = document.getElementById("message");
 
-<<<<<<< HEAD
     if (password !== confirmPassword) {
         messageBox.textContent = "Mật khẩu xác nhận không khớp!";
         messageBox.classList.remove("hidden");
         messageBox.classList.add("text-red-500", "bg-red-100");
         return;
     }
-=======
-            // if (password !== confirmPassword) {
-            //     messageBox.textContent = "Mật khẩu xác nhận không khớp!";
-            //     messageBox.classList.remove("hidden");
-            //     messageBox.classList.add("text-red-500", "bg-red-100");
-            //     return;
-            // }
->>>>>>> d61c1ca25d29af6840bbcf4690d0740a7f7650b5
 
     let formData = new FormData(this);
 
@@ -224,7 +215,6 @@ include ('../../../BackEnd/Config/config.php');
         messageBox.textContent = data.message;
         messageBox.classList.remove("hidden");
 
-<<<<<<< HEAD
         if (data.status === "success") {
             Swal.fire({
                 icon: 'success',
@@ -233,39 +223,6 @@ include ('../../../BackEnd/Config/config.php');
                 confirmButtonText: 'OK'
             }).then(() => {
                 window.location.href = "?page=login";
-=======
-                if (data.status === "success") {
-                    messageBox.classList.remove("text-red-500", "bg-red-100");
-                    messageBox.classList.add("text-green-500", "bg-green-100");
-
-                    setTimeout(function() {
-                        console.log("Chuyển hướng...");
-                        window.location.href = "?page=login";
-                    }, 1000);
-                } else {
-                    messageBox.classList.remove("text-green-500", "bg-green-100");
-                    messageBox.classList.add("text-red-500", "bg-red-100");
-                }
-            })
-            .catch(error => console.error("Lỗi:", error));
-        });
-
-        document.querySelectorAll('.password-toggle').forEach(toggle => {
-            toggle.addEventListener('click', function () {
-                const targetId = this.getAttribute('data-target');
-                const input = document.getElementById(targetId);
-                const icon = this.querySelector('i');
-
-                if (input.type === "password") {
-                    input.type = "text";
-                    icon.classList.remove("ffa-eye-slash");
-                    icon.classList.add("fa-eye");
-                } else {
-                    input.type = "password";
-                    icon.classList.remove("fa-eye");
-                    icon.classList.add("fa-eye-slash");
-                }
->>>>>>> d61c1ca25d29af6840bbcf4690d0740a7f7650b5
             });
         } else {
             messageBox.classList.remove("text-green-500", "bg-green-100");

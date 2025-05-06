@@ -312,7 +312,7 @@ if (!$result_items) {
 <div class="order-header">
     <h2>Đơn Hàng #<?= htmlspecialchars($order['order_id']) ?></h2>
     <div class="order-info">
-        <div><b>Ngày đặt hàng:</b><?= htmlspecialchars($order['order_date']) ?></div>
+        <div><b>Ngày đặt hàng:</b> <?= htmlspecialchars($order['order_date']) ?></div>
         <div><b>Phương thức thanh toán:</b> 
             <?php
             $payment_method = htmlspecialchars($order['payment_method']);

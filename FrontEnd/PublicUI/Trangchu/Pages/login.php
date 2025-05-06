@@ -173,7 +173,7 @@
     </div>
 
     <script>
-        document.getElementById("loginForm").addEventListener("submit", function (event) {
+document.getElementById("loginForm").addEventListener("submit", function (event) {
     event.preventDefault();
 
     const email = document.getElementById("email").value.trim();
@@ -195,7 +195,6 @@
     submitButton.disabled = true;
     submitButton.textContent = "Đang đăng nhập...";
 
-<<<<<<< HEAD
     fetch("Pages/process-login.php", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -211,38 +210,6 @@
                 confirmButtonText: 'OK'
             }).then(() => {
                 window.location.href = data.redirect;
-=======
-            fetch("Pages/process-login.php", {
-                method: "POST",
-                headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                body: `email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    messageBox.textContent = "Đăng nhập thành công! Đang chuyển hướng...";
-                    messageBox.classList.remove("error");
-                    messageBox.classList.add("success");
-                    messageBox.style.display = "block";
-                    setTimeout(() => {
-                        window.location.href = data.redirect;
-                    }, 1000);
-                } else {
-                    messageBox.textContent = data.message;
-                    messageBox.classList.remove("success");
-                    messageBox.classList.add("error");
-                    messageBox.style.display = "block";
-                }
-            })
-            .catch(error => {
-                messageBox.textContent = "Lỗi hệ thống, vui lòng thử lại!";
-                messageBox.classList.add("error");
-                messageBox.style.display = "block";
-            })
-            .finally(() => {
-                submitButton.disabled = false;
-                submitButton.textContent = "Đăng nhập";
->>>>>>> d61c1ca25d29af6840bbcf4690d0740a7f7650b5
             });
         } else {
             messageBox.textContent = data.message;
