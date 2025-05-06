@@ -27,13 +27,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             // Kiểm tra mật khẩu
             if (password_verify($password, $user['password_hash'])) {
                 // Kiểm tra role_id
-                if ($user['role_id'] == 2) {
+                if (is_null($user['role_id'])) {
+                    $response["message"] = "Tài khoản không có vai trò hợp lệ.";
+                } else if ($user['role_id'] == 2) {
                     $response["message"] = "Tài khoản không có quyền truy cập.";
                 } else {
                     // Đăng nhập thành công, lưu session
                     $_SESSION["user_id"] = $user["account_id"];
                     $_SESSION["user_name"] = $user["account_name"];
                     $_SESSION["user_email"] = $user["email"];
+                    $_SESSION["role_id"] = $user["role_id"];
                     $response["success"] = true;
                     $response["message"] = "Đăng nhập thành công!";
                     $response["redirect"] = "index.php"; // Chuyển hướng đến trang chủ
