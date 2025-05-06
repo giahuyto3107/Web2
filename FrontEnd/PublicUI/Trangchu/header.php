@@ -69,7 +69,7 @@ $featured_collection = $conn->query("SELECT p.* FROM product p JOIN product_cate
         }
 
         header .logo h1 {
-            font-family: 'Georgia', serif;
+            font-family: 'Poppins', sans-serif;
             font-size: 2rem;
             font-weight: 700;
             color: rgb(0, 0, 0);
@@ -250,7 +250,7 @@ $featured_collection = $conn->query("SELECT p.* FROM product p JOIN product_cate
         .profile-icon .username {
             font-weight: 400;
             font-size: 1.2rem;
-            font-family: 'Georgia', serif;
+            font-family: 'Poppins', sans-serif;
         }
         /* Search Results Styles */
         .search-results {

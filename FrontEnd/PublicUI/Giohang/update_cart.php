@@ -6,34 +6,50 @@ $user_id = $_SESSION['user_id'];
 $product_id = $_POST['product_id'];
 $action = $_POST['action'];
 
+$response = [
+    "success" => false,
+    "new_quantity" => 0,
+    "new_total_price" => 0,
+    "cart_total" => 0,
+    "message" => ""
+];
+
 if ($action === "increase") {
-    $sql = "UPDATE cart_items SET quantity = quantity +1 WHERE user_id = $user_id AND product_id = $product_id";
+    $check_sql = "SELECT cart_items.quantity, product.stock_quantity 
+                  FROM cart_items 
+                  JOIN product ON cart_items.product_id = product.product_id 
+                  WHERE cart_items.user_id = $user_id AND cart_items.product_id = $product_id";
+    $check_result = mysqli_query($conn, $check_sql);
+    $check_row = mysqli_fetch_assoc($check_result);
+
+    if ($check_row['quantity'] >= $check_row['stock_quantity']) {
+        $response["message"] = "Số lượng đã đạt tối đa trong kho!";
+    } else {
+        $sql = "UPDATE cart_items SET quantity = quantity + 1 WHERE user_id = $user_id AND product_id = $product_id";
+        if (mysqli_query($conn, $sql)) {
+            $response["success"] = true;
+        }
+    }
 } elseif ($action === "decrease") {
-    $sql = "UPDATE cart_items SET quantity = quantity -1  WHERE user_id = $user_id AND product_id = $product_id AND quantity > 1";
+    $sql = "UPDATE cart_items SET quantity = quantity - 1 WHERE user_id = $user_id AND product_id = $product_id AND quantity > 1";
+    if (mysqli_query($conn, $sql)) {
+        $response["success"] = true;
+    }
 }
-
-mysqli_query($conn, $sql);
-
 
 $sql = "SELECT quantity, price FROM cart_items JOIN product ON cart_items.product_id = product.product_id WHERE cart_items.user_id = $user_id AND cart_items.product_id = $product_id";
 $result = mysqli_query($conn, $sql);
 $row = mysqli_fetch_assoc($result);
-$new_quantity = $row['quantity'];
-$new_total_price = $row['quantity'] * $row['price'];
-
+$response["new_quantity"] = $row['quantity'];
+$response["new_total_price"] = $row['quantity'] * $row['price'];
 
 
 $sql = "SELECT SUM(cart_items.quantity * product.price) AS cart_total FROM cart_items JOIN product ON cart_items.product_id = product.product_id WHERE cart_items.user_id = $user_id";
 $result = mysqli_query($conn, $sql);
 $row = mysqli_fetch_assoc($result);
-$cart_total = $row['cart_total'];
+$response["cart_total"] = $row['cart_total'];
 
 mysqli_close($conn);
 
-echo json_encode([
-    "success" => true,
-    "new_quantity" => $new_quantity,
-    "new_total_price" => $new_total_price,
-    "cart_total" => $cart_total
-]);
+echo json_encode($response);
 ?>

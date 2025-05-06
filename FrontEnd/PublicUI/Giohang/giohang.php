@@ -10,7 +10,7 @@ if (!$conn) {
 $user_id = $_SESSION['user_id'];
 
 // Lấy dữ liệu giỏ hàng
-$sql = "SELECT cart_items.product_id, product.product_name, product.image_url, product.price, cart_items.quantity 
+$sql = "SELECT cart_items.product_id, product.product_name, product.stock_quantity, product.image_url, product.price, cart_items.quantity 
         FROM cart_items 
         JOIN product ON cart_items.product_id = product.product_id
         WHERE cart_items.user_id = $user_id";
@@ -400,28 +400,35 @@ $(document).ready(function () {
         $("#cart-total").text(new Intl.NumberFormat('vi-VN').format(total) + "₫");
     }
 
-    // Cập nhật số lượng sản phẩm
     $(".update-quantity").click(function () {
-        var productId = $(this).data("product-id");
-        var action = $(this).data("action");
+    var productId = $(this).data("product-id");
+    var action = $(this).data("action");
 
-        $.ajax({
-            url: "http://localhost/Web2/FrontEnd/PublicUI/Giohang/update_cart.php",
-            type: "POST",
-            data: { product_id: productId, action: action },
-            success: function (response) {
-                var data = JSON.parse(response);
-                if (data.success) {
-                    $("#quantity-" + productId).text(data.new_quantity);
-                    $("#total-" + productId).text(new Intl.NumberFormat('vi-VN').format(data.new_total_price) + "₫");
-                    $("#checkbox-" + productId).data("price", parseFloat(data.new_total_price));
-                    if ($("#checkbox-" + productId).prop("checked")) {
-                        updateTotalPrice();
-                    }
+    $.ajax({
+        url: "http://localhost/Web2/FrontEnd/PublicUI/Giohang/update_cart.php",
+        type: "POST",
+        data: { product_id: productId, action: action },
+        success: function (response) {
+            var data = JSON.parse(response);
+            if (data.success) {
+                $("#quantity-" + productId).text(data.new_quantity);
+                $("#total-" + productId).text(new Intl.NumberFormat('vi-VN').format(data.new_total_price) + "₫");
+                $("#checkbox-" + productId).data("price", parseFloat(data.new_total_price));
+                if ($("#checkbox-" + productId).prop("checked")) {
+                    updateTotalPrice();
                 }
             }
-        });
+            if (data.message) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Thông báo',
+                    text: data.message,
+                    confirmButtonText: 'OK'
+                });
+            }
+        }
     });
+});
 
     // Cập nhật sản phẩm được chọn
     function updateSelectedProducts() {

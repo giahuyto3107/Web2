@@ -174,76 +174,78 @@
 
     <script>
         document.getElementById("loginForm").addEventListener("submit", function (event) {
-            event.preventDefault();
+    event.preventDefault();
 
-            const email = document.getElementById("email").value.trim();
-            const password = document.getElementById("password").value.trim();
-            const messageBox = document.getElementById("login-message");
-            const submitButton = document.getElementById("submit-login");
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const messageBox = document.getElementById("login-message");
+    const submitButton = document.getElementById("submit-login");
 
-            messageBox.style.display = "none";
-            messageBox.textContent = "";
-            messageBox.classList.remove("success", "error");
+    messageBox.style.display = "none";
+    messageBox.textContent = "";
+    messageBox.classList.remove("success", "error");
 
-            if (!email || !password) {
-                messageBox.textContent = "Vui lòng nhập đầy đủ email và mật khẩu!";
-                messageBox.classList.add("error");
-                messageBox.style.display = "block";
-                return;
-            }
+    if (!email || !password) {
+        messageBox.textContent = "Vui lòng nhập đầy đủ email và mật khẩu!";
+        messageBox.classList.add("error");
+        messageBox.style.display = "block";
+        return;
+    }
 
-            submitButton.disabled = true;
-            submitButton.textContent = "Đang đăng nhập...";
+    submitButton.disabled = true;
+    submitButton.textContent = "Đang đăng nhập...";
 
-            fetch("Pages/process-login.php", {
-                method: "POST",
-                headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                body: `email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    messageBox.textContent = "Đăng nhập thành công! Đang chuyển hướng...";
-                    messageBox.classList.remove("error");
-                    messageBox.classList.add("success");
-                    messageBox.style.display = "block";
-                    setTimeout(() => {
-                        window.location.href = data.redirect;
-                    }, 2000);
-                } else {
-                    messageBox.textContent = data.message;
-                    messageBox.classList.remove("success");
-                    messageBox.classList.add("error");
-                    messageBox.style.display = "block";
-                }
-            })
-            .catch(error => {
-                messageBox.textContent = "Lỗi hệ thống, vui lòng thử lại!";
-                messageBox.classList.add("error");
-                messageBox.style.display = "block";
-            })
-            .finally(() => {
-                submitButton.disabled = false;
-                submitButton.textContent = "Đăng nhập";
+    fetch("Pages/process-login.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Thành công',
+                text: 'Đăng nhập thành công!',
+                confirmButtonText: 'OK'
+            }).then(() => {
+                window.location.href = data.redirect;
             });
-        });
-        document.querySelectorAll('.password-toggle').forEach(toggle => {
-            toggle.addEventListener('click', function () {
-                const targetId = this.getAttribute('data-target');
-                const input = document.getElementById(targetId);
-                const icon = this.querySelector('i');
+        } else {
+            messageBox.textContent = data.message;
+            messageBox.classList.remove("success");
+            messageBox.classList.add("error");
+            messageBox.style.display = "block";
+        }
+    })
+    .catch(error => {
+        messageBox.textContent = "Lỗi hệ thống, vui lòng thử lại!";
+        messageBox.classList.add("error");
+        messageBox.style.display = "block";
+    })
+    .finally(() => {
+        submitButton.disabled = false;
+        submitButton.textContent = "Đăng nhập";
+    });
+});
 
-                if (input.type === "password") {
-                    input.type = "text";
-                    icon.classList.remove("ffa-eye-slash");
-                    icon.classList.add("fa-eye");
-                } else {
-                    input.type = "password";
-                    icon.classList.remove("fa-eye");
-                    icon.classList.add("fa-eye-slash");
-                }
-            });
-        });
+document.querySelectorAll('.password-toggle').forEach(toggle => {
+    toggle.addEventListener('click', function () {
+        const targetId = this.getAttribute('data-target');
+        const input = document.getElementById(targetId);
+        const icon = this.querySelector('i');
+
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.remove("fa-eye-slash");
+            icon.classList.add("fa-eye");
+        } else {
+            input.type = "password";
+            icon.classList.remove("fa-eye");
+            icon.classList.add("fa-eye-slash");
+        }
+    });
+});
     </script>
 </body>
 </html>

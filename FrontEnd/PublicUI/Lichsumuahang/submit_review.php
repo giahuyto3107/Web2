@@ -46,7 +46,7 @@ if ($existing_review) {
     
     if (mysqli_stmt_execute($stmt_insert)) {
         $query_update_order_item = "UPDATE order_items SET review = 1 WHERE order_id IN (SELECT order_id FROM orders WHERE user_id = ?) AND product_id = ? AND order_item_id IN (SELECT order_item_id FROM order_items WHERE product_id = ? AND order_id IN (SELECT order_id FROM orders WHERE user_id = ?))";
-        $stmt_order_item_update = mysqli_prepare($stmt_update_order_item);
+        $stmt_order_item_update = mysqli_prepare($conn, $query_update_order_item);
         mysqli_stmt_bind_param($stmt_order_item_update, "iiii", $user_id, $product_id, $product_id, $user_id);
         mysqli_stmt_execute($stmt_order_item_update);
 

@@ -241,7 +241,7 @@ $user_id = $_SESSION['user_id'];
                         </div>
                     </div>
                     <div class="order-details">
-                        <div class="total">Tổng giá trị: <?= number_format($row['total_amount'], 0, ',', '.') ?> đ</div>
+                    <div class="total">Tổng giá trị: <?= str_replace(['.00', '.'], ['', ','], number_format((float)$row['total_amount'], 2, '.', '')) ?> đ</div>
                         <a href="?page=order_details&order_id=<?= htmlspecialchars($row['order_id']) ?>" 
                         data-page="order_details&order_id=<?= htmlspecialchars($row['order_id']) ?>" 
                         class="btn btn-primary">Xem chi tiết</a>
