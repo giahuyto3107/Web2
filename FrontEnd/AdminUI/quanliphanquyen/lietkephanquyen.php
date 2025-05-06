@@ -77,10 +77,10 @@
 
             // Hàm chuyển status_id thành văn bản
             function getStatusText(statusId) {
-                switch (statusId) {
-                    case "1": return 'Hoạt động';
-                    case "2": return 'Không hoạt động';
-                    case "6": return 'Deleted';
+                switch (parseInt(statusId)) {
+                    case 1: return 'Hoạt động';
+                    case 2: return 'Không hoạt động';
+                    case 6: return 'Deleted';
                     default: return 'N/A';
                 }
             }
@@ -131,7 +131,7 @@
                 }
 
                 tableBody.innerHTML = '';
-                const activePermissions = displayedPermissions.filter(permission => permission.status_id !== 6);
+                const activePermissions = displayedPermissions.filter(permission => parseInt(permission.status_id) !== 6);
 
                 if (activePermissions.length > 0) {
                     noProductsEl.style.display = 'none';
@@ -146,9 +146,9 @@
                                 <div class="dropdown">
                                     <button class="dropdownButton"><i class="fa fa-ellipsis-v dropIcon"></i></button>
                                     <div class="dropdown-content">
-                                        <a href="#" class="viewPermission" data-permission-id="11" data-action="Xem" data-permission-id="${permission.permission_id}">Xem Phân Quyền <i class="fa fa-eye"></i></a>
-                                        <a href="#" class="editPermission" data-permission-id="11" data-action="Sửa" data-permission-id="${permission.permission_id}">Sửa Phân Quyền <i class="fa fa-edit"></i></a>
-                                        <a href="#" class="deletePermission" data-permission-id="11" data-action="Xóa" data-permission-id="${permission.permission_id}">Xóa Phân Quyền <i class="fa fa-trash"></i></a>
+                                        <a href="#" class="viewPermission" data-permission-id="11" data-action="Xem" data-permissionrole-id="${permission.permission_id}">Xem Phân Quyền <i class="fa fa-eye"></i></a>
+                                        <a href="#" class="editPermission" data-permission-id="11" data-action="Sửa" data-permissionrole-id="${permission.permission_id}">Sửa Phân Quyền <i class="fa fa-edit"></i></a>
+                                        <a href="#" class="deletePermission" data-permission-id="11" data-action="Xóa" data-permissionrole-id="${permission.permission_id}">Xóa Phân Quyền <i class="fa fa-trash"></i></a>
                                     </div>
                                 </div>
                             </td>
@@ -186,8 +186,8 @@
                 if (!target) return;
 
                 e.preventDefault();
-                const permissionId = target.getAttribute('data-permission-id');
-                const permission = permissions.find(per => per.permission_id === permissionId);
+                const permissionId = parseInt(target.getAttribute('data-permissionrole-id')); // Ép kiểu thành int
+                const permission = permissions.find(per => parseInt(per.permission_id) === permissionId);
 
                 if (!permission) {
                     console.error('Permission not found:', permissionId);
@@ -213,10 +213,10 @@
                 const editModal = document.getElementById('edit-modal');
                 const form = document.getElementById('modal-edit-form');
 
-                document.getElementById('modal-edit-permission-id').value = permission.permission_id;
+                document.getElementById('modal-edit-permission-id').value = parseInt(permission.permission_id); // Ép kiểu thành int
                 document.getElementById('modal-edit-name').value = permission.permission_name || '';
                 document.getElementById('modal-edit-desc').value = permission.permission_description || '';
-                document.getElementById('modal-edit-status').value = permission.status_id;
+                document.getElementById('modal-edit-status').value = parseInt(permission.status_id); // Ép kiểu thành int
 
                 clearFormErrors(form);
                 form.removeEventListener('submit', handleEditSubmit);
@@ -253,6 +253,10 @@
             // Hàm cập nhật quyền
             function updatePermission(form) {
                 const formData = new FormData(form);
+                // Đảm bảo các giá trị là số nguyên
+                formData.set('permission_id', parseInt(formData.get('permission_id')));
+                formData.set('status_id', parseInt(formData.get('status_id')));
+
                 fetch('../../BackEnd/Model/quanliphanquyen/xuliphanquyen.php', {
                     method: 'POST',
                     body: formData
@@ -298,6 +302,8 @@
             // Hàm thêm quyền
             function addProduct(formEl) {
                 const formData = new FormData(formEl);
+                formData.set('status_id', parseInt(formData.get('status_id'))); // Ép kiểu status_id thành int
+
                 fetch('../../BackEnd/Model/quanliphanquyen/xuliphanquyen.php', {
                     method: 'POST',
                     body: formData
@@ -343,7 +349,7 @@
             // Hàm xóa quyền (cập nhật status_id thành 6)
             function deleteProduct(permissionId) {
                 const formData = new FormData();
-                formData.append('permission_id', permissionId);
+                formData.append('permission_id', parseInt(permissionId)); // Ép kiểu thành int
                 formData.append('status_id', 6);
 
                 fetch('../../BackEnd/Model/quanliphanquyen/xuliphanquyen.php', {
@@ -396,7 +402,11 @@
             const deleteModalEl = document.getElementById('delete-modal');
             const deleteDeleteButton = deleteModalEl.querySelector('#delete-delete-button');
             deleteDeleteButton.addEventListener('click', () => {
-                const permissionId = parseInt(deleteModalEl.getAttribute('data-permission-id'));
+                const permissionId = parseInt(deleteModalEl.getAttribute('data-permission-id')); // Ép kiểu thành int
+                if (isNaN(permissionId)) {
+                    console.error('Invalid permission ID:', permissionId);
+                    return;
+                }
                 deleteProduct(permissionId);
             });
 
@@ -435,88 +445,88 @@
             }
 
             // Hàm validate form cho edit-modal
-    function validateModalFormInputs(form) {
-        const inputs = form.querySelectorAll('input[required], textarea[required], select[required]');
-        let isError = false;
+            function validateModalFormInputs(form) {
+                const inputs = form.querySelectorAll('input[required], textarea[required], select[required]');
+                let isError = false;
 
-        inputs.forEach(input => {
-            const value = input.value.trim();
-            const errorEl = input.parentElement.querySelector('.modal-error');
-            input.style.border = '';
-            if (errorEl) errorEl.textContent = '';
+                inputs.forEach(input => {
+                    const value = input.value.trim();
+                    const errorEl = input.parentElement.querySelector('.modal-error');
+                    input.style.border = '';
+                    if (errorEl) errorEl.textContent = '';
 
-            if (!value) {
-                isError = true;
-                input.style.border = '1px solid var(--clr-error)';
-                if (errorEl) errorEl.textContent = 'Trường này không được để trống!';
-                return;
+                    if (!value) {
+                        isError = true;
+                        input.style.border = '1px solid var(--clr-error)';
+                        if (errorEl) errorEl.textContent = 'Trường này không được để trống!';
+                        return;
+                    }
+
+                    if (input.id === 'modal-edit-name') {
+                        if (!/^[\p{L}\s-]+$/u.test(value)) {
+                            isError = true;
+                            input.style.border = '1px solid var(--clr-error)';
+                            if (errorEl) errorEl.textContent = 'Tên quyền chỉ chứa chữ cái, khoảng trắng, và dấu gạch ngang';
+                        } else if (value.length > 50) {
+                            isError = true;
+                            input.style.border = '1px solid var(--clr-error)';
+                            if (errorEl) errorEl.textContent = 'Tên quyền không được vượt quá 50 ký tự';
+                        }
+                    }
+
+                    if (input.id === 'modal-edit-desc') {
+                        if (value.length > 200) {
+                            isError = true;
+                            input.style.border = '1px solid var(--clr-error)';
+                            if (errorEl) errorEl.textContent = 'Mô tả không được vượt quá 200 ký tự';
+                        }
+                    }
+                });
+
+                return isError;
             }
 
-            if (input.id === 'modal-edit-name') {
-                if (!/^[\p{L}\s-]+$/u.test(value)) {
-                    isError = true;
-                    input.style.border = '1px solid var(--clr-error)';
-                    if (errorEl) errorEl.textContent = 'Tên quyền chỉ chứa chữ cái, khoảng trắng, và dấu gạch ngang';
-                } else if (value.length > 50) {
-                    isError = true;
-                    input.style.border = '1px solid var(--clr-error)';
-                    if (errorEl) errorEl.textContent = 'Tên quyền không được vượt quá 50 ký tự';
-                }
+            // Hàm validate form cho add-modal
+            function validateAddModalFormInputs(form) {
+                const inputs = form.querySelectorAll('input[required], textarea[required], select[required]');
+                let isError = false;
+
+                inputs.forEach(input => {
+                    const value = input.value.trim();
+                    const errorEl = input.parentElement.querySelector('.modal-error');
+                    input.style.border = '';
+                    if (errorEl) errorEl.textContent = '';
+
+                    if (!value) {
+                        isError = true;
+                        input.style.border = '1px solid var(--clr-error)';
+                        if (errorEl) errorEl.textContent = 'Trường này không được để trống!';
+                        return;
+                    }
+
+                    if (input.id === 'modal-add-name') {
+                        if (!/^[\p{L}\s-]+$/u.test(value)) {
+                            isError = true;
+                            input.style.border = '1px solid var(--clr-error)';
+                            if (errorEl) errorEl.textContent = 'Tên quyền chỉ chứa chữ cái, khoảng trắng, và dấu gạch ngang';
+                        } else if (value.length > 50) {
+                            isError = true;
+                            input.style.border = '1px solid var(--clr-error)';
+                            if (errorEl) errorEl.textContent = 'Tên quyền không được vượt quá 50 ký tự';
+                        }
+                    }
+
+                    if (input.id === 'modal-add-desc') {
+                        if (value.length > 200) {
+                            isError = true;
+                            input.style.border = '1px solid var(--clr-error)';
+                            if (errorEl) errorEl.textContent = 'Mô tả không được vượt quá 200 ký tự';
+                        }
+                    }
+                });
+
+                return isError;
             }
-
-            if (input.id === 'modal-edit-desc') {
-                if (value.length > 200) {
-                    isError = true;
-                    input.style.border = '1px solid var(--clr-error)';
-                    if (errorEl) errorEl.textContent = 'Mô tả không được vượt quá 200 ký tự';
-                }
-            }
-        });
-
-        return isError;
-    }
-
-    // Hàm validate form cho add-modal
-    function validateAddModalFormInputs(form) {
-        const inputs = form.querySelectorAll('input[required], textarea[required], select[required]');
-        let isError = false;
-
-        inputs.forEach(input => {
-            const value = input.value.trim();
-            const errorEl = input.parentElement.querySelector('.modal-error');
-            input.style.border = '';
-            if (errorEl) errorEl.textContent = '';
-
-            if (!value) {
-                isError = true;
-                input.style.border = '1px solid var(--clr-error)';
-                if (errorEl) errorEl.textContent = 'Trường này không được để trống!';
-                return;
-            }
-
-            if (input.id === 'modal-add-name') {
-                if (!/^[\p{L}\s-]+$/u.test(value)) {
-                    isError = true;
-                    input.style.border = '1px solid var(--clr-error)';
-                    if (errorEl) errorEl.textContent = 'Tên quyền chỉ chứa chữ cái, khoảng trắng, và dấu gạch ngang';
-                } else if (value.length > 50) {
-                    isError = true;
-                    input.style.border = '1px solid var(--clr-error)';
-                    if (errorEl) errorEl.textContent = 'Tên quyền không được vượt quá 50 ký tự';
-                }
-            }
-
-            if (input.id === 'modal-add-desc') {
-                if (value.length > 200) {
-                    isError = true;
-                    input.style.border = '1px solid var(--clr-error)';
-                    if (errorEl) errorEl.textContent = 'Mô tả không được vượt quá 200 ký tự';
-                }
-            }
-        });
-
-        return isError;
-    }
 
             // Hàm thêm dữ liệu vào modal
             function addModalData(modalEl, permission, type) {
@@ -526,10 +536,10 @@
                     modalEl.querySelector("#modal-view-desc").textContent = permission.permission_description || 'N/A';
                     modalEl.querySelector("#modal-view-status").textContent = getStatusText(permission.status_id);
                 } else if (type === "value") {
-                    modalEl.querySelector("#modal-edit-permission-id").value = permission.permission_id;
+                    modalEl.querySelector("#modal-edit-permission-id").value = parseInt(permission.permission_id);
                     modalEl.querySelector("#modal-edit-name").value = permission.permission_name || '';
                     modalEl.querySelector("#modal-edit-desc").value = permission.permission_description || '';
-                    modalEl.querySelector("#modal-edit-status").value = permission.status_id;
+                    modalEl.querySelector("#modal-edit-status").value = parseInt(permission.status_id);
                 }
             }
 

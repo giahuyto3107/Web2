@@ -8,8 +8,8 @@ try {
                     p.permission_name,
                     p.permission_description,
                     p.status_id
-                from permission p
-                join status st on st.id = p.status_id
+                FROM permission p
+                JOIN status st ON st.id = p.status_id
                 ORDER BY p.permission_id ASC";
     $result = $conn->query($sql);
 
@@ -21,10 +21,10 @@ try {
     if ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
             $permissions[] = [
-                'permission_id' => $row['permission_id'],
+                'permission_id' => (int)$row['permission_id'], // Ép kiểu thành int
                 'permission_name' => $row['permission_name'],
                 'permission_description' => $row['permission_description'],
-                'status_id' => $row['status_id']
+                'status_id' => (int)$row['status_id'] // Ép kiểu thành int
             ];
         }
     }
