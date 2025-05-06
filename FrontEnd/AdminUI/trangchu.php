@@ -1,6 +1,6 @@
 <div class="welcome-container">
     <h1 class="welcome-title">CHÀO MỪNG ĐẾN VỚI TRANG ADMIN</h1>
-    <p class="welcome-subtitle">CỬA HÀNG ĐIỆN THOẠI NHỎ</p>
+    <p class="welcome-subtitle">CỬA HÀNG GÓC SÁCH NHỎ</p>
     <div class="welcome-animation"></div>
 </div>
 

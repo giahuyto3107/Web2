@@ -51,7 +51,7 @@ $conn->close();
 <div class="sidebar">
     <div class="top">
         <div class="logo">
-            <span>Điện Thoại Nhỏ</span>
+            <span>Góc Sách Nhỏ</span>
         </div>
         <i class="bx bx-menu" id="sidebar-menu-btn"></i>
     </div>

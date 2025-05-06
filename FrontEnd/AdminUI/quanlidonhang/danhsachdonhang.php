@@ -160,6 +160,15 @@
             }
         }
 
+        // Hàm chuyển đổi payment_method
+        function formatPaymentMethod(paymentMethod) {
+            switch (paymentMethod) {
+                case "cod": return "Tiền mặt";
+                case "ck": return "Online";
+                default: return paymentMethod || "N/A";
+            }
+        }
+
         // Hàm render bảng
         function renderTable(displayedOrders) {
             const tableBody = document.getElementById('table-body');
@@ -177,7 +186,10 @@
             });
 
             tableBody.innerHTML = '';
-            const activeOrders = displayedOrders;
+            // Sắp xếp theo ngày đặt giảm dần (mới nhất lên đầu)
+            const activeOrders = [...displayedOrders].sort((a, b) => {
+                return new Date(b.order_date) - new Date(a.order_date);
+            });
 
             if (activeOrders.length > 0) {
                 noProductsEl.style.display = 'none';
@@ -239,7 +251,7 @@
                         <td>${order.order_date || 'N/A'}</td>
                         <td>${formatCurrencyVND(order.total_amount)}</td>
                         <td>${getStatusText(order.status_id)}</td>
-                        <td>${order.payment_method || 'N/A'}</td>
+                        <td>${formatPaymentMethod(order.payment_method)}</td>
                         <td>${order.phone || 'N/A'}</td>
                         <td>${order.address || 'N/A'}</td>
                         <td class="actions">
@@ -316,7 +328,7 @@
                 }
             } else if (filterBy === 'payment_method') {
                 if (searchPaymentMethod) {
-                    filteredData = orders.filter(order => order.payment_method === searchPaymentMethod);
+                    filteredData = orders.filter(order => formatPaymentMethod(order.payment_method) === searchPaymentMethod);
                 }
             } else if (filterBy === 'order_date') {
                 if (dateFrom || dateTo) {
@@ -487,7 +499,7 @@
                     document.getElementById('modal-view-order-date').textContent = orderInfo.order_date || 'N/A';
                     document.getElementById('modal-view-total-amount').textContent = formatCurrencyVND(totalValue);
                     document.getElementById('modal-view-status').textContent = getStatusText(orderInfo.status_id);
-                    document.getElementById('modal-view-payment-method').textContent = orderInfo.payment_method || 'N/A';
+                    document.getElementById('modal-view-payment-method').textContent = formatPaymentMethod(orderInfo.payment_method);
                     document.getElementById('modal-view-phone').textContent = orderInfo.phone || 'N/A';
                     document.getElementById('modal-view-address').textContent = orderInfo.address || 'N/A';
 
