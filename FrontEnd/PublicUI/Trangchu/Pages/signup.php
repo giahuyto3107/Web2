@@ -148,7 +148,7 @@ include ('../../../BackEnd/Config/config.php');
             right: 12px;
             transform: translateY(-50%);
             cursor: pointer;
-            font-size: 1.5rem; /* Tăng kích thước */
+            font-size: 1.2rem; /* Tăng kích thước */
             color: #777;
             user-select: none;
             line-height: 1;
@@ -173,12 +173,12 @@ include ('../../../BackEnd/Config/config.php');
                 <input type="text" id="address" name="address" placeholder="Địa chỉ" required>
                 <div class="password-wrapper">
                     <input type="password" id="password" name="password" placeholder="Mật khẩu" required>
-                    <span class="password-toggle" data-target="password">👁️</span>
+                    <span class="password-toggle" data-target="password"><i class="fa-solid fa-eye-slash"></i></span>
                 </div>
 
                 <div class="password-wrapper">
                     <input type="password" id="confirm_password" name="confirm_password" placeholder="Xác nhận mật khẩu" required>
-                    <span class="password-toggle" data-target="confirm_password">👁️</span>
+                    <span class="password-toggle" data-target="confirm_password"><i class="fa-solid fa-eye-slash"></i></span>
                 </div>
                 <button type="submit">Đăng ký</button>
             </form>
@@ -235,12 +235,16 @@ include ('../../../BackEnd/Config/config.php');
             toggle.addEventListener('click', function () {
                 const targetId = this.getAttribute('data-target');
                 const input = document.getElementById(targetId);
+                const icon = this.querySelector('i');
+
                 if (input.type === "password") {
                     input.type = "text";
-                    this.textContent = "🙈";
+                    icon.classList.remove("ffa-eye-slash");
+                    icon.classList.add("fa-eye");
                 } else {
                     input.type = "password";
-                    this.textContent = "👁️";
+                    icon.classList.remove("fa-eye");
+                    icon.classList.add("fa-eye-slash");
                 }
             });
         });

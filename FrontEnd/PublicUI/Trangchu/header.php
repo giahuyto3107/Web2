@@ -238,7 +238,20 @@ $featured_collection = $conn->query("SELECT p.* FROM product p JOIN product_cate
             transform: translateX(0);
             background-color: black;
         }
+        /* Username style*/
+        .profile-icon {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            color: #fff; /* hoặc màu chữ tùy theo giao diện */
+        }
 
+        .profile-icon .username {
+            font-weight: 400;
+            font-size: 1.2rem;
+            font-family: 'Georgia', serif;
+        }
         /* Search Results Styles */
         .search-results {
             position: absolute;
@@ -382,6 +395,7 @@ $featured_collection = $conn->query("SELECT p.* FROM product p JOIN product_cate
             <?php if (isset($_SESSION['user_id'])): ?>
                 <div class="profile-icon">
                     <i class="fa-solid fa-user"></i>
+                    <span class="username"><?php echo htmlspecialchars($user_name); ?></span>
                 </div>
                 <div class="dropdown-menu">
                     <a href="?page=profile" data-page="profile"><i class="fa-solid fa-user"></i> Hồ sơ</a>
