@@ -68,6 +68,9 @@
     let accounts = []; // Dữ liệu gốc, không thay đổi
     let roles = []; // Danh sách chức vụ
 
+    // Lấy session user_id từ PHP
+    const sessionUserId = <?php echo isset($_SESSION['user_id']) ? intval($_SESSION['user_id']) : 0; ?>;
+
     // Hàm chuyển status_id thành văn bản
     function getStatusText(statusId) {
       switch (statusId) {
@@ -247,12 +250,24 @@
           console.error('Modal sửa với id "edit-modal" không được tìm thấy trong DOM!');
         }
       } else if (target.classList.contains('deleteAccount')) {
-        const deleteModalEl = document.getElementById("delete-modal");
-        if (deleteModalEl) {
-          deleteModalEl.setAttribute("data-account-id", accountId);
-          deleteModalEl.showModal();
+        // Kiểm tra nếu tài khoản đang xóa là của chính người dùng
+        if (parseInt(accountId) === sessionUserId) {
+          const successMessage = document.getElementById('success-message');
+          successMessage.querySelector('.success-text p').textContent = 'Bạn không thể xóa chính tài khoản của mình!';
+          successMessage.style.display = 'block';
+          successMessage.style.backgroundColor = 'var(--clr-error)';
+          setTimeout(() => {
+            successMessage.style.display = 'none';
+            successMessage.style.backgroundColor = '';
+          }, 3000);
         } else {
-          console.error('Modal xóa với id "delete-modal" không được tìm thấy trong DOM!');
+          const deleteModalEl = document.getElementById("delete-modal");
+          if (deleteModalEl) {
+            deleteModalEl.setAttribute("data-account-id", accountId);
+            deleteModalEl.showModal();
+          } else {
+            console.error('Modal xóa với id "delete-modal" không được tìm thấy trong DOM!');
+          }
         }
       }
     });

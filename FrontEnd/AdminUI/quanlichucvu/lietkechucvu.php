@@ -62,6 +62,9 @@
         // Biến toàn cục
         let roles = []; // Dữ liệu gốc, không thay đổi
 
+        // Lấy session role_id từ PHP
+        const sessionRoleId = <?php echo isset($_SESSION['role_id']) ? intval($_SESSION['role_id']) : 0; ?>;
+
         // Hàm chuyển status_id thành văn bản
         function getStatusText(statusId) {
             switch (statusId) {
@@ -133,9 +136,9 @@
                                 <button class="dropdownButton"><i class="fa fa-ellipsis-v dropIcon"></i></button>
                                 <div class="dropdown-content">
                                     <a href="#" class="viewRole" data-permission-id="10" data-action="Xem" data-role-id="${role.id}">Xem <i class="fa fa-eye"></i></a>
-                                    <a href="#" class="editRole" data-permission-id="10" data-action="Sửa" data-role-id="${role.id}">Sửa <i class="fa fa-edit"></i></a>
-                                    <a href="#" class="deleteRole" data-permission-id="10" data-action="Xóa" data-role-id="${role.id}">Xóa <i class="fa fa-trash"></i></a>
-                                    <a href="#" class="updatePermission" data-permission-id="10" data-action="Cập nhật phân quyền" data-role-id="${role.id}" data-role-name="${role.role_name}">Cập nhật quyền <i class="fa fa-key"></i></a>
+                                    ${role.id === 1 || role.id === 2 ? '' : `<a href="#" class="editRole" data-permission-id="10" data-action="Sửa" data-role-id="${role.id}">Sửa <i class="fa fa-edit"></i></a>`}
+                                    ${role.id === 1 || role.id === 2 ? '' : `<a href="#" class="deleteRole" data-permission-id="10" data-action="Xóa" data-role-id="${role.id}">Xóa <i class="fa fa-trash"></i></a>`}
+                                    ${role.id === 1 || role.id === 2 ? '' : `<a href="#" class="updatePermission" data-permission-id="10" data-action="Cập nhật phân quyền" data-role-id="${role.id}" data-role-name="${role.role_name}">Cập nhật quyền <i class="fa fa-key"></i></a>`}
                                 </div>
                             </div>
                         </td>
@@ -188,13 +191,29 @@
                 addModalData(viewModalEl, role, "innerHTML");
                 viewModalEl.showModal();
             } else if (target.classList.contains('editRole')) {
+                if (roleId === 1 || roleId === 2) {
+                    alert('Không thể chỉnh sửa chức vụ hệ thống hoặc chức vụ khách hàng.');
+                    return;
+                }
                 const editModalEl = document.getElementById("edit-modal");
                 openEditModal(role);
             } else if (target.classList.contains('deleteRole')) {
+                if (roleId === 1 || roleId === 2) {
+                    alert('Không thể xóa chức vụ hệ thống hoặc chức vụ khách hàng.');
+                    return;
+                }
+                if (roleId === sessionRoleId) {
+                    alert('Bạn không thể xóa chính chức vụ của mình!');
+                    return;
+                }
                 const deleteModalEl = document.getElementById("delete-modal");
                 deleteModalEl.setAttribute("data-role-id", roleId);
                 deleteModalEl.showModal();
             } else if (target.classList.contains('updatePermission')) {
+                if (roleId === 1 || roleId === 2) {
+                    alert('Không thể cập nhật quyền cho chức vụ hệ thống hoặc chức vụ khách hàng.');
+                    return;
+                }
                 const permissionModal = document.getElementById('permission-modal');
                 document.getElementById('modal-role-id').value = roleId;
                 document.getElementById('modal-role-name').textContent = roleName;
