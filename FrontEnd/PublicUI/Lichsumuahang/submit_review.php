@@ -37,7 +37,6 @@ if (mysqli_stmt_execute($stmt_insert)) {
 
     echo json_encode(["status" => "success", "message" => "Gửi đánh giá thành công!"]);
 } else {
-<<<<<<< HEAD
     // Thêm mới review
     $query_insert = "INSERT INTO review (user_id, product_id, rating, review_text, feedback, status_id) VALUES (?, ?, ?, ?, NULL, 1)";
     $stmt_insert = mysqli_prepare($conn, $query_insert);
@@ -53,9 +52,6 @@ if (mysqli_stmt_execute($stmt_insert)) {
     } else {
         echo json_encode(["status" => "error", "message" => "Có lỗi khi lưu đánh giá."]);
     }
-=======
-    echo json_encode(["status" => "error", "message" => "Có lỗi khi lưu đánh giá."]);
->>>>>>> d61c1ca25d29af6840bbcf4690d0740a7f7650b5
 }
 
 mysqli_close($conn);
