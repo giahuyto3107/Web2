@@ -48,7 +48,7 @@
           <th data-id="type_name">Tên chủng loại</th>
           <th data-id="type_description">Mô tả</th>
           <th data-id="status_id">Trạng thái</th>
-          <th class="actionsTH">Actions</th>
+          <th class="actionsTH">Hành động</th>
         </tr>
       </thead>
       <tbody id="table-body"></tbody>
@@ -65,8 +65,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Hàm chuyển status_id thành văn bản
     function getStatusText(statusId) {
         switch (statusId) {
-            case "1": return 'Active';
-            case "2": return 'Inactive';
+            case "1": return 'Hoạt động';
+            case "2": return 'Không hoạt động';
             default: return 'N/A';
         }
     }
@@ -132,9 +132,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="dropdown">
                             <button class="dropdownButton"><i class="fa fa-ellipsis-v dropIcon"></i></button>
                             <div class="dropdown-content">
-                                <a href="#" class="viewCategoryType" data-permission-id="12" data-action="Xem" data-category-type-id="${categoryType.category_type_id}">View Category Type <i class="fa fa-eye"></i></a>
-                                <a href="#" class="editCategoryType" data-permission-id="12" data-action="Sửa" data-category-type-id="${categoryType.category_type_id}">Edit Category Type <i class="fa fa-edit"></i></a>
-                                <a href="#" class="deleteCategoryType" data-permission-id="12" data-action="Xóa" data-category-type-id="${categoryType.category_type_id}">Delete Category Type <i class="fa fa-trash"></i></a>
+                                <a href="#" class="viewCategoryType" data-permission-id="12" data-action="Xem" data-category-type-id="${categoryType.category_type_id}">Xem chủng loại <i class="fa fa-eye"></i></a>
+                                <a href="#" class="editCategoryType" data-permission-id="12" data-action="Sửa" data-category-type-id="${categoryType.category_type_id}">Sửa chủng loại <i class="fa fa-edit"></i></a>
+                                <a href="#" class="deleteCategoryType" data-permission-id="12" data-action="Xóa" data-category-type-id="${categoryType.category_type_id}">Xóa chủng loại <i class="fa fa-trash"></i></a>
                             </div>
                         </div>
                     </td>
@@ -143,7 +143,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         } else {
             noProductsEl.style.display = 'flex';
-            tableBody.innerHTML = '<tr><td colspan="5">No category types found.</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="5">Không tìm thấy chủng loại nào.</td></tr>';
         }
     }
 
@@ -157,13 +157,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 renderTable(categoryTypes);
                 addFilterEventListener();
             } else {
-                console.error('Error:', data.message);
-                document.getElementById('table-body').innerHTML = '<tr><td colspan="5">Error loading category types.</td></tr>';
+                console.error('Lỗi:', data.message);
+                document.getElementById('table-body').innerHTML = '<tr><td colspan="5">Lỗi khi tải danh sách chủng loại.</td></tr>';
             }
         })
         .catch(error => {
-            console.error('Fetch error:', error);
-            document.getElementById('table-body').innerHTML = '<tr><td colspan="5">Error loading category types.</td></tr>';
+            console.error('Lỗi tải dữ liệu:', error);
+            document.getElementById('table-body').innerHTML = '<tr><td colspan="5">Lỗi khi tải danh sách chủng loại.</td></tr>';
         });
 
     // Sử dụng event delegation để xử lý các hành động
@@ -176,7 +176,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const categoryType = categoryTypes.find(cat => cat.category_type_id === categoryTypeId);
 
         if (!categoryType) {
-            console.error('Category type not found:', categoryTypeId);
+            console.error('Không tìm thấy chủng loại:', categoryTypeId);
             return;
         }
 
@@ -244,7 +244,7 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(response => {
             if (!response.ok) {
-                throw new Error('Network response was not ok');
+                throw new Error('Phản hồi mạng không ổn');
             }
             return response.json();
         })
@@ -289,7 +289,7 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(response => {
             if (!response.ok) {
-                throw new Error('Network response was not ok');
+                throw new Error('Phản hồi mạng không ổn');
             }
             return response.json();
         })
@@ -303,7 +303,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         renderTable(categoryTypes);
                         addCategoryTypeModal.close();
                         const successMessage = document.getElementById('success-message');
-                        successMessage.querySelector('.success-text p').textContent = result.message || 'Chủng loại thêm thành công';
+                        successMessage.querySelector('.success-text p').textContent = result.message || 'Thêm chủng loại thành công';
                         successMessage.style.display = 'block';
                         setTimeout(() => {
                             successMessage.style.display = 'none';
@@ -454,7 +454,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (!/^[a-zA-Z\s-]+$/.test(value)) {
                     isError = true;
                     input.style.border = '1px solid var(--clr-error)';
-                    if (errorEl) errorEl.textContent = 'Tên chủng loại chỉ chứa chữ cái, khoảng trắng, và dấu gạch ngang';
+                    if (errorEl) errorEl.textContent = 'Tên chủng loại chỉ chứa chữ cái, khoảng trắng và dấu gạch ngang';
                 } else if (value.length > 100) {
                     isError = true;
                     input.style.border = '1px solid var(--clr-error)';
@@ -496,7 +496,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (!/^[a-zA-Z\s-]+$/.test(value)) {
                     isError = true;
                     input.style.border = '1px solid var(--clr-error)';
-                    if (errorEl) errorEl.textContent = 'Tên chủng loại chỉ chứa chữ cái, khoảng trắng, và dấu gạch ngang';
+                    if (errorEl) errorEl.textContent = 'Tên chủng loại chỉ chứa chữ cái, khoảng trắng và dấu gạch ngang';
                 } else if (value.length > 100) {
                     isError = true;
                     input.style.border = '1px solid var(--clr-error)';
@@ -552,7 +552,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function addModalCancelButtonEventListener(modalEl) {
         const cancelButton = modalEl.querySelector('[id$="-close-button"]');
         if (!cancelButton) {
-            console.error('Cancel button with id ending in "-close-button" not found in modal!');
+            console.error('Nút hủy với id kết thúc bằng "-close-button" không được tìm thấy trong modal!');
             return;
         }
 
@@ -588,9 +588,9 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <?php
-    include 'quanlichungloai/themchungloai.php'; // Add Modal
-    include 'quanlichungloai/suachungloai.php'; // Edit Modal
-    include 'quanlichungloai/xemchungloai.php';
-    include 'quanlichungloai/xoachungloai.php';
+    include 'quanlichungloai/themchungloai.php'; // Modal thêm
+    include 'quanlichungloai/suachungloai.php'; // Modal sửa
+    include 'quanlichungloai/xemchungloai.php'; // Modal xem
+    include 'quanlichungloai/xoachungloai.php'; // Modal xóa
 ?>
 </div>

@@ -2,7 +2,7 @@
 <div class="data-table">
   <div class="success-message" id="success-message" style="display: none">
     <div class="success-text">
-      <p>Dummy Text</p>
+      <p>Văn bản mẫu</p>
       <a id="success-message-cross" style="cursor: pointer">
         <i class="fa fa-times" style="font-size: 1.5rem; height: 1.5rem"></i>
       </a>
@@ -11,7 +11,7 @@
       <div class="progress-bar" id="progressBar"></div>
     </div>
   </div>
-  <h1 class="heading"> Quản lí <span>TÀI KHOẢN</span></h1>
+  <h1 class="heading"> Quản lý <span>TÀI KHOẢN</span></h1>
   <div class="toolbar">
     <div class="filters">
       <div class="filter-options-wrapper">
@@ -54,7 +54,7 @@
           <th data-id="address">Địa chỉ</th>
           <th data-id="role_id">Chức vụ</th>
           <th data-id="status_id">Trạng thái</th>
-          <th class="actionsTH">Actions</th>
+          <th class="actionsTH">Hành động</th>
         </tr>
       </thead>
       <tbody id="table-body"></tbody>
@@ -71,8 +71,8 @@
     // Hàm chuyển status_id thành văn bản
     function getStatusText(statusId) {
       switch (statusId) {
-        case "1": return 'Active';
-        case "2": return 'Inactive';
+        case "1": return 'Hoạt động';
+        case "2": return 'Không hoạt động';
         default: return 'N/A';
       }
     }
@@ -109,7 +109,7 @@
       const filterOptionsEl = document.getElementById("filter-options");
 
       if (!searchEl || !filterOptionsEl) {
-        console.error('Required elements not found: #search-text or #filter-options');
+        console.error('Không tìm thấy các phần tử cần thiết: #search-text hoặc #filter-options');
         return;
       }
 
@@ -144,7 +144,7 @@
       const noProductsEl = document.querySelector('.no-products');
 
       if (!tableBody || !noProductsEl) {
-        console.error('Required elements not found: #table-body or .no-products');
+        console.error('Không tìm thấy các phần tử cần thiết: #table-body hoặc .no-products');
         return;
       }
 
@@ -167,9 +167,9 @@
               <div class="dropdown">
                 <button class="dropdownButton"><i class="fa fa-ellipsis-v dropIcon"></i></button>
                 <div class="dropdown-content">
-                  <a href="#" class="viewAccount" data-permission-id="3" data-action="Xem" data-account-id="${account.account_id}">Xem <i class="fa fa-eye"></i></a>
-                  <a href="#" class="editAccount" data-permission-id="3" data-action="Sửa" data-account-id="${account.account_id}">Sửa <i class="fa fa-edit"></i></a>
-                  <a href="#" class="deleteAccount" data-permission-id="3" data-action="Xóa" data-account-id="${account.account_id}">Xóa <i class="fa fa-trash"></i></a>
+                  <a href="#" class="viewAccount" data-permission-id="3" data-action="Xem" data-account-id="${account.account_id}">Xem tài khoản <i class="fa fa-eye"></i></a>
+                  <a href="#" class="editAccount" data-permission-id="3" data-action="Sửa" data-account-id="${account.account_id}">Sửa tài khoản <i class="fa fa-edit"></i></a>
+                  <a href="#" class="deleteAccount" data-permission-id="3" data-action="Xóa" data-account-id="${account.account_id}">Xóa tài khoản <i class="fa fa-trash"></i></a>
                 </div>
               </div>
             </td>
@@ -188,14 +188,14 @@
       .then(data => {
         if (data.status === 'success') {
           roles = data.data;
-          console.log('Initial roles:', roles);
+          console.log('Danh sách chức vụ ban đầu:', roles);
           populateRoleDropdown();
         } else {
-          console.error('Error fetching roles:', data.message);
+          console.error('Lỗi khi lấy danh sách chức vụ:', data.message);
         }
       })
       .catch(error => {
-        console.error('Fetch roles error:', error);
+        console.error('Lỗi tải dữ liệu chức vụ:', error);
       });
 
     // Fetch dữ liệu tài khoản ban đầu từ server
@@ -204,16 +204,16 @@
       .then(data => {
         if (data.status === 'success') {
           accounts = data.data;
-          console.log('Initial accounts:', accounts);
+          console.log('Danh sách tài khoản ban đầu:', accounts);
           renderTable(accounts);
           addFilterEventListener();
         } else {
-          console.error('Error:', data.message);
+          console.error('Lỗi:', data.message);
           document.getElementById('table-body').innerHTML = '<tr><td colspan="8">Lỗi khi tải danh sách tài khoản.</td></tr>';
         }
       })
       .catch(error => {
-        console.error('Fetch error:', error);
+        console.error('Lỗi tải dữ liệu:', error);
         document.getElementById('table-body').innerHTML = '<tr><td colspan="8">Lỗi khi tải danh sách tài khoản.</td></tr>';
       });
 
@@ -227,7 +227,7 @@
       const account = accounts.find(acc => acc.account_id === accountId);
 
       if (!account) {
-        console.error('Account not found:', accountId);
+        console.error('Không tìm thấy tài khoản:', accountId);
         return;
       }
 
@@ -237,14 +237,14 @@
           addModalData(viewModalEl, account, "innerHTML");
           viewModalEl.showModal();
         } else {
-          console.error('View modal with id "view-modal" not found in DOM!');
+          console.error('Modal xem với id "view-modal" không được tìm thấy trong DOM!');
         }
       } else if (target.classList.contains('editAccount')) {
         const editModalEl = document.getElementById("edit-modal");
         if (editModalEl) {
           openEditModal(account);
         } else {
-          console.error('Edit modal with id "edit-modal" not found in DOM!');
+          console.error('Modal sửa với id "edit-modal" không được tìm thấy trong DOM!');
         }
       } else if (target.classList.contains('deleteAccount')) {
         const deleteModalEl = document.getElementById("delete-modal");
@@ -252,7 +252,7 @@
           deleteModalEl.setAttribute("data-account-id", accountId);
           deleteModalEl.showModal();
         } else {
-          console.error('Delete modal with id "delete-modal" not found in DOM!');
+          console.error('Modal xóa với id "delete-modal" không được tìm thấy trong DOM!');
         }
       }
     });
@@ -263,7 +263,7 @@
       const form = document.getElementById('modal-edit-form');
 
       if (!editModal || !form) {
-        console.error('Edit modal or form not found!');
+        console.error('Modal sửa hoặc form không được tìm thấy!');
         return;
       }
 
@@ -335,7 +335,7 @@
       })
       .then(response => {
         if (!response.ok) {
-          throw new Error('Network response was not ok');
+          throw new Error('Phản hồi mạng không ổn');
         }
         return response.json();
       })
@@ -386,7 +386,7 @@
       })
       .then(response => {
         if (!response.ok) {
-          throw new Error('Network response was not ok');
+          throw new Error('Phản hồi mạng không ổn');
         }
         return response.json();
       })
@@ -404,7 +404,7 @@
               formEl.reset(); // Reset tất cả các trường trong form
               addAccountModal.close();
               const successMessage = document.getElementById('success-message');
-              successMessage.querySelector('.success-text p').textContent = result.message || 'Tài khoản thêm thành công';
+              successMessage.querySelector('.success-text p').textContent = result.message || 'Thêm tài khoản thành công';
               successMessage.style.display = 'block';
               setTimeout(() => {
                 successMessage.style.display = 'none';
@@ -428,6 +428,23 @@
 
     // Hàm xóa tài khoản (cập nhật status_id thành 6)
     function deleteAccount(accountId) {
+      // Kiểm tra nếu account_id là 1
+      if (parseInt(accountId) === 1) {
+        const successMessage = document.getElementById('success-message');
+        successMessage.querySelector('.success-text p').textContent = 'Không thể xóa tài khoản admin hệ thống!';
+        successMessage.style.display = 'block';
+        successMessage.style.backgroundColor = 'var(--clr-error)';
+        setTimeout(() => {
+          successMessage.style.display = 'none';
+          successMessage.style.backgroundColor = '';
+        }, 3000);
+        const deleteModalEl = document.getElementById('delete-modal');
+        if (deleteModalEl) {
+          deleteModalEl.close();
+        }
+        return;
+      }
+
       const formData = new FormData();
       formData.append('account_id', accountId);
       formData.append('status_id', "6");
@@ -490,10 +507,10 @@
           deleteAccount(accountId);
         });
       } else {
-        console.error('Delete button with id "delete-delete-button" not found in delete-modal!');
+        console.error('Nút xóa với id "delete-delete-button" không được tìm thấy trong modal xóa!');
       }
     } else {
-      console.error('Delete modal with id "delete-modal" not found in DOM!');
+      console.error('Modal xóa với id "delete-modal" không được tìm thấy trong DOM!');
     }
 
     // Hàm xử lý modal Add
@@ -504,7 +521,7 @@
       const addAccountToolbar = document.querySelector("#add-product-toolbar");
 
       if (!addAccountModal || !formEl || !addCloseButton || !addAccountToolbar) {
-        console.error('Required elements for add modal not found!');
+        console.error('Không tìm thấy các phần tử cần thiết cho modal thêm!');
         return;
       }
 
@@ -557,7 +574,7 @@
           if (!/^[a-zA-Z0-9_]+$/.test(value)) {
             isError = true;
             input.style.border = '1px solid var(--clr-error)';
-            if (errorEl) errorEl.textContent = 'Tên tài khoản chỉ chứa chữ cái, số, và dấu gạch dưới';
+            if (errorEl) errorEl.textContent = 'Tên tài khoản chỉ chứa chữ cái, số và dấu gạch dưới';
           } else if (value.length > 50) {
             isError = true;
             input.style.border = '1px solid var(--clr-error)';
@@ -637,7 +654,7 @@
           if (!/^[a-zA-Z0-9_]+$/.test(value)) {
             isError = true;
             input.style.border = '1px solid var(--clr-error)';
-            if (errorEl) errorEl.textContent = 'Tên tài khoản chỉ chứa chữ cái, số, và dấu gạch dưới';
+            if (errorEl) errorEl.textContent = 'Tên tài khoản chỉ chứa chữ cái, số và dấu gạch dưới';
           } else if (value.length > 50) {
             isError = true;
             input.style.border = '1px solid var(--clr-error)';
@@ -743,7 +760,7 @@
     function addModalCancelButtonEventListener(modalEl) {
       const cancelButton = modalEl.querySelector('[id$="-close-button"]');
       if (!cancelButton) {
-        console.error('Cancel button with id ending in "-close-button" not found in modal!');
+        console.error('Nút hủy với id kết thúc bằng "-close-button" không được tìm thấy trong modal!');
         return;
       }
 

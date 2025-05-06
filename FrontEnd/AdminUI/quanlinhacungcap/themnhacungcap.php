@@ -30,8 +30,8 @@
             <div class="modal-input">
                 <span>Trạng thái</span>
                 <select id="modal-add-status" name="status_id" required>
-                    <option value="1">Active</option>
-                    <option value="2">Inactive</option>
+                    <option value="1">Hoạt động</option>
+                    <option value="2">Không hoạt động</option>
                 </select>
                 <p class="modal-error" id="modal-add-status-error"></p>
             </div>

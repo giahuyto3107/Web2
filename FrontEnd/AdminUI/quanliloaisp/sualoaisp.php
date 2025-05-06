@@ -29,8 +29,8 @@
             <label for="modal-edit-status">
                 <span>Trạng Thái</span>
                 <select id="modal-edit-status" name="status_id" required>
-                    <option value="1">Active</option>
-                    <option value="2">Inactive</option>
+                    <option value="1">Hoạt động</option>
+                    <option value="2">Không hoạt động</option>
                 </select>
                 <p class="modal-error" id="modal-edit-status-error"></p>
             </label>

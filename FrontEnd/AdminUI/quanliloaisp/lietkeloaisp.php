@@ -50,7 +50,7 @@
           <th data-id="category_description">Mô tả</th>
           <th data-id="type_name">Chủng loại</th>
           <th data-id="status_id">Trạng thái</th>
-          <th class="actionsTH">Actions</th>
+          <th class="actionsTH">Hành động</th>
         </tr>
       </thead>
       <tbody id="table-body"></tbody>
@@ -68,8 +68,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Hàm chuyển status_id thành văn bản
     function getStatusText(statusId) {
         switch (statusId) {
-            case "1": return 'Active';
-            case "2": return 'Inactive';
+            case "1": return 'Hoạt động';
+            case "2": return 'Không hoạt động';
             default: return 'N/A';
         }
     }
@@ -192,7 +192,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         } else {
             noProductsEl.style.display = 'flex';
-            tableBody.innerHTML = '<tr><td colspan="6">No categories found.</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="6">Không tìm thấy thể loại.</td></tr>';
         }
     }
 
@@ -209,12 +209,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 fetchCategoryTypes();
             } else {
                 console.error('Error:', data.message);
-                document.getElementById('table-body').innerHTML = '<tr><td colspan="6">Error loading categories.</td></tr>';
+                document.getElementById('table-body').innerHTML = '<tr><td colspan="6">Lỗi tải thể loại.</td></tr>';
             }
         })
         .catch(error => {
             console.error('Fetch error:', error);
-            document.getElementById('table-body').innerHTML = '<tr><td colspan="6">Error loading categories.</td></tr>';
+            document.getElementById('table-body').innerHTML = '<tr><td colspan="6">Lỗi tải thể loại.</td></tr>';
         });
 
     // Sử dụng event delegation để xử lý các hành động

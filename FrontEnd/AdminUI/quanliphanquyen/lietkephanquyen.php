@@ -52,7 +52,7 @@
 
         <div class="table-container">
             <div class="no-products">
-                <p>Looks like you do not have any permissions.</p>
+                <p>Có vẻ như bạn chưa có phân quyền nào hết.</p>
             </div>
 
             <table class="table" id="data-table">
@@ -78,8 +78,8 @@
             // Hàm chuyển status_id thành văn bản
             function getStatusText(statusId) {
                 switch (statusId) {
-                    case "1": return 'Active';
-                    case "2": return 'Inactive';
+                    case "1": return 'Hoạt động';
+                    case "2": return 'Không hoạt động';
                     case "6": return 'Deleted';
                     default: return 'N/A';
                 }

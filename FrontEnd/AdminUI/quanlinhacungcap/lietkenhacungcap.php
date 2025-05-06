@@ -53,7 +53,7 @@
         <th data-id="address">Địa chỉ nhà cung cấp</th>
         <th data-id="publisher">Nhà xuất bản</th>
         <th data-id="status_id">Trạng thái</th>
-          <th class="actionsTH">Actions</th>
+          <th class="actionsTH">Hành động</th>
         </tr>
       </thead>
       <tbody id="table-body"></tbody>
@@ -70,8 +70,8 @@ document.addEventListener('DOMContentLoaded', function() {
       // Hàm chuyển status_id thành văn bản
       function getStatusText(statusId) {
           switch (statusId) {
-              case "1": return 'Active';
-              case "2": return 'Inactive';
+              case "1": return 'Hoạt động';
+              case "2": return 'Không hoạt động';
               default: return 'N/A';
           }
       }
@@ -139,9 +139,9 @@ document.addEventListener('DOMContentLoaded', function() {
                           <div class="dropdown">
                               <button class="dropdownButton"><i class="fa fa-ellipsis-v dropIcon"></i></button>
                               <div class="dropdown-content">
-                                  <a href="#" class="viewSupplier" data-permission-id="6" data-action="Xem" data-supplier-id="${supplier.supplier_id}">View Supplier <i class="fa fa-eye"></i></a>
-                                  <a href="#" class="editSupplier" data-permission-id="6" data-action="Sửa" data-supplier-id="${supplier.supplier_id}">Edit Supplier <i class="fa fa-edit"></i></a>
-                                  <a href="#" class="deleteSupplier" data-permission-id="6" data-action="Xóa" data-supplier-id="${supplier.supplier_id}">Delete Supplier <i class="fa fa-trash"></i></a>
+                                  <a href="#" class="viewSupplier" data-permission-id="6" data-action="Xem" data-supplier-id="${supplier.supplier_id}">Xem Nhà Cung Cấp <i class="fa fa-eye"></i></a>
+                                  <a href="#" class="editSupplier" data-permission-id="6" data-action="Sửa" data-supplier-id="${supplier.supplier_id}">Sửa Nhà Cung Cấp <i class="fa fa-edit"></i></a>
+                                  <a href="#" class="deleteSupplier" data-permission-id="6" data-action="Xóa" data-supplier-id="${supplier.supplier_id}">Xóa Nhà Cung Cấp <i class="fa fa-trash"></i></a>
                               </div>
                           </div>
                       </td>
@@ -150,7 +150,7 @@ document.addEventListener('DOMContentLoaded', function() {
               });
           } else {
               noProductsEl.style.display = 'flex';
-              tableBody.innerHTML = '<tr><td colspan="7">No suppliers found.</td></tr>';
+              tableBody.innerHTML = '<tr><td colspan="7">Không tìm thấy nhà cung cấp.</td></tr>';
           }
       }
 
@@ -165,12 +165,12 @@ document.addEventListener('DOMContentLoaded', function() {
                   addFilterEventListener();
               } else {
                   console.error('Error:', data.message);
-                  document.getElementById('table-body').innerHTML = '<tr><td colspan="7">Error loading suppliers.</td></tr>';
+                  document.getElementById('table-body').innerHTML = '<tr><td colspan="7">Lỗi hiển thị nhà cung cấp.</td></tr>';
               }
           })
           .catch(error => {
               console.error('Fetch error:', error);
-              document.getElementById('table-body').innerHTML = '<tr><td colspan="7">Error loading suppliers.</td></tr>';
+              document.getElementById('table-body').innerHTML = '<tr><td colspan="7">Lỗi hiển thị nhà cung cấp.</td></tr>';
           });
 
       // Sử dụng event delegation để xử lý các hành động

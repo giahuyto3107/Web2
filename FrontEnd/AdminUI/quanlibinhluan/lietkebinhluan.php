@@ -19,7 +19,6 @@
                     <label for="filter-options" class="filter-label">Bộ lọc </label>
                     <select id="filter-options">
                         <option value="user_name">Tên người dùng</option>
-                        <option value="admin_name">Tên Admin</option>
                         <option value="product_name">Tên sản phẩm</option>
                         <option value="rating">Đánh giá</option>
                         <option value="review_text">Nội dung đánh giá</option>
@@ -44,7 +43,6 @@
                     <tr>
                         <th data-id="review_id">ID</th>
                         <th data-id="user_name">Tên người dùng</th>
-                        <th data-id="admin_name">Tên Admin</th>
                         <th data-id="product_name">Tên sản phẩm</th>
                         <th data-id="rating">Đánh giá</th>
                         <th data-id="review_text">Nội dung</th>
@@ -66,8 +64,8 @@
             // Hàm chuyển status_id thành văn bản
             function getStatusText(statusId) {
                 switch (statusId) {
-                    case "1": return 'Active';
-                    case "2": return 'Inactive';
+                    case "1": return 'Hoạt động';
+                    case "2": return 'Không hoạt động';
                     case "6": return 'Deleted';
                     default: return 'N/A';
                 }
@@ -129,7 +127,6 @@
                         row.innerHTML = `
                             <td>${index + 1}</td>
                             <td>${review.user_name || 'N/A'}</td>
-                            <td>${review.admin_name || 'N/A'}</td>
                             <td>${review.product_name || 'N/A'}</td>
                             <td>${review.rating || 'N/A'}</td>
                             <td>${review.review_text || 'N/A'}</td>
@@ -150,7 +147,7 @@
                     });
                 } else {
                     noReviewsEl.style.display = 'flex';
-                    tableBody.innerHTML = '<tr><td colspan="9">Không tìm thấy bình luận nào.</td></tr>';
+                    tableBody.innerHTML = '<tr><td colspan="8">Không tìm thấy bình luận nào.</td></tr>';
                 }
             }
 
@@ -165,12 +162,12 @@
                         addFilterEventListener();
                     } else {
                         console.error('Error:', data.message);
-                        document.getElementById('table-body').innerHTML = '<tr><td colspan="9">Lỗi khi tải danh sách bình luận.</td></tr>';
+                        document.getElementById('table-body').innerHTML = '<tr><td colspan="8">Lỗi khi tải danh sách bình luận.</td></tr>';
                     }
                 })
                 .catch(error => {
                     console.error('Fetch error:', error);
-                    document.getElementById('table-body').innerHTML = '<tr><td colspan="9">Lỗi khi tải danh sách bình luận.</td></tr>';
+                    document.getElementById('table-body').innerHTML = '<tr><td colspan="8">Lỗi khi tải danh sách bình luận.</td></tr>';
                 });
 
             // Sử dụng event delegation để xử lý các hành động
@@ -391,7 +388,6 @@
                 if (type === "innerHTML") {
                     modalEl.querySelector("#modal-view-review-id").textContent = review.review_id || 'N/A';
                     modalEl.querySelector("#modal-view-user-name").textContent = review.user_name || 'N/A';
-                    modalEl.querySelector("#modal-view-admin-name").textContent = review.admin_name || 'N/A';
                     modalEl.querySelector("#modal-view-product-name").textContent = review.product_name || 'N/A';
                     modalEl.querySelector("#modal-view-rating").textContent = review.rating || 'N/A';
                     modalEl.querySelector("#modal-view-review-text").textContent = review.review_text || 'N/A';
@@ -476,10 +472,6 @@
                 <p id="modal-view-user-name">N/A</p>
             </div>
             <div class="view-content">
-                <span>Tên Admin</span>
-                <p id="modal-view-admin-name">N/A</p>
-            </div>
-            <div class="view-content">
                 <span>Tên sản phẩm</span>
                 <p id="modal-view-product-name">N/A</p>
             </div>
@@ -533,8 +525,8 @@
                 <div class="modal-input">
                     <span>Trạng thái</span>
                     <select id="modal-edit-status" name="status_id" required>
-                        <option value="1">Active</option>
-                        <option value="2">Inactive</option>
+                        <option value="1">Hoạt động</option>
+                        <option value="2">Không hoạt động</option>
                     </select>
                     <p class="modal-error" id="modal-edit-status-error"></p>
                 </div>
