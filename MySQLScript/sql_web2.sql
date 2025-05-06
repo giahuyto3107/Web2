@@ -597,7 +597,7 @@ CREATE TABLE if not exists role_permission (
     FOREIGN KEY (permission_id) REFERENCES permission(permission_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-INSERT INTO `role_permission` (`role_id`, `permission_id`, `action`) VALUES
+INSERT INTO role_permission (role_id, permission_id, action) VALUES
 (1, 1, 'Sửa'),
 (1, 1, 'Thêm'),
 (1, 1, 'Xem'),

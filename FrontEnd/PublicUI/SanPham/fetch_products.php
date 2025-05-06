@@ -35,7 +35,7 @@ while ($row = $result->fetch_assoc()) {
 }
 
 
-$pagination = new Pagination(2); 
+$pagination = new Pagination(9); 
 $paginated_result = $pagination->paginate($products);
 
 // Trả về JSON

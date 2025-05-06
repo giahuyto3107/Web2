@@ -509,11 +509,12 @@ $avg_rating = $result_avg_rating->fetch_assoc()['avg_rating'];
 
                                 while ($suggested = $result_suggested->fetch_assoc()) {
                                     echo '<div class="product-item">';
-                                    echo '<a href="?page=product_details&id=' . htmlspecialchars($suggested['product_id']) . ' " data-page="product_details&id=' . htmlspecialchars($suggested['product_id']) . '">';
+                                    echo '<a href="index.php?page=product_details&id=' . htmlspecialchars($suggested['product_id']) . ' ">';
                                     echo '<img src="../../../BackEnd/Uploads/Product Picture/' . htmlspecialchars($suggested['image_url']) . '" alt="' . htmlspecialchars($suggested['product_name']) . '">';
                                     echo '<span class="product-name">' . htmlspecialchars($suggested['product_name']) . '</span>';
                                     echo '</a>';
                                     echo '</div>';
+                                    
                                 }
                             }
                             ?>
