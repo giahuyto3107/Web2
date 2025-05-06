@@ -1,6 +1,7 @@
 <?php
+include '../../../BackEnd/Config/config.php';
 session_start();
-$conn = mysqli_connect("localhost", "root", "", "web2_sql");
+
 
 if (!$conn) {
     die("Kết nối thất bại: " . mysqli_connect_error());

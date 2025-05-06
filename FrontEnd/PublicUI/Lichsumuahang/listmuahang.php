@@ -203,7 +203,7 @@ $user_id = $_SESSION['user_id'];
         </div>
         <div id="order-list">
             <?php
-                $conn = mysqli_connect("localhost", "root", "", "web2_sql");
+                include '../../../BackEnd/Config/config.php';
                 $query_lietke_dh = "SELECT orders.order_id, orders.order_date, orders.total_amount, status.status_name , orders.payment_method
                                     FROM orders
                                     JOIN status ON status.id = orders.status_id

@@ -597,28 +597,45 @@ CREATE TABLE if not exists role_permission (
     FOREIGN KEY (permission_id) REFERENCES permission(permission_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-INSERT INTO `role_permission` (`role_id`, `permission_id`, `action`) 
-VALUES
+INSERT INTO `role_permission` (`role_id`, `permission_id`, `action`) VALUES
+(1, 1, 'Sửa'),
+(1, 1, 'Thêm'),
 (1, 1, 'Xem'),
 (1, 1, 'Xóa'),
-(1, 1, 'Sửa'),
-(1, 1, 'Cập nhật phân quyền'),
-(1, 2, 'Xem'),
 (1, 2, 'Duyệt đơn/Hoàn tất'),
+(1, 2, 'Hủy'),
+(1, 2, 'Xem'),
+(1, 3, 'Sửa'),
+(1, 3, 'Thêm'),
 (1, 3, 'Xem'),
+(1, 3, 'Xóa'),
+(1, 4, 'Sửa'),
 (1, 4, 'Xem'),
+(1, 4, 'Xóa'),
 (1, 5, 'Xem'),
+(1, 6, 'Sửa'),
+(1, 6, 'Thêm'),
 (1, 6, 'Xem'),
+(1, 6, 'Xóa'),
 (1, 7, 'Đặt hàng'),
+(1, 8, 'Sửa'),
+(1, 8, 'Thêm'),
 (1, 8, 'Xem'),
+(1, 8, 'Xóa'),
 (1, 9, 'Xem'),
-(1, 10, 'Xem'),
-(1, 10, 'Sửa'),
-(1, 10, 'Xóa'),
 (1, 10, 'Cập nhật phân quyền'),
+(1, 10, 'Sửa'),
 (1, 10, 'Thêm'),
+(1, 10, 'Xem'),
+(1, 10, 'Xóa'),
+(1, 11, 'Sửa'),
+(1, 11, 'Thêm'),
 (1, 11, 'Xem'),
-(1, 12, 'Xem');
+(1, 11, 'Xóa'),
+(1, 12, 'Sửa'),
+(1, 12, 'Thêm'),
+(1, 12, 'Xem'),
+(1, 12, 'Xóa');
 
 
 

@@ -2,7 +2,7 @@
 session_start();
 header('Content-Type: application/json'); // Trả về JSON
 
-$conn = mysqli_connect("localhost", "root", "", "web2_sql");
+include '../../../BackEnd/Config/config.php';
 if (!$conn) {
     echo json_encode(['success' => false, 'message' => 'Kết nối thất bại']);
     exit;
