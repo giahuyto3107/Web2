@@ -61,30 +61,50 @@
     document.addEventListener('DOMContentLoaded', function() {
         // Biến toàn cục
         let roles = []; // Dữ liệu gốc, không thay đổi
-        let sessionRoleId = null; // Role ID của người dùng hiện tại
+        let currentUserRoleId = null; // Role ID của người dùng hiện tại
 
-        // Lấy session role_id từ PHP
+        // Lấy role_id của người dùng hiện tại từ server
         fetch('../../BackEnd/Model/quanlichucvu/get_current_user_role.php')
             .then(response => response.json())
             .then(userData => {
                 if (userData.status === 'success') {
-                    sessionRoleId = parseInt(userData.role_id);
-                    console.log('Session Role ID:', sessionRoleId);
+                    currentUserRoleId = parseInt(userData.role_id);
+                    console.log('Current User Role ID:', currentUserRoleId);
                 } else {
-                    console.error('Lỗi khi lấy role_id của người dùng:', userData.message);
-                    sessionRoleId = 0; // Giá trị mặc định nếu không lấy được
+                    console.error('Error getting current user role:', userData.message);
+                    currentUserRoleId = 0; // Giá trị mặc định nếu không lấy được
                 }
             })
             .catch(error => {
-                console.error('Lỗi khi lấy role_id của người dùng:', error);
-                sessionRoleId = 0;
+                console.error('Error fetching current user role:', error);
+                currentUserRoleId = 0;
             });
 
-        // Hàm kiểm tra quyền admin (role_id = 1)
-        function checkAdminPermission() {
-            if (sessionRoleId !== 1) {
+        // Hàm kiểm tra quyền admin chỉ cho role_id = 1 hoặc 2
+        function checkAdminPermission(targetRoleId, action) {
+            if ([1, 2].includes(parseInt(targetRoleId))) {
+                const isAdminRole = currentUserRoleId === 1;
+                if (!isAdminRole) {
+                    const successMessage = document.getElementById('success-message');
+                    successMessage.querySelector('.success-text p').textContent = 'Chỉ admin (role_id = 1) mới có quyền thực hiện hành động này!';
+                    successMessage.style.display = 'block';
+                    successMessage.style.backgroundColor = 'var(--clr-error)';
+                    setTimeout(() => {
+                        successMessage.style.display = 'none';
+                        successMessage.style.backgroundColor = '';
+                    }, 3000);
+                    return false;
+                }
+            }
+            return true;
+        }
+
+       // Hàm kiểm tra quyền sửa và cập nhật quyền dựa trên role_id
+       function checkRolePermission(targetRoleId, action) {
+            // Cấm chỉnh sửa role_id 1 hoặc 2 nếu không phải admin
+            if ([1, 2].includes(parseInt(targetRoleId)) && currentUserRoleId !== 1) {
                 const successMessage = document.getElementById('success-message');
-                successMessage.querySelector('.success-text p').textContent = 'Chỉ admin (role_id = 1) mới có quyền chỉnh sửa hoặc cập nhật phân quyền!';
+                successMessage.querySelector('.success-text p').textContent = `Chỉ admin (role_id = 1) mới có thể ${action} chức vụ role_id 1 hoặc 2!`;
                 successMessage.style.display = 'block';
                 successMessage.style.backgroundColor = 'var(--clr-error)';
                 setTimeout(() => {
@@ -93,19 +113,29 @@
                 }, 3000);
                 return false;
             }
-            return true;
-        }
 
-        // Hàm kiểm tra xem role_id có phải là 1 hoặc 2 không
-        function isEditableRole(roleId) {
-            return [1, 2].includes(parseInt(roleId));
+            // Cấm mọi role_id cập nhật quyền của chính mình, ngoại lệ admin (role_id = 1)
+            if (currentUserRoleId === parseInt(targetRoleId) && action === 'cập nhật phân quyền' && currentUserRoleId !== 1) {
+                const successMessage = document.getElementById('success-message');
+                successMessage.querySelector('.success-text p').textContent = `Tài khoản role_id ${currentUserRoleId} không thể cập nhật quyền của chính mình!`;
+                successMessage.style.display = 'block';
+                successMessage.style.backgroundColor = 'var(--clr-error)';
+                setTimeout(() => {
+                    successMessage.style.display = 'none';
+                    successMessage.style.backgroundColor = '';
+                }, 3000);
+                return false;
+            }
+
+            // Nếu targetRoleId không phải 1 hoặc 2, cho phép chỉnh sửa
+            return true;
         }
 
         // Hàm chuyển status_id thành văn bản
         function getStatusText(statusId) {
             switch (parseInt(statusId)) {
-                case 1: return 'Active';
-                case 2: return 'Inactive';
+                case 1: return 'Hoạt động';
+                case 2: return 'Không hoạt động';
                 case 6: return 'Deleted';
                 default: return 'N/A';
             }
@@ -228,27 +258,14 @@
                 addModalData(viewModalEl, role, "innerHTML");
                 viewModalEl.showModal();
             } else if (target.classList.contains('editRole')) {
-                // Kiểm tra quyền admin và role_id
-                if (!checkAdminPermission()) return;
-                if (!isEditableRole(roleId)) {
-                    const successMessage = document.getElementById('success-message');
-                    successMessage.querySelector('.success-text p').textContent = 'Chỉ có thể chỉnh sửa chức vụ có role_id là 1 hoặc 2!';
-                    successMessage.style.display = 'block';
-                    successMessage.style.backgroundColor = 'var(--clr-error)';
-                    setTimeout(() => {
-                        successMessage.style.display = 'none';
-                        successMessage.style.backgroundColor = '';
-                    }, 3000);
-                    return;
-                }
+                if (!checkAdminPermission(roleId, 'sửa') || !checkRolePermission(roleId, 'sửa')) return;
                 const editModalEl = document.getElementById("edit-modal");
                 openEditModal(role);
             } else if (target.classList.contains('deleteRole')) {
-                // Kiểm tra quyền admin
-                if (!checkAdminPermission()) return;
+                if (!checkAdminPermission(roleId, 'xóa') || !checkRolePermission(roleId, 'xóa')) return;
 
                 // Kiểm tra nếu role_id đang xóa trùng với role_id của người dùng
-                if (roleId === sessionRoleId) {
+                if (roleId === currentUserRoleId) {
                     const successMessage = document.getElementById('success-message');
                     successMessage.querySelector('.success-text p').textContent = 'Bạn không thể xóa chức vụ của chính mình!';
                     successMessage.style.display = 'block';
@@ -264,19 +281,7 @@
                 deleteModalEl.setAttribute("data-role-id", roleId);
                 deleteModalEl.showModal();
             } else if (target.classList.contains('updatePermission')) {
-                // Kiểm tra quyền admin và role_id
-                if (!checkAdminPermission()) return;
-                if (!isEditableRole(roleId)) {
-                    const successMessage = document.getElementById('success-message');
-                    successMessage.querySelector('.success-text p').textContent = 'Chỉ có thể cập nhật phân quyền cho role_id là 1 hoặc 2!';
-                    successMessage.style.display = 'block';
-                    successMessage.style.backgroundColor = 'var(--clr-error)';
-                    setTimeout(() => {
-                        successMessage.style.display = 'none';
-                        successMessage.style.backgroundColor = '';
-                    }, 3000);
-                    return;
-                }
+                if (!checkAdminPermission(roleId, 'cập nhật phân quyền') || !checkRolePermission(roleId, 'cập nhật phân quyền')) return;
                 const permissionModal = document.getElementById('permission-modal');
                 document.getElementById('modal-role-id').value = roleId;
                 document.getElementById('modal-role-name').textContent = roleName;
@@ -297,153 +302,180 @@
             const defaultActions = ["Xem", "Thêm", "Xóa", "Sửa"];
             const allActions = ["Xem", "Thêm", "Xóa", "Sửa", "Cập nhật phân quyền", "Duyệt đơn/Hoàn tất", "Hủy", "Đặt hàng"];
 
-            // Kiểm tra quyền của người dùng hiện tại
-            if (!checkAdminPermission() || !isEditableRole(roleId)) return;
-
-            // Fetch tất cả quyền từ server
-            fetch('../../BackEnd/Model/quanlichucvu/fetch_quyen.php')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! Status: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(allPermissions => {
-                    if (allPermissions.status !== 'success') {
-                        console.error('Lỗi khi lấy danh sách quyền:', allPermissions.message);
-                        alert('Không thể lấy danh sách quyền. Vui lòng thử lại.');
+            // Check if current user has permission to modify this role
+            fetch('../../BackEnd/Model/quanlichucvu/get_current_user_role.php')
+                .then(response => response.json())
+                .then(userData => {
+                    if (userData.status !== 'success') {
+                        console.error('Error getting current user role:', userData.message);
+                        alert('Không thể xác định quyền của người dùng hiện tại. Vui lòng thử lại.');
                         return;
                     }
 
-                    // Fetch quyền đã gán cho role
-                    fetch(`quanlichucvu/fetch_chucvu_phanquyen.php?role_id=${roleId}`)
+                    const currentUserRoleId = parseInt(userData.role_id);
+                    if (!checkAdminPermission(roleId, 'cập nhật phân quyền') || !checkRolePermission(roleId, 'cập nhật phân quyền')) {
+                        permissionModal.close();
+                        return;
+                    }
+
+                    const permissionActions = {
+                        "Đặt hàng": ["Đặt hàng"],
+                        "Quản lý hóa đơn": ["Xem", "Duyệt đơn/Hoàn tất", "Hủy"],
+                        "Quản lý phiếu nhập": ["Xem"],
+                        "Quản lý đánh giá": ["Xem", "Xóa", "Sửa"],
+                        "Thống kê": ["Xem"],
+                        "Quản lý chức vụ": ["Xem", "Thêm", "Xóa", "Sửa", "Cập nhật phân quyền"]
+                    };
+                    const defaultActions = ["Xem", "Thêm", "Xóa", "Sửa"];
+                    const allActions = ["Xem", "Thêm", "Xóa", "Sửa", "Cập nhật phân quyền", "Duyệt đơn/Hoàn tất", "Hủy", "Đặt hàng"];
+
+                    fetch('../../BackEnd/Model/quanlichucvu/fetch_quyen.php')
                         .then(response => {
                             if (!response.ok) {
                                 throw new Error(`HTTP error! Status: ${response.status}`);
                             }
                             return response.json();
                         })
-                        .then(assignedPermissions => {
-                            if (assignedPermissions.status !== 'success') {
-                                console.error('Lỗi khi lấy quyền đã gán:', assignedPermissions.message);
-                                alert('Không thể lấy quyền đã gán. Vui lòng thử lại.');
+                        .then(allPermissions => {
+                            if (allPermissions.status !== 'success') {
+                                console.error('Lỗi khi lấy danh sách quyền:', allPermissions.message);
+                                alert('Không thể lấy danh sách quyền. Vui lòng thử lại.');
                                 return;
                             }
 
-                            const permissionsList = document.getElementById('permissions-list');
-                            permissionsList.innerHTML = '';
-
-                            const assignedSet = new Set(
-                                assignedPermissions.data.map(item => `${item.permission_id}-${item.action}`)
-                            );
-
-                            const table = document.createElement('table');
-                            table.style.width = '100%';
-                            table.style.borderCollapse = 'collapse';
-
-                            const thead = document.createElement('thead');
-                            const trHead = document.createElement('tr');
-                            const thPermission = document.createElement('th');
-                            thPermission.textContent = 'Quyền';
-                            thPermission.style.padding = '8px';
-                            thPermission.style.borderBottom = '1px solid #ddd';
-                            trHead.appendChild(thPermission);
-
-                            allActions.forEach(action => {
-                                const th = document.createElement('th');
-                                th.textContent = action;
-                                th.style.padding = '8px';
-                                th.style.borderBottom = '1px solid #ddd';
-                                trHead.appendChild(th);
-                            });
-
-                            const thSelectAll = document.createElement('th');
-                            thSelectAll.textContent = 'Select All';
-                            thSelectAll.style.padding = '8px';
-                            thSelectAll.style.borderBottom = '1px solid #ddd';
-                            trHead.appendChild(thSelectAll);
-                            thead.appendChild(trHead);
-                            table.appendChild(thead);
-
-                            const tbody = document.createElement('tbody');
-
-                            allPermissions.data.forEach(permission => {
-                                const allowedActions = permissionActions[permission.name] || defaultActions;
-                                const tr = document.createElement('tr');
-                                tr.style.borderBottom = '1px solid #ddd';
-
-                                const tdPermission = document.createElement('td');
-                                tdPermission.textContent = permission.name;
-                                tdPermission.style.padding = '8px';
-                                tr.appendChild(tdPermission);
-
-                                allActions.forEach(action => {
-                                    const td = document.createElement('td');
-                                    td.style.padding = '8px';
-                                    td.style.textAlign = 'center';
-                                    if (allowedActions.includes(action)) {
-                                        const checkbox = document.createElement('input');
-                                        checkbox.type = 'checkbox';
-                                        checkbox.name = `permissions[${permission.id}][${action}]`;
-                                        checkbox.className = 'permission-checkbox';
-
-                                        if (assignedSet.has(`${permission.id}-${action}`)) {
-                                            checkbox.checked = true;
-                                        }
-
-                                        td.appendChild(checkbox);
+                            fetch(`quanlichucvu/fetch_chucvu_phanquyen.php?role_id=${roleId}`)
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error(`HTTP error! Status: ${response.status}`);
                                     }
-                                    tr.appendChild(td);
+                                    return response.json();
+                                })
+                                .then(assignedPermissions => {
+                                    if (assignedPermissions.status !== 'success') {
+                                        console.error('Lỗi khi lấy quyền đã gán:', assignedPermissions.message);
+                                        alert('Không thể lấy quyền đã gán. Vui lòng thử lại.');
+                                        return;
+                                    }
+
+                                    const permissionsList = document.getElementById('permissions-list');
+                                    permissionsList.innerHTML = '';
+
+                                    const assignedSet = new Set(
+                                        assignedPermissions.data.map(item => `${item.permission_id}-${item.action}`)
+                                    );
+
+                                    const table = document.createElement('table');
+                                    table.style.width = '100%';
+                                    table.style.borderCollapse = 'collapse';
+
+                                    const thead = document.createElement('thead');
+                                    const trHead = document.createElement('tr');
+                                    const thPermission = document.createElement('th');
+                                    thPermission.textContent = 'Quyền';
+                                    thPermission.style.padding = '8px';
+                                    thPermission.style.borderBottom = '1px solid #ddd';
+                                    trHead.appendChild(thPermission);
+
+                                    allActions.forEach(action => {
+                                        const th = document.createElement('th');
+                                        th.textContent = action;
+                                        th.style.padding = '8px';
+                                        th.style.borderBottom = '1px solid #ddd';
+                                        trHead.appendChild(th);
+                                    });
+
+                                    const thSelectAll = document.createElement('th');
+                                    thSelectAll.textContent = 'Select All';
+                                    thSelectAll.style.padding = '8px';
+                                    thSelectAll.style.borderBottom = '1px solid #ddd';
+                                    trHead.appendChild(thSelectAll);
+                                    thead.appendChild(trHead);
+                                    table.appendChild(thead);
+
+                                    const tbody = document.createElement('tbody');
+
+                                    allPermissions.data.forEach(permission => {
+                                        const allowedActions = permissionActions[permission.name] || defaultActions;
+                                        const tr = document.createElement('tr');
+                                        tr.style.borderBottom = '1px solid #ddd';
+
+                                        const tdPermission = document.createElement('td');
+                                        tdPermission.textContent = permission.name;
+                                        tdPermission.style.padding = '8px';
+                                        tr.appendChild(tdPermission);
+
+                                        allActions.forEach(action => {
+                                            const td = document.createElement('td');
+                                            td.style.padding = '8px';
+                                            td.style.textAlign = 'center';
+                                            if (allowedActions.includes(action)) {
+                                                const checkbox = document.createElement('input');
+                                                checkbox.type = 'checkbox';
+                                                checkbox.name = `permissions[${permission.id}][${action}]`;
+                                                checkbox.className = 'permission-checkbox';
+
+                                                if (assignedSet.has(`${permission.id}-${action}`)) {
+                                                    checkbox.checked = true;
+                                                }
+
+                                                td.appendChild(checkbox);
+                                            }
+                                            tr.appendChild(td);
+                                        });
+
+                                        const tdSelectAll = document.createElement('td');
+                                        tdSelectAll.style.padding = '8px';
+                                        tdSelectAll.style.textAlign = 'center';
+
+                                        const buttonContainer = document.createElement('div');
+                                        buttonContainer.style.display = 'flex';
+                                        buttonContainer.style.justifyContent = 'center';
+                                        buttonContainer.style.gap = '5px';
+
+                                        const selectAllButton = document.createElement('button');
+                                        selectAllButton.type = 'button';
+                                        selectAllButton.textContent = 'Select All';
+                                        selectAllButton.style.padding = '4px 8px';
+                                        selectAllButton.style.cursor = 'pointer';
+                                        selectAllButton.addEventListener('click', () => {
+                                            const checkboxes = tr.querySelectorAll('input[type="checkbox"]:not(:disabled)');
+                                            checkboxes.forEach(cb => cb.checked = true);
+                                        });
+                                        buttonContainer.appendChild(selectAllButton);
+
+                                        const uncheckAllButton = document.createElement('button');
+                                        uncheckAllButton.type = 'button';
+                                        uncheckAllButton.textContent = 'Uncheck All';
+                                        uncheckAllButton.style.padding = '4px 8px';
+                                        uncheckAllButton.style.cursor = 'pointer';
+                                        uncheckAllButton.addEventListener('click', () => {
+                                            const checkboxes = tr.querySelectorAll('input[type="checkbox"]:not(:disabled)');
+                                            checkboxes.forEach(cb => cb.checked = false);
+                                        });
+                                        buttonContainer.appendChild(uncheckAllButton);
+
+                                        tdSelectAll.appendChild(buttonContainer);
+                                        tr.appendChild(tdSelectAll);
+
+                                        tbody.appendChild(tr);
+                                    });
+
+                                    table.appendChild(tbody);
+                                    permissionsList.appendChild(table);
+                                })
+                                .catch(error => {
+                                    console.error('Lỗi khi lấy quyền đã gán:', error);
+                                    alert('Có lỗi khi lấy quyền đã gán. Vui lòng kiểm tra console để biết thêm chi tiết.');
                                 });
-
-                                const tdSelectAll = document.createElement('td');
-                                tdSelectAll.style.padding = '8px';
-                                tdSelectAll.style.textAlign = 'center';
-
-                                const buttonContainer = document.createElement('div');
-                                buttonContainer.style.display = 'flex';
-                                buttonContainer.style.justifyContent = 'center';
-                                buttonContainer.style.gap = '5px';
-
-                                const selectAllButton = document.createElement('button');
-                                selectAllButton.type = 'button';
-                                selectAllButton.textContent = 'Select All';
-                                selectAllButton.style.padding = '4px 8px';
-                                selectAllButton.style.cursor = 'pointer';
-                                selectAllButton.addEventListener('click', () => {
-                                    const checkboxes = tr.querySelectorAll('input[type="checkbox"]:not(:disabled)');
-                                    checkboxes.forEach(cb => cb.checked = true);
-                                });
-                                buttonContainer.appendChild(selectAllButton);
-
-                                const uncheckAllButton = document.createElement('button');
-                                uncheckAllButton.type = 'button';
-                                uncheckAllButton.textContent = 'Uncheck All';
-                                uncheckAllButton.style.padding = '4px 8px';
-                                uncheckAllButton.style.cursor = 'pointer';
-                                uncheckAllButton.addEventListener('click', () => {
-                                    const checkboxes = tr.querySelectorAll('input[type="checkbox"]:not(:disabled)');
-                                    checkboxes.forEach(cb => cb.checked = false);
-                                });
-                                buttonContainer.appendChild(uncheckAllButton);
-
-                                tdSelectAll.appendChild(buttonContainer);
-                                tr.appendChild(tdSelectAll);
-
-                                tbody.appendChild(tr);
-                            });
-
-                            table.appendChild(tbody);
-                            permissionsList.appendChild(table);
                         })
                         .catch(error => {
-                            console.error('Lỗi khi lấy quyền đã gán:', error);
-                            alert('Có lỗi khi lấy quyền đã gán. Vui lòng kiểm tra console để biết thêm chi tiết.');
+                            console.error('Lỗi khi lấy danh sách quyền:', error);
+                            alert('Có lỗi khi lấy danh sách quyền. Vui lòng kiểm tra console để biết thêm chi tiết.');
                         });
                 })
                 .catch(error => {
-                    console.error('Lỗi khi lấy danh sách quyền:', error);
-                    alert('Có lỗi khi lấy danh sách quyền. Vui lòng kiểm tra console để biết thêm chi tiết.');
+                    console.error('Error getting current user role:', error);
+                    alert('Có lỗi khi xác định quyền của người dùng hiện tại. Vui lòng thử lại.');
                 });
         }
 
@@ -452,50 +484,83 @@
             const formData = new FormData(form);
             const roleId = parseInt(formData.get('role_id'));
 
-            // Kiểm tra quyền admin và role_id
-            if (!checkAdminPermission() || !isEditableRole(roleId)) return;
+            if (!checkAdminPermission(roleId, 'cập nhật phân quyền') || !checkRolePermission(roleId, 'cập nhật phân quyền')) {
+                return;
+            }
 
-            fetch('../../BackEnd/Model/quanlichucvu/xulichucvu_phanquyen.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(result => {
-                const permissionModal = document.getElementById('permission-modal');
-                if (result.status === 'success') {
-                    permissionModal.close();
-                    const successMessage = document.getElementById('success-message');
-                    successMessage.querySelector('.success-text p').textContent = result.message || 'Phân quyền thành công';
-                    successMessage.style.display = 'block';
-                    setTimeout(() => {
-                        successMessage.style.display = 'none';
-                    }, 3000);
-                } else {
-                    const errorContainer = permissionModal.querySelector('.modal-error') || document.createElement('p');
-                    errorContainer.classList.add('modal-error');
-                    errorContainer.textContent = result.message || 'Có lỗi khi phân quyền';
-                    errorContainer.style.display = 'block';
-                    errorContainer.style.color = 'var(--clr-error)';
-                    permissionModal.querySelector('.modal-content').insertAdjacentElement('afterbegin', errorContainer);
-                    permissionModal.scrollTop = 0;
-                }
-            })
-            .catch(error => {
-                console.error('Phân quyền thất bại:', error);
-                const permissionModal = document.getElementById('permission-modal');
-                const errorContainer = permissionModal.querySelector('.modal-error') || document.createElement('p');
-                errorContainer.classList.add('modal-error');
-                errorContainer.textContent = 'Có lỗi khi phân quyền';
-                errorContainer.style.display = 'block';
-                errorContainer.style.color = 'var(--clr-error)';
-                permissionModal.querySelector('.modal-content').insertAdjacentElement('afterbegin', errorContainer);
-                permissionModal.scrollTop = 0;
-            });
+            fetch('../../BackEnd/Model/quanlichucvu/get_current_user_role.php')
+                .then(response => response.json())
+                .then(userData => {
+                    if (userData.status !== 'success') {
+                        console.error('Error getting current user role:', userData.message);
+                        alert('Không thể xác định quyền của người dùng hiện tại. Vui lòng thử lại.');
+                        return;
+                    }
+
+                    const currentUserRoleId = parseInt(userData.role_id);
+                    const isAdminRole = currentUserRoleId === 1;
+                    const isModifyingOwnRole = currentUserRoleId === roleId;
+
+                    const hasPermissionToModify = window.PermissionSystem && 
+                        window.PermissionSystem.hasActionPermission ? 
+                        window.PermissionSystem.hasActionPermission(10, "Cập nhật phân quyền") : false;
+
+                    const canModify = (isAdminRole && isModifyingOwnRole) || 
+                                     (isAdminRole && !isModifyingOwnRole) || 
+                                     (!isAdminRole && hasPermissionToModify && roleId !== 1);
+
+                    if (!canModify) {
+                        console.error('User does not have permission to modify this role');
+                        alert('Bạn không có quyền sửa đổi quyền của chức vụ này.');
+                        return;
+                    }
+
+                    fetch('../../BackEnd/Model/quanlichucvu/xulichucvu_phanquyen.php', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(result => {
+                        const permissionModal = document.getElementById('permission-modal');
+                        if (result.status === 'success') {
+                            permissionModal.close();
+                            const successMessage = document.getElementById('success-message');
+                            successMessage.querySelector('.success-text p').textContent = result.message || 'Phân quyền thành công';
+                            successMessage.style.display = 'block';
+                            setTimeout(() => {
+                                successMessage.style.display = 'none';
+                            }, 3000);
+                        } else {
+                            const errorContainer = permissionModal.querySelector('.modal-error') || document.createElement('p');
+                            errorContainer.classList.add('modal-error');
+                            errorContainer.textContent = result.message || 'Có lỗi khi phân quyền';
+                            errorContainer.style.display = 'block';
+                            errorContainer.style.color = 'var(--clr-error)';
+                            permissionModal.querySelector('.modal-content').insertAdjacentElement('afterbegin', errorContainer);
+                            permissionModal.scrollTop = 0;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Phân quyền thất bại:', error);
+                        const permissionModal = document.getElementById('permission-modal');
+                        const errorContainer = permissionModal.querySelector('.modal-error') || document.createElement('p');
+                        errorContainer.classList.add('modal-error');
+                        errorContainer.textContent = 'Có lỗi khi phân quyền';
+                        errorContainer.style.display = 'block';
+                        errorContainer.style.color = 'var(--clr-error)';
+                        permissionModal.querySelector('.modal-content').insertAdjacentElement('afterbegin', errorContainer);
+                        permissionModal.scrollTop = 0;
+                    });
+                })
+                .catch(error => {
+                    console.error('Error getting current user role:', error);
+                    alert('Có lỗi khi xác định quyền của người dùng hiện tại. Vui lòng thử lại.');
+                });
         }
 
         // Hàm mở modal chỉnh sửa
