@@ -130,13 +130,18 @@
 
         // Hàm fetch dữ liệu tổng hợp
         function fetchAllData() {
-            const dateFrom = dateFromEl.value;
-            const dateTo = dateToEl.value;
+            let dateFrom = dateFromEl.value;
+            let dateTo = dateToEl.value;
 
             if (!dateFrom || !dateTo) {
                 alert('Vui lòng chọn khoảng thời gian');
                 return;
             }
+
+            // Tăng dateTo lên 1 ngày để bao gồm cả ngày được chọn
+            const dateToObj = new Date(dateTo);
+            dateToObj.setDate(dateToObj.getDate() + 1);
+            dateTo = dateToObj.toISOString().split('T')[0];
 
             // Fetch top 5 khách hàng
             fetchTopCustomers(dateFrom, dateTo);
@@ -420,7 +425,13 @@
 
         // Hàm fetch chi tiết đơn hàng của khách hàng
         function fetchOrderDetails(userId) {
-            fetch(`thongke/fetch_customer_orders.php?user_id=${userId}&date_from=${dateFromEl.value}&date_to=${dateToEl.value}`)
+            // Tăng dateTo lên 1 ngày để bao gồm cả ngày được chọn
+            let dateTo = dateToEl.value;
+            const dateToObj = new Date(dateTo);
+            dateToObj.setDate(dateToObj.getDate() + 1);
+            dateTo = dateToObj.toISOString().split('T')[0];
+
+            fetch(`thongke/fetch_customer_orders.php?user_id=${userId}&date_from=${dateFromEl.value}&date_to=${dateTo}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.status === 'success') {

@@ -486,106 +486,106 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Hàm validate form cho edit-modal
 function validateModalFormInputs(form) {
-    const inputs = form.querySelectorAll('input[required], textarea[required], select[required]');
-    let isError = false;
+        const inputs = form.querySelectorAll('input[required], textarea[required], select[required]');
+        let isError = false;
 
-    inputs.forEach(input => {
-        const value = input.value.trim();
-        const errorEl = input.parentElement.querySelector('.modal-error');
-        input.style.border = '';
-        if (errorEl) errorEl.textContent = '';
+        inputs.forEach(input => {
+            const value = input.value.trim();
+            const errorEl = input.parentElement.querySelector('.modal-error');
+            input.style.border = '';
+            if (errorEl) errorEl.textContent = '';
 
-        if (!value) {
-            isError = true;
-            input.style.border = '1px solid var(--clr-error)';
-            if (errorEl) errorEl.textContent = 'Trường này không được để trống!';
-            return;
-        }
-
-        if (input.id === 'modal-edit-name') {
-            // Sử dụng biểu thức chính quy hỗ trợ ký tự Unicode (bao gồm tiếng Việt)
-            if (!/^[\p{L}\s-]+$/u.test(value)) {
-                isError = true;
-                input.style.border = '1px solid var(--clr-error)';
-                if (errorEl) errorEl.textContent = 'Tên thể loại chỉ chứa chữ cái, khoảng trắng, và dấu gạch ngang';
-            } else if (value.length > 100) {
-                isError = true;
-                input.style.border = '1px solid var(--clr-error)';
-                if (errorEl) errorEl.textContent = 'Tên thể loại không được vượt quá 100 ký tự';
-            }
-        }
-
-        if (input.id === 'modal-edit-desc') {
-            if (value.length > 400) {
-                isError = true;
-                input.style.border = '1px solid var(--clr-error)';
-                if (errorEl) errorEl.textContent = 'Mô tả không được vượt quá 400 ký tự';
-            }
-        }
-
-        if (input.id === 'modal-edit-category-type') {
             if (!value) {
                 isError = true;
                 input.style.border = '1px solid var(--clr-error)';
-                if (errorEl) errorEl.textContent = 'Vui lòng chọn chủng loại!';
+                if (errorEl) errorEl.textContent = 'Trường này không được để trống!';
+                return;
             }
-        }
-    });
 
-    return isError;
-}
-
-// Hàm validate form cho add-modal
-function validateAddModalFormInputs(form) {
-    const inputs = form.querySelectorAll('input[required], textarea[required], select[required]');
-    let isError = false;
-
-    inputs.forEach(input => {
-        const value = input.value.trim();
-        const errorEl = input.parentElement.querySelector('.modal-error');
-        input.style.border = '';
-        if (errorEl) errorEl.textContent = '';
-
-        if (!value) {
-            isError = true;
-            input.style.border = '1px solid var(--clr-error)';
-            if (errorEl) errorEl.textContent = 'Trường này không được để trống!';
-            return;
-        }
-
-        if (input.id === 'modal-add-name') {
-            // Sử dụng biểu thức chính quy hỗ trợ ký tự Unicode (bao gồm tiếng Việt)
-            if (!/^[\p{L}\s-]+$/u.test(value)) {
-                isError = true;
-                input.style.border = '1px solid var(--clr-error)';
-                if (errorEl) errorEl.textContent = 'Tên thể loại chỉ chứa chữ cái, khoảng trắng, và dấu gạch ngang';
-            } else if (value.length > 100) {
-                isError = true;
-                input.style.border = '1px solid var(--clr-error)';
-                if (errorEl) errorEl.textContent = 'Tên thể loại không được vượt quá 100 ký tự';
+            if (input.id === 'modal-edit-name') {
+                // Sử dụng biểu thức chính quy hỗ trợ ký tự Unicode (bao gồm tiếng Việt)
+                if (!/^[\p{L}\s-]+$/u.test(value)) {
+                    isError = true;
+                    input.style.border = '1px solid var(--clr-error)';
+                    if (errorEl) errorEl.textContent = 'Tên thể loại chỉ chứa chữ cái, khoảng trắng, và dấu gạch ngang';
+                } else if (value.length > 100) {
+                    isError = true;
+                    input.style.border = '1px solid var(--clr-error)';
+                    if (errorEl) errorEl.textContent = 'Tên thể loại không được vượt quá 100 ký tự';
+                }
             }
-        }
 
-        if (input.id === 'modal-add-desc') {
-            if (value.length > 400) {
-                isError = true;
-                input.style.border = '1px solid var(--clr-error)';
-                if (errorEl) errorEl.textContent = 'Mô tả không được vượt quá 400 ký tự';
+            if (input.id === 'modal-edit-desc') {
+                if (value.length > 400) {
+                    isError = true;
+                    input.style.border = '1px solid var(--clr-error)';
+                    if (errorEl) errorEl.textContent = 'Mô tả không được vượt quá 400 ký tự';
+                }
             }
-        }
 
-        if (input.id === 'modal-add-category-type') {
+            if (input.id === 'modal-edit-category-type') {
+                if (!value) {
+                    isError = true;
+                    input.style.border = '1px solid var(--clr-error)';
+                    if (errorEl) errorEl.textContent = 'Vui lòng chọn chủng loại!';
+                }
+            }
+        });
+
+        return isError;
+    }
+
+    // Hàm validate form cho add-modal
+    function validateAddModalFormInputs(form) {
+        const inputs = form.querySelectorAll('input[required], textarea[required], select[required]');
+        let isError = false;
+
+        inputs.forEach(input => {
+            const value = input.value.trim();
+            const errorEl = input.parentElement.querySelector('.modal-error');
+            input.style.border = '';
+            if (errorEl) errorEl.textContent = '';
+
             if (!value) {
                 isError = true;
                 input.style.border = '1px solid var(--clr-error)';
-                if (errorEl) errorEl.textContent = 'Vui lòng chọn chủng loại!';
+                if (errorEl) errorEl.textContent = 'Trường này không được để trống!';
+                return;
             }
-        }
-    });
 
-    return isError;
-}
+            if (input.id === 'modal-add-name') {
+                // Sử dụng biểu thức chính quy hỗ trợ ký tự Unicode (bao gồm tiếng Việt)
+                if (!/^[\p{L}\s-]+$/u.test(value)) {
+                    isError = true;
+                    input.style.border = '1px solid var(--clr-error)';
+                    if (errorEl) errorEl.textContent = 'Tên thể loại chỉ chứa chữ cái, khoảng trắng, và dấu gạch ngang';
+                } else if (value.length > 100) {
+                    isError = true;
+                    input.style.border = '1px solid var(--clr-error)';
+                    if (errorEl) errorEl.textContent = 'Tên thể loại không được vượt quá 100 ký tự';
+                }
+            }
 
+            if (input.id === 'modal-add-desc') {
+                if (value.length > 400) {
+                    isError = true;
+                    input.style.border = '1px solid var(--clr-error)';
+                    if (errorEl) errorEl.textContent = 'Mô tả không được vượt quá 400 ký tự';
+                }
+            }
+
+            if (input.id === 'modal-add-category-type') {
+                if (!value) {
+                    isError = true;
+                    input.style.border = '1px solid var(--clr-error)';
+                    if (errorEl) errorEl.textContent = 'Vui lòng chọn chủng loại!';
+                }
+            }
+        });
+
+        return isError;
+    }
+    
     // Hàm thêm dữ liệu vào modal
     function addModalData(modalEl, category, type) {
         if (type === "innerHTML") {

@@ -441,123 +441,130 @@ document.addEventListener('DOMContentLoaded', function() {
               }
           });
       }
+// Hàm validate form cho edit-modal
+function validateModalFormInputs(form) {
+        const inputs = form.querySelectorAll('input[required], textarea[required], select[required]');
+        let isError = false;
 
-      // Hàm validate form cho edit-modal
-      function validateModalFormInputs(form) {
-          const inputs = form.querySelectorAll('input[required], textarea[required], select[required]');
-          let isError = false;
+        inputs.forEach(input => {
+            const value = input.value.trim();
+            const errorEl = input.parentElement.querySelector('.modal-error');
+            input.style.border = '';
+            if (errorEl) errorEl.textContent = '';
 
-          inputs.forEach(input => {
-              const value = input.value.trim();
-              const errorEl = input.parentElement.querySelector('.modal-error');
-              input.style.border = '';
-              if (errorEl) errorEl.textContent = '';
+            if (!value) {
+                isError = true;
+                input.style.border = '1px solid var(--clr-error)';
+                if (errorEl) errorEl.textContent = 'Trường này không được để trống!';
+                return;
+            }
 
-              if (!value) {
-                  isError = true;
-                  input.style.border = '1px solid var(--clr-error)';
-                  if (errorEl) errorEl.textContent = 'Trường này không được để trống!';
-                  return;
-              }
+            if (input.id === 'modal-edit-name') {
+                if (!/^[\p{L}\s-]+$/u.test(value)) {
+                    isError = true;
+                    input.style.border = '1px solid var(--clr-error)';
+                    if (errorEl) errorEl.textContent = 'Tên nhà cung cấp chỉ chứa chữ cái, khoảng trắng, và dấu gạch ngang';
+                } else if (value.length > 50) {
+                    isError = true;
+                    input.style.border = '1px solid var(--clr-error)';
+                    if (errorEl) errorEl.textContent = 'Tên nhà cung cấp không được vượt quá 50 ký tự';
+                }
+            }
 
-              if (input.id === 'modal-edit-name') {
-                  if (!/^[a-zA-Z\s-]+$/.test(value)) {
-                      isError = true;
-                      input.style.border = '1px solid var(--clr-error)';
-                      if (errorEl) errorEl.textContent = 'Tên nhà cung cấp chỉ chứa chữ cái, khoảng trắng, và dấu gạch ngang';
-                  } else if (value.length > 50) {
-                      isError = true;
-                      input.style.border = '1px solid var(--clr-error)';
-                      if (errorEl) errorEl.textContent = 'Tên nhà cung cấp không được vượt quá 50 ký tự';
-                  }
-              }
+            if (input.id === 'modal-edit-contact-phone') {
+                if (!/^0[0-9]{9}$/.test(value)) {
+                    isError = true;
+                    input.style.border = '1px solid var(--clr-error)';
+                    if (errorEl) errorEl.textContent = 'Số điện thoại phải là 10 chữ số và bắt đầu bằng 0';
+                }
+            }
 
-              if (input.id === 'modal-edit-contact-phone') {
-                  if (!/^[0-9]{10,11}$/.test(value)) {
-                      isError = true;
-                      input.style.border = '1px solid var(--clr-error)';
-                      if (errorEl) errorEl.textContent = 'Số điện thoại phải chứa 10-11 chữ số';
-                  }
-              }
+            if (input.id === 'modal-edit-address') {
+                if (value.length > 100) {
+                    isError = true;
+                    input.style.border = '1px solid var(--clr-error)';
+                    if (errorEl) errorEl.textContent = 'Địa chỉ không được vượt quá 100 ký tự';
+                }
+            }
 
-              if (input.id === 'modal-edit-address') {
-                  if (value.length > 100) {
-                      isError = true;
-                      input.style.border = '1px solid var(--clr-error)';
-                      if (errorEl) errorEl.textContent = 'Địa chỉ không được vượt quá 100 ký tự';
-                  }
-              }
+            if (input.id === 'modal-edit-publisher') {
+                if (!/^NXB\s[\p{L}\s-]{1,45}$/iu.test(value)) {
+                    isError = true;
+                    input.style.border = '1px solid var(--clr-error)';
+                    if (errorEl) errorEl.textContent = 'Nhà xuất bản phải bắt đầu bằng "NXB" theo sau là tên hợp lệ, không vượt quá 50 ký tự';
+                } else if (value.length > 50) {
+                    isError = true;
+                    input.style.border = '1px solid var(--clr-error)';
+                    if (errorEl) errorEl.textContent = 'Nhà xuất bản không được vượt quá 50 ký tự';
+                }
+            }
+        });
 
-              if (input.id === 'modal-edit-publisher') {
-                  if (value.length > 50) {
-                      isError = true;
-                      input.style.border = '1px solid var(--clr-error)';
-                      if (errorEl) errorEl.textContent = 'Nhà xuất bản không được vượt quá 50 ký tự';
-                  }
-              }
-          });
+        return isError;
+    }
 
-          return isError;
-      }
+    // Hàm validate form cho add-modal
+    function validateAddModalFormInputs(form) {
+        const inputs = form.querySelectorAll('input[required], textarea[required], select[required]');
+        let isError = false;
 
-      // Hàm validate form cho add-modal
-      function validateAddModalFormInputs(form) {
-          const inputs = form.querySelectorAll('input[required], textarea[required], select[required]');
-          let isError = false;
+        inputs.forEach(input => {
+            const value = input.value.trim();
+            const errorEl = input.parentElement.querySelector('.modal-error');
+            input.style.border = '';
+            if (errorEl) errorEl.textContent = '';
 
-          inputs.forEach(input => {
-              const value = input.value.trim();
-              const errorEl = input.parentElement.querySelector('.modal-error');
-              input.style.border = '';
-              if (errorEl) errorEl.textContent = '';
+            if (!value) {
+                isError = true;
+                input.style.border = '1px solid var(--clr-error)';
+                if (errorEl) errorEl.textContent = 'Trường này không được để trống!';
+                return;
+            }
 
-              if (!value) {
-                  isError = true;
-                  input.style.border = '1px solid var(--clr-error)';
-                  if (errorEl) errorEl.textContent = 'Trường này không được để trống!';
-                  return;
-              }
+            if (input.id === 'modal-add-name') {
+                if (!/^[\p{L}\s-]+$/u.test(value)) {
+                    isError = true;
+                    input.style.border = '1px solid var(--clr-error)';
+                    if (errorEl) errorEl.textContent = 'Tên nhà cung cấp chỉ chứa chữ cái, khoảng trắng, và dấu gạch ngang';
+                } else if (value.length > 50) {
+                    isError = true;
+                    input.style.border = '1px solid var(--clr-error)';
+                    if (errorEl) errorEl.textContent = 'Tên nhà cung cấp không được vượt quá 50 ký tự';
+                }
+            }
 
-              if (input.id === 'modal-add-name') {
-                  if (!/^[a-zA-Z\s-]+$/.test(value)) {
-                      isError = true;
-                      input.style.border = '1px solid var(--clr-error)';
-                      if (errorEl) errorEl.textContent = 'Tên nhà cung cấp chỉ chứa chữ cái, khoảng trắng, và dấu gạch ngang';
-                  } else if (value.length > 50) {
-                      isError = true;
-                      input.style.border = '1px solid var(--clr-error)';
-                      if (errorEl) errorEl.textContent = 'Tên nhà cung cấp không được vượt quá 50 ký tự';
-                  }
-              }
+            if (input.id === 'modal-add-contact-phone') {
+                if (!/^0[0-9]{9}$/.test(value)) {
+                    isError = true;
+                    input.style.border = '1px solid var(--clr-error)';
+                    if (errorEl) errorEl.textContent = 'Số điện thoại phải là 10 chữ số và bắt đầu bằng 0';
+                }
+            }
 
-              if (input.id === 'modal-add-contact-phone') {
-                  if (!/^[0-9]{10,11}$/.test(value)) {
-                      isError = true;
-                      input.style.border = '1px solid var(--clr-error)';
-                      if (errorEl) errorEl.textContent = 'Số điện thoại phải chứa 10-11 chữ số';
-                  }
-              }
+            if (input.id === 'modal-add-address') {
+                if (value.length > 100) {
+                    isError = true;
+                    input.style.border = '1px solid var(--clr-error)';
+                    if (errorEl) errorEl.textContent = 'Địa chỉ không được vượt quá 100 ký tự';
+                }
+            }
 
-              if (input.id === 'modal-add-address') {
-                  if (value.length > 100) {
-                      isError = true;
-                      input.style.border = '1px solid var(--clr-error)';
-                      if (errorEl) errorEl.textContent = 'Địa chỉ không được vượt quá 100 ký tự';
-                  }
-              }
+            if (input.id === 'modal-add-publisher') {
+                if (!/^NXB\s[\p{L}\s-]{1,45}$/iu.test(value)) {
+                    isError = true;
+                    input.style.border = '1px solid var(--clr-error)';
+                    if (errorEl) errorEl.textContent = 'Nhà xuất bản phải bắt đầu bằng "NXB" theo sau là tên hợp lệ, không vượt quá 50 ký tự';
+                } else if (value.length > 50) {
+                    isError = true;
+                    input.style.border = '1px solid var(--clr-error)';
+                    if (errorEl) errorEl.textContent = 'Nhà xuất bản không được vượt quá 50 ký tự';
+                }
+            }
+        });
 
-              if (input.id === 'modal-add-publisher') {
-                  if (value.length > 50) {
-                      isError = true;
-                      input.style.border = '1px solid var(--clr-error)';
-                      if (errorEl) errorEl.textContent = 'Nhà xuất bản không được vượt quá 50 ký tự';
-                  }
-              }
-          });
-
-          return isError;
-      }
-
+        return isError;
+    }
+    
       // Hàm thêm dữ liệu vào modal
       function addModalData(modalEl, supplier, type) {
           if (type === "innerHTML") {

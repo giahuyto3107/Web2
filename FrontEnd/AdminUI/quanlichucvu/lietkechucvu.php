@@ -762,7 +762,7 @@
                 }
 
                 if (input.id === 'modal-edit-name') {
-                    if (!/^[a-zA-Z\s-]+$/.test(value)) {
+                    if (!/^[\p{L}\s-]+$/u.test(value)) {
                         isError = true;
                         input.style.border = '1px solid var(--clr-error)';
                         if (errorEl) errorEl.textContent = 'Tên chức vụ chỉ chứa chữ cái, khoảng trắng, và dấu gạch ngang';
@@ -804,7 +804,7 @@
                 }
 
                 if (input.id === 'modal-add-name') {
-                    if (!/^[a-zA-Z\s-]+$/.test(value)) {
+                    if (!/^[\p{L}\s-]+$/u.test(value)) {
                         isError = true;
                         input.style.border = '1px solid var(--clr-error)';
                         if (errorEl) errorEl.textContent = 'Tên chức vụ chỉ chứa chữ cái, khoảng trắng, và dấu gạch ngang';
