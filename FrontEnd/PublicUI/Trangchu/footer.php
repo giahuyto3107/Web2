@@ -17,11 +17,11 @@
         <div class="col smallest-col">
             <h3>Links <div class="underline"><span></span></div></h3>
             <ul>
-                <li><a href=""><strong>Home</strong></a></li>
-                <li><a href=""><strong>Service</strong></a></li>
-                <li><a href=""><strong>About us</strong></a></li>
-                <li><a href=""><strong>Contact</strong></a></li>
-                <li><a href=""><strong>Policy</strong></a></li>
+                <li><a href="https://dictionary.cambridge.org/vi/dictionary/english/home"><strong>Home</strong></a></li>
+                <li><a href="https://dictionary.cambridge.org/vi/dictionary/english/service"><strong>Service</strong></a></li>
+                <li><a href="https://dictionary.cambridge.org/vi/spellcheck/english/?q=About+us"><strong>About us</strong></a></li>
+                <li><a href="https://dictionary.cambridge.org/vi/dictionary/english/Contact"><strong>Contact</strong></a></li>
+                <li><a href="https://dictionary.cambridge.org/vi/dictionary/english/Policy"><strong>Policy</strong></a></li>
             </ul>
         </div>
         <div class="col biggest-col">

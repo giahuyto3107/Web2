@@ -135,6 +135,24 @@
             color: #1a1a1a;
             background: #e6f0e6;
         }
+        .password-wrapper {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            top: 36%;
+            right: 12px;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 1.5rem; /* Tăng kích thước */
+            color: #777;
+            user-select: none;
+            line-height: 1;
+        }
+        .password-toggle:hover {
+            color: #d4af37;
+        }
     </style>
 </head>
 <body>
@@ -143,7 +161,10 @@
             <h2>Đăng Nhập</h2>
             <form id="loginForm">
                 <input id="email" type="email" name="email" placeholder="Email" required>
-                <input id="password" type="password" name="password" placeholder="Mật khẩu" required>
+                <div class="password-wrapper">
+                    <input id="password" type="password" name="password" placeholder="Mật khẩu" required>
+                    <span class="password-toggle" data-target="password">👁️</span>
+                </div>
                 <button id="submit-login" type="submit">Đăng nhập</button>
                 <p id="login-message"></p>
             </form>
@@ -188,7 +209,7 @@
                     messageBox.style.display = "block";
                     setTimeout(() => {
                         window.location.href = data.redirect;
-                    }, 0);
+                    }, 2000);
                 } else {
                     messageBox.textContent = data.message;
                     messageBox.classList.remove("success");
@@ -204,6 +225,19 @@
             .finally(() => {
                 submitButton.disabled = false;
                 submitButton.textContent = "Đăng nhập";
+            });
+        });
+        document.querySelectorAll('.password-toggle').forEach(toggle => {
+            toggle.addEventListener('click', function () {
+                const targetId = this.getAttribute('data-target');
+                const input = document.getElementById(targetId);
+                if (input.type === "password") {
+                    input.type = "text";
+                    this.textContent = "🙈";
+                } else {
+                    input.type = "password";
+                    this.textContent = "👁️";
+                }
             });
         });
     </script>

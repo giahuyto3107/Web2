@@ -75,7 +75,7 @@ VALUES
     ('taikhoan12', 'taikhoan12@gmail.com', '$2y$10$oqXTtS3NRNxd.EfMSTM86.X.hELS9KXaBSwWP1Ho7FCwZMzj1RsXe', 1, NULL, 2, '2025-04-20 08:17:59', '2025-04-20 08:17:59'), -- Khách hàng
     ('taikhoan13', 'taikhoan13@gmail.com', '$2y$10$85MOwmB35ZdXQUPJ3Aht/.qP56.jax0nQnje9f2K4AJB0ejIZv0cK', 1, NULL, 3, '2025-04-20 08:18:07', '2025-04-20 08:18:07'), -- Nhà cung cấp
     ('taikhoan14', 'taikhoan14@gmail.com', '$2y$10$SkrBaIBPnK1TrmutvJr1KubVRqAz5yAv43nhVcK6hhV4.OQehf6TC', 1, NULL, 2, '2025-04-20 08:18:18', '2025-04-20 08:18:18'), -- Khách hàng
-    ('taikhoan15', 'taikhoan15@gmail.com', '$10$K4uCTePQOEVCvlQmN2vgH.uo89p7wQsBjJxVKSfvEvAruv3dhRlKe', 1, NULL, 2, '2025-04-20 08:18:34', '2025-04-20 08:18:34'), -- Khách hàng
+    ('taikhoan15', 'taikhoan15@gmail.com', '$10$K4uCTePQOEVCvlQmN2vgH.uo89p7wQsBjJxVKSfvEvAruv3dhRlKe', 1, NULL, 2, '2025-04-20 08:18:34', '2025-04-20 08:18:34'); -- Khách hàng
     
     
 
@@ -170,7 +170,27 @@ VALUES
     ('Đắc Nhân Tâm', 'Sách kỹ năng sống nổi tiếng của Dale Carnegie, bản dịch tiếng Việt.', 95000, 400, 1, 'dac-nhan-tam.png', '2025-02-05 03:00:08', '2025-02-05 03:09:20'),
     ('Doraemon Tập 1', 'Truyện tranh nổi tiếng của Fujiko F. Fujio, bản dịch tiếng Việt.', 35000, 500, 1, 'doraemon-1.png', '2025-02-05 03:00:08', '2025-02-05 03:09:20'),
     ('Toán Lớp 10', 'Sách giáo khoa Toán lớp 10, chương trình mới.', 45000, 300, 1, 'toan-lop-10.png', '2025-02-05 03:00:08', '2025-02-05 03:09:20'),
-    ('Mắt Biếc', 'Tiểu thuyết tình cảm của Nguyễn Nhật Ánh, kể về mối tình đơn phương đầy day dứt.', 125000, 160, 1, 'mat-biec.png', '2025-02-05 03:00:08', '2025-02-05 03:09:20');
+    ('Mắt Biếc', 'Tiểu thuyết tình cảm của Nguyễn Nhật Ánh, kể về mối tình đơn phương đầy day dứt.', 125000, 160, 1, 'mat-biec.png', '2025-02-05 03:00:08', '2025-02-05 03:09:20'),
+    ('Thép Đã Tôi Thế Đấy', 'Tiểu thuyết kinh điển về nghị lực và lý tưởng sống của Nikolai Ostrovsky.', 100000, 180, 1, 'thep-da-toi-the-day.png', '2025-02-05 03:00:08', '2025-02-05 03:09:20'),
+('Không Gia Đình', 'Tác phẩm cảm động của Hector Malot về cuộc đời cậu bé mồ côi Rémi.', 110000, 160, 1, 'khong-gia-dinh.png', '2025-02-05 03:00:08', '2025-02-05 03:09:20'),
+('Hai Vạn Dặm Dưới Đáy Biển', 'Tiểu thuyết khoa học viễn tưởng kinh điển của Jules Verne.', 90000, 200, 1, 'hai-van-dam-duoi-day-bien.png', '2025-02-05 03:00:08', '2025-02-05 03:09:20'),
+('Cuộc Đời Của Pi', 'Câu chuyện sinh tồn đầy kỳ lạ giữa cậu bé và con hổ trên chiếc thuyền nhỏ.', 115000, 170, 1, 'cuoc-doi-cua-pi.png', '2025-02-05 03:00:08', '2025-02-05 03:09:20'),
+('Chiến Tranh Và Hòa Bình', 'Đại tác phẩm của Lev Tolstoy về chiến tranh và cuộc sống nước Nga thế kỷ 19.', 135000, 120, 1, 'chien-tranh-va-hoa-binh.png', '2025-02-05 03:00:08', '2025-02-05 03:09:20'),
+('Chí Phèo', 'Truyện ngắn của Nam Cao phản ánh xã hội nông thôn Việt Nam trước Cách mạng.', 75000, 210, 1, 'chi-pheo.png', '2025-02-05 03:00:08', '2025-02-05 03:09:20'),
+('Vợ Nhặt', 'Truyện ngắn xuất sắc của Kim Lân về nạn đói năm 1945.', 80000, 190, 1, 'vo-nhat.png', '2025-02-05 03:00:08', '2025-02-05 03:09:20'),
+('Người Giàu Có Nhất Thành Babylon', 'Sách tài chính cá nhân nổi tiếng của George S. Clason.', 95000, 300, 1, 'nguoi-giau-co-nhat-thanh-babylon.png', '2025-02-05 03:00:08', '2025-02-05 03:09:20'),
+('Bí Mật Của May Mắn', 'Truyện ngụ ngôn hiện đại truyền cảm hứng sống tốt đẹp.', 85000, 230, 1, 'bi-mat-cua-may-man.png', '2025-02-05 03:00:08', '2025-02-05 03:09:20'),
+('Sherlock Holmes: Dấu Vết Con Chó Má', 'Vụ án nổi tiếng của thám tử Holmes.', 105000, 180, 1, 'sherlock-holmes-dau-vet-con-cho-ma.png', '2025-02-05 03:00:08', '2025-02-05 03:09:20'),
+('Con Chim Xanh Biếc Bay Về', 'Tiểu thuyết đậm chất hiện thực của Nguyễn Nhật Ánh.', 120000, 200, 1, 'con-chim-xanh-biec-bay-ve.png', '2025-02-05 03:00:08', '2025-02-05 03:09:20'),
+('Người Truy Tìm Vết Tích', 'Tiểu thuyết hình sự của Arthur Conan Doyle.', 99000, 250, 1, 'nguoi-truy-tim-vet-tich.png', '2025-02-05 03:00:08', '2025-02-05 03:09:20'),
+('7 Thói Quen Hiệu Quả', 'Tác phẩm self-help kinh điển của Stephen R. Covey.', 125000, 270, 1, '7-thoi-quen-hieu-qua.png', '2025-02-05 03:00:08', '2025-02-05 03:09:20'),
+('Cội Rễ', 'Cuốn tiểu thuyết sử thi nổi tiếng của Alex Haley về nô lệ da màu.', 130000, 150, 1, 'coi-re.png', '2025-02-05 03:00:08', '2025-02-05 03:09:20'),
+('Những Kẻ Khốn Cùng', 'Tiểu thuyết kinh điển của Victor Hugo phản ánh xã hội Pháp thế kỷ 19.', 135000, 160, 1, 'nhung-ke-khon-cung.png', '2025-02-05 03:00:08', '2025-02-05 03:09:20'),
+('Cô Gái Đến Từ Hôm Qua', 'Một cuốn khác của Nguyễn Nhật Ánh về mối tình tuổi học trò.', 110000, 210, 1, 'co-gai-den-tu-hom-qua.png', '2025-02-05 03:00:08', '2025-02-05 03:09:20'),
+('Totto-Chan Bên Cửa Sổ', 'Hồi ký cảm động của Kuroyanagi Tetsuko.', 98000, 200, 1, 'totto-chan-ben-cua-so.png', '2025-02-05 03:00:08', '2025-02-05 03:09:20'),
+('Những Người Khốn Khó', 'Tác phẩm nhân văn sâu sắc của Fyodor Dostoevsky.', 128000, 140, 1, 'nhung-nguoi-khon-kho.png', '2025-02-05 03:00:08', '2025-02-05 03:09:20'),
+('Nếu Chỉ Còn Một Ngày Để Sống', 'Tản văn truyền cảm hứng sống ý nghĩa của Nguyễn Văn Phước.', 89000, 230, 1, 'neu-chi-con-mot-ngay-de-song.png', '2025-02-05 03:00:08', '2025-02-05 03:09:20'),
+('Tâm Hồn Cao Thượng', 'Tuyển tập truyện ngắn về tình yêu thương và lòng nhân hậu của Edmondo De Amicis.', 95000, 260, 1, 'tam-hon-cao-thuong.png', '2025-02-05 03:00:08', '2025-02-05 03:09:20');
 
 CREATE TABLE IF NOT EXISTS product_category (
     product_id INT NOT NULL,
@@ -205,7 +225,27 @@ VALUES
     (12, 6), -- 'Đắc Nhân Tâm' - 'Kỹ năng sống'
     (13, 10),-- 'Doraemon Tập 1' - 'Truyện tranh'
     (14, 9), -- 'Toán Lớp 10' - 'Sách giáo khoa'
-    (15, 1); -- 'Mắt Biếc' - 'Văn học Việt Nam'
+    (15, 1), -- 'Mắt Biếc' - 'Văn học Việt Nam'
+    (16, 2), (16, 3),
+	(17, 2),
+	(18, 2),
+	(19, 2),
+	(20, 2),
+	(21, 1), (21, 4),
+	(22, 1), (22, 4),
+	(23, 3), (23, 4),
+	(24, 3),
+	(25, 2), (25, 5),
+	(26, 1),
+	(27, 2), (27, 5),
+	(28, 3),
+	(29, 2),
+	(30, 2),
+	(31, 1), (31, 5),
+	(32, 2), (32, 4),
+	(33, 2),
+	(34, 3), (34, 5),
+	(35, 2), (35, 3);
 
 
 CREATE TABLE IF NOT EXISTS user (

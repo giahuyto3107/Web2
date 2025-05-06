@@ -27,13 +27,13 @@ $best_sellers = $conn->query("
     FROM order_items oi
     INNER JOIN orders o ON oi.order_id = o.order_id
     INNER JOIN product p ON oi.product_id = p.product_id
-    WHERE o.status_id = 5 AND p.status_id = 1
+    WHERE o.status_id = 5 AND p.status_id = 1 AND p.stock_quantity > 0
     GROUP BY oi.product_id, p.product_name
     ORDER BY total_sold DESC
     LIMIT 5
 ");
-$new_releases = $conn->query("SELECT * FROM product WHERE status_id = 1 ORDER BY created_at DESC LIMIT 5");
-$featured_collection = $conn->query("SELECT p.* FROM product p JOIN product_category pc ON p.product_id = pc.product_id WHERE pc.category_id = 1 AND p.status_id = 1 LIMIT 3");
+$new_releases = $conn->query("SELECT * FROM product WHERE status_id = 1 AND product.stock_quantity>0 ORDER BY created_at DESC LIMIT 5");
+$featured_collection = $conn->query("SELECT p.* FROM product p JOIN product_category pc ON p.product_id = pc.product_id WHERE pc.category_id = 1 AND p.status_id = 1 AND p.stock_quantity > 0 LIMIT 3");
 ?>
 
 <style>

@@ -10,7 +10,7 @@ $response = ['success' => false, 'results' => []];
 
 if (isset($_POST['query']) && !empty($_POST['query'])) {
     $query = '%' . $_POST['query'] . '%';
-    $sql = "SELECT product_id, product_name, image_url FROM product WHERE product_name LIKE ? AND status_id = 1";
+    $sql = "SELECT product_id, product_name, image_url FROM product WHERE product_name LIKE ? AND status_id = 1 AND stock_quantity > 0";
     
     $stmt = $conn->prepare($sql);
     if (!$stmt) {

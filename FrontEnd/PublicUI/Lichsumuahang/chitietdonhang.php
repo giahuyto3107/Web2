@@ -7,8 +7,7 @@ if (!isset($_GET['order_id'])) {
 }
 
 $order_id = mysqli_real_escape_string($conn, $_GET['order_id']);
-$query = "SELECT orders.order_id, orders.order_date, orders.status_id, orders.total_amount
-          FROM orders 
+$query = "SELECT orders.order_id, orders.order_date, orders.status_id, orders.total_amount, orders.phone, orders.address, orders.payment_method          FROM orders 
           WHERE orders.order_id = '$order_id'";
 $result = mysqli_query($conn, $query);
 
@@ -63,6 +62,8 @@ if (!$result_items) {
             margin: 0 auto;
             padding: 40px;
         }
+
+        
 
         /* Header */
         .order-header {
@@ -308,15 +309,29 @@ if (!$result_items) {
 </head>
 <body>
 <div class="container">
-    <div class="order-header">
-        <h2>Đơn Hàng #<?= htmlspecialchars($order['order_id']) ?></h2>
-        <div class="order-info">
-            Ngày đặt hàng: <?= htmlspecialchars($order['order_date']) ?>
-            <?php if ($order_status == 7) : ?>
-                <span class="text-danger ms-3">Đơn hàng bị hủy</span>
-            <?php endif; ?>
+<div class="order-header">
+    <h2>Đơn Hàng #<?= htmlspecialchars($order['order_id']) ?></h2>
+    <div class="order-info">
+        <div><b>Ngày đặt hàng:</b><?= htmlspecialchars($order['order_date']) ?></div>
+        <div><b>Phương thức thanh toán:</b> 
+            <?php
+            $payment_method = htmlspecialchars($order['payment_method']);
+            if ($payment_method === 'cod') {
+                echo 'Tiền mặt';
+            } elseif ($payment_method === 'Online') {
+                echo 'Chuyển khoản';
+            } else {
+                echo $payment_method ?: 'Không xác định';
+            }
+            ?>
         </div>
+        <div><b>Số điện thoại:</b> <?= htmlspecialchars($order['phone'] ?: 'Không có') ?></div>
+        <div><b>Địa chỉ: </b> <?= htmlspecialchars($order['address'] ?: 'Không có') ?></div>
+        <?php if ($order_status == 7) : ?>
+            <span class="text-danger ms-3">Đơn hàng bị hủy</span>
+        <?php endif; ?>
     </div>
+</div>
 
     <div class="order-items">
         <table>

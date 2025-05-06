@@ -374,7 +374,7 @@ body {
                                 <h1>Your Information</h1>
                                 <div class="row">
                                     <div class="col-md-6 bio-row">
-                                        <p><strong>Tên đầy đủ:</strong> <?php echo $row_user_data['full_name']; ?></p>
+                                        <p><strong>Họ và Tên:</strong> <?php echo $row_user_data['full_name']; ?></p>
                                     </div>
                                     <div class="col-md-6 bio-row">
                                         <p><strong>Email:</strong> <?php echo $row_user_data['email']; ?></p>
@@ -443,7 +443,7 @@ body {
             <div class="modal-body">
     <form id="editProfileForm" enctype="multipart/form-data">
         <div class="form-group">
-            <label for="fullName">Tên đầy đủ:</label>
+            <label for="fullName">Họ và Tên:</label>
             <input type="text" class="form-control" id="fullName" name="fullName" value="<?php echo $row_user_data['full_name']; ?>" required>
             <span class="error-message text-danger"></span>
         </div>
