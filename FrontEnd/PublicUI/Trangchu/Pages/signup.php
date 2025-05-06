@@ -197,12 +197,12 @@ include ('../../../BackEnd/Config/config.php');
             let confirmPassword = document.getElementById("confirm_password").value;
             let messageBox = document.getElementById("message");
 
-            if (password !== confirmPassword) {
-                messageBox.textContent = "Mật khẩu xác nhận không khớp!";
-                messageBox.classList.remove("hidden");
-                messageBox.classList.add("text-red-500", "bg-red-100");
-                return;
-            }
+            // if (password !== confirmPassword) {
+            //     messageBox.textContent = "Mật khẩu xác nhận không khớp!";
+            //     messageBox.classList.remove("hidden");
+            //     messageBox.classList.add("text-red-500", "bg-red-100");
+            //     return;
+            // }
 
             let formData = new FormData(this);
 
@@ -222,7 +222,7 @@ include ('../../../BackEnd/Config/config.php');
                     setTimeout(function() {
                         console.log("Chuyển hướng...");
                         window.location.href = "?page=login";
-                    }, 2000);
+                    }, 1000);
                 } else {
                     messageBox.classList.remove("text-green-500", "bg-green-100");
                     messageBox.classList.add("text-red-500", "bg-red-100");

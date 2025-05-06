@@ -209,7 +209,7 @@
                     messageBox.style.display = "block";
                     setTimeout(() => {
                         window.location.href = data.redirect;
-                    }, 2000);
+                    }, 1000);
                 } else {
                     messageBox.textContent = data.message;
                     messageBox.classList.remove("success");
