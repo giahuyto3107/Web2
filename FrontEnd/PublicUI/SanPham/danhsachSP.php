@@ -360,7 +360,7 @@ include ('../../../BackEnd/Config/config.php');
 <body>
     <div class="content">
         <div class="sidebar">
-            <h4>Tìm Kiếm Theo Danh Mục</h4>
+            <h4>Tìm Kiếm Theo Chủng loại</h4>
             <ul id="category-type-list" class="list-unstyled">
                 <li class="category-item all-categories" data-category-id="">Tất cả thể loại</li>
             </ul>
