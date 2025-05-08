@@ -349,7 +349,7 @@ CREATE TABLE IF NOT EXISTS order_items (
 INSERT INTO `orders` (`user_id`, `total_amount`, `status_id`, `payment_method`, `phone`, `address`) 
 VALUES
     (1, 390000, 5, 'Tiền mặt', '0123456789', '123 Nguyễn Trãi, Quận 5, TP.HCM'),
-    (2, 230000, 5, 'Chuyển khoản', '0987654321', '456 Lê Lợi, Quận 1, TP.HCM'),
+    (1, 230000, 5, 'Chuyển khoản', '0987654321', '456 Lê Lợi, Quận 1, TP.HCM'),
     (3, 180000, 5, 'Tiền mặt', '0912345678', '789 Phạm Văn Đồng, Thủ Đức, TP.HCM'),
     (4, 270000, 5, 'Chuyển khoản', '0934567890', '321 Trần Phú, Quận 7, TP.HCM'),
     (5, 360000, 4, 'Tiền mặt', '0945678901', '654 Nguyễn Huệ, Quận 1, TP.HCM'),
@@ -361,8 +361,8 @@ VALUES
     (11, 280000, 4, 'Tiền mặt', '0901234567', '852 Nguyễn Văn Cừ, Quận 5, TP.HCM'),
     (12, 165000, 3, 'Chuyển khoản', '0912345679', '963 Lê Văn Sỹ, Quận 3, TP.HCM'),
     (13, 200000, 4, 'Tiền mặt', '0923456780', '159 Trường Chinh, Quận Tân Bình, TP.HCM'),
-    (14, 340000, 3, 'Chuyển khoản', '0934567891', '357 Điện Biên Phủ, Quận Bình Thạnh, TP.HCM'),
-    (15, 175000, 4, 'Tiền mặt', '0945678902', '468 Nguyễn Đình Chiểu, Quận 3, TP.HCM');
+    (1, 340000, 5, 'Chuyển khoản', '0934567891', '357 Điện Biên Phủ, Quận Bình Thạnh, TP.HCM'),
+    (1, 175000, 5, 'Tiền mặt', '0945678902', '468 Nguyễn Đình Chiểu, Quận 3, TP.HCM');
 
 -- Thêm nhiều mục trong order_items
 INSERT INTO `order_items` (`order_id`, `product_id`, `quantity`, `price`, `review`) 

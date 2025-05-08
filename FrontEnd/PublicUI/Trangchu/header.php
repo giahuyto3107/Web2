@@ -7,7 +7,23 @@ if (isset($_GET['page']) && $_GET['page'] === 'logout') {
     header("Location: index.php");
     exit();
 }
+$full_name = null;
 
+if (isset($_SESSION['user_id'])) {
+    $user_id = $_SESSION['user_id'];
+
+    $query = "SELECT full_name FROM user WHERE user_id = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($row = $result->fetch_assoc()) {
+        $full_name = $row['full_name'];
+    }
+
+    $stmt->close();
+}
 $cart_count = 0;
 if (isset($_SESSION['user_id'])) {
     $user_id = $_SESSION['user_id'];
@@ -395,7 +411,7 @@ $featured_collection = $conn->query("SELECT p.* FROM product p JOIN product_cate
             <?php if (isset($_SESSION['user_id'])): ?>
                 <div class="profile-icon">
                     <i class="fa-solid fa-user"></i>
-                    <span class="username"><?php echo htmlspecialchars($user_name); ?></span>
+                    <span class="username"><?php echo htmlspecialchars($full_name); ?></span>
                 </div>
                 <div class="dropdown-menu">
                     <a href="?page=profile" data-page="profile"><i class="fa-solid fa-user"></i> Hồ sơ</a>
