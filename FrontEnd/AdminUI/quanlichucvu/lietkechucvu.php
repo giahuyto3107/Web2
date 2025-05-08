@@ -61,15 +61,82 @@
     document.addEventListener('DOMContentLoaded', function() {
         // Biến toàn cục
         let roles = []; // Dữ liệu gốc, không thay đổi
+        let currentUserRoleId = null; // Role ID của người dùng hiện tại
 
-        // Lấy session role_id từ PHP
-        const sessionRoleId = <?php echo isset($_SESSION['role_id']) ? intval($_SESSION['role_id']) : 0; ?>;
+        // Lấy role_id của người dùng hiện tại từ server
+        fetch('../../BackEnd/Model/quanlichucvu/get_current_user_role.php')
+            .then(response => response.json())
+            .then(userData => {
+                if (userData.status === 'success') {
+                    currentUserRoleId = parseInt(userData.role_id);
+                    console.log('Current User Role ID:', currentUserRoleId);
+                } else {
+                    console.error('Error getting current user role:', userData.message);
+                    currentUserRoleId = 0; // Giá trị mặc định nếu không lấy được
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching current user role:', error);
+                currentUserRoleId = 0;
+            });
+
+        // Hàm kiểm tra quyền admin chỉ cho role_id = 1 hoặc 2
+        function checkAdminPermission(targetRoleId, action) {
+            if ([1, 2].includes(parseInt(targetRoleId))) {
+                const isAdminRole = currentUserRoleId === 1;
+                if (!isAdminRole) {
+                    const successMessage = document.getElementById('success-message');
+                    successMessage.querySelector('.success-text p').textContent = 'Chỉ admin (role_id = 1) mới có quyền thực hiện hành động này!';
+                    successMessage.style.display = 'block';
+                    successMessage.style.backgroundColor = 'var(--clr-error)';
+                    setTimeout(() => {
+                        successMessage.style.display = 'none';
+                        successMessage.style.backgroundColor = '';
+                    }, 3000);
+                    return false;
+                }
+            }
+            return true;
+        }
+
+       // Hàm kiểm tra quyền sửa và cập nhật quyền dựa trên role_id
+       function checkRolePermission(targetRoleId, action) {
+            // Cấm chỉnh sửa role_id 1 hoặc 2 nếu không phải admin
+            if ([1, 2].includes(parseInt(targetRoleId)) && currentUserRoleId !== 1) {
+                const successMessage = document.getElementById('success-message');
+                successMessage.querySelector('.success-text p').textContent = `Chỉ admin (role_id = 1) mới có thể ${action} chức vụ role_id 1 hoặc 2!`;
+                successMessage.style.display = 'block';
+                successMessage.style.backgroundColor = 'var(--clr-error)';
+                setTimeout(() => {
+                    successMessage.style.display = 'none';
+                    successMessage.style.backgroundColor = '';
+                }, 3000);
+                return false;
+            }
+
+            // Cấm mọi role_id cập nhật quyền của chính mình, ngoại lệ admin (role_id = 1)
+            if (currentUserRoleId === parseInt(targetRoleId) && action === 'cập nhật phân quyền' && currentUserRoleId !== 1) {
+                const successMessage = document.getElementById('success-message');
+                successMessage.querySelector('.success-text p').textContent = `Tài khoản role_id ${currentUserRoleId} không thể cập nhật quyền của chính mình!`;
+                successMessage.style.display = 'block';
+                successMessage.style.backgroundColor = 'var(--clr-error)';
+                setTimeout(() => {
+                    successMessage.style.display = 'none';
+                    successMessage.style.backgroundColor = '';
+                }, 3000);
+                return false;
+            }
+
+            // Nếu targetRoleId không phải 1 hoặc 2, cho phép chỉnh sửa
+            return true;
+        }
 
         // Hàm chuyển status_id thành văn bản
         function getStatusText(statusId) {
-            switch (statusId) {
-                case 1: return 'Active';
-                case 2: return 'Inactive';
+            switch (parseInt(statusId)) {
+                case 1: return 'Hoạt động';
+                case 2: return 'Không hoạt động';
+                case 6: return 'Deleted';
                 default: return 'N/A';
             }
         }
@@ -120,7 +187,7 @@
             }
 
             tableBody.innerHTML = '';
-            const activeRoles = displayedRoles.filter(role => role.status_id !== 6);
+            const activeRoles = displayedRoles.filter(role => parseInt(role.status_id) !== 6);
 
             if (activeRoles.length > 0) {
                 noProductsEl.style.display = 'none';
@@ -136,9 +203,9 @@
                                 <button class="dropdownButton"><i class="fa fa-ellipsis-v dropIcon"></i></button>
                                 <div class="dropdown-content">
                                     <a href="#" class="viewRole" data-permission-id="10" data-action="Xem" data-role-id="${role.id}">Xem <i class="fa fa-eye"></i></a>
-                                    ${role.id === 1 || role.id === 2 ? '' : `<a href="#" class="editRole" data-permission-id="10" data-action="Sửa" data-role-id="${role.id}">Sửa <i class="fa fa-edit"></i></a>`}
-                                    ${role.id === 1 || role.id === 2 ? '' : `<a href="#" class="deleteRole" data-permission-id="10" data-action="Xóa" data-role-id="${role.id}">Xóa <i class="fa fa-trash"></i></a>`}
-                                    ${role.id === 1 || role.id === 2 ? '' : `<a href="#" class="updatePermission" data-permission-id="10" data-action="Cập nhật phân quyền" data-role-id="${role.id}" data-role-name="${role.role_name}">Cập nhật quyền <i class="fa fa-key"></i></a>`}
+                                    <a href="#" class="editRole" data-permission-id="10" data-action="Sửa" data-role-id="${role.id}">Sửa <i class="fa fa-edit"></i></a>
+                                    <a href="#" class="deleteRole" data-permission-id="10" data-action="Xóa" data-role-id="${role.id}">Xóa <i class="fa fa-trash"></i></a>
+                                    <a href="#" class="updatePermission" data-permission-id="10" data-action="Cập nhật phân quyền" data-role-id="${role.id}" data-role-name="${role.role_name}">Cập nhật quyền <i class="fa fa-key"></i></a>
                                 </div>
                             </div>
                         </td>
@@ -176,8 +243,8 @@
             if (!target) return;
 
             e.preventDefault();
-            const roleId = parseInt(target.getAttribute('data-role-id')); // Chuyển roleId thành số
-            const role = roles.find(r => r.id === roleId);
+            const roleId = parseInt(target.getAttribute('data-role-id'));
+            const role = roles.find(r => parseInt(r.id) === roleId);
             const roleName = target.getAttribute('data-role-name');
 
             if (!role) {
@@ -191,52 +258,51 @@
                 addModalData(viewModalEl, role, "innerHTML");
                 viewModalEl.showModal();
             } else if (target.classList.contains('editRole')) {
-                if (roleId === 1 || roleId === 2) {
-                    alert('Không thể chỉnh sửa chức vụ hệ thống hoặc chức vụ khách hàng.');
-                    return;
-                }
+                if (!checkAdminPermission(roleId, 'sửa') || !checkRolePermission(roleId, 'sửa')) return;
                 const editModalEl = document.getElementById("edit-modal");
                 openEditModal(role);
             } else if (target.classList.contains('deleteRole')) {
-                if (roleId === 1 || roleId === 2) {
-                    alert('Không thể xóa chức vụ hệ thống hoặc chức vụ khách hàng.');
+                if (!checkAdminPermission(roleId, 'xóa') || !checkRolePermission(roleId, 'xóa')) return;
+
+                // Kiểm tra nếu role_id đang xóa trùng với role_id của người dùng
+                if (roleId === currentUserRoleId) {
+                    const successMessage = document.getElementById('success-message');
+                    successMessage.querySelector('.success-text p').textContent = 'Bạn không thể xóa chức vụ của chính mình!';
+                    successMessage.style.display = 'block';
+                    successMessage.style.backgroundColor = 'var(--clr-error)';
+                    setTimeout(() => {
+                        successMessage.style.display = 'none';
+                        successMessage.style.backgroundColor = '';
+                    }, 3000);
                     return;
                 }
-                if (roleId === sessionRoleId) {
-                    alert('Bạn không thể xóa chính chức vụ của mình!');
-                    return;
-                }
+
                 const deleteModalEl = document.getElementById("delete-modal");
                 deleteModalEl.setAttribute("data-role-id", roleId);
                 deleteModalEl.showModal();
             } else if (target.classList.contains('updatePermission')) {
-                if (roleId === 1 || roleId === 2) {
-                    alert('Không thể cập nhật quyền cho chức vụ hệ thống hoặc chức vụ khách hàng.');
-                    return;
-                }
+                if (!checkAdminPermission(roleId, 'cập nhật phân quyền') || !checkRolePermission(roleId, 'cập nhật phân quyền')) return;
                 const permissionModal = document.getElementById('permission-modal');
                 document.getElementById('modal-role-id').value = roleId;
                 document.getElementById('modal-role-name').textContent = roleName;
-                fetchPermissions(roleId, permissionModal); // Load permissions
+                fetchPermissions(roleId, permissionModal);
                 permissionModal.showModal();
             }
         });
 
         function fetchPermissions(roleId, permissionModal) {
-            // Define permission-specific actions
             const permissionActions = {
                 "Đặt hàng": ["Đặt hàng"],
                 "Quản lý hóa đơn": ["Xem", "Duyệt đơn/Hoàn tất", "Hủy"],
                 "Quản lý phiếu nhập": ["Xem"],
                 "Quản lý đánh giá": ["Xem", "Xóa", "Sửa"],
-                "Thống kê" : ["Xem"],
+                "Thống kê": ["Xem"],
                 "Quản lý chức vụ": ["Xem", "Thêm", "Xóa", "Sửa", "Cập nhật phân quyền"]
             };
             const defaultActions = ["Xem", "Thêm", "Xóa", "Sửa"];
             const allActions = ["Xem", "Thêm", "Xóa", "Sửa", "Cập nhật phân quyền", "Duyệt đơn/Hoàn tất", "Hủy", "Đặt hàng"];
 
             // Check if current user has permission to modify this role
-            // First, get the current user's role ID
             fetch('../../BackEnd/Model/quanlichucvu/get_current_user_role.php')
                 .then(response => response.json())
                 .then(userData => {
@@ -246,31 +312,23 @@
                         return;
                     }
 
-                    const currentUserRoleId = userData.role_id;
-                    const isAdminRole = currentUserRoleId === 1;
-                    const isModifyingOwnRole = currentUserRoleId === roleId;
-                    
-                    // Check if user has permission to modify this role
-                    const hasPermissionToModify = window.PermissionSystem && 
-                        window.PermissionSystem.hasActionPermission ? 
-                        window.PermissionSystem.hasActionPermission(10, "Cập nhật phân quyền") : false;
-                    
-                    // Only allow modification if:
-                    // 1. User is admin (role_id = 1) and modifying their own role, or
-                    // 2. User is admin (role_id = 1) and modifying other roles, or
-                    // 3. User is not admin but has permission to modify roles and is not modifying role_id = 1
-                    const canModify = (isAdminRole && isModifyingOwnRole) || 
-                                     (isAdminRole && !isModifyingOwnRole) || 
-                                     (!isAdminRole && hasPermissionToModify && roleId !== 1);
-                    
-                    if (!canModify) {
-                        console.error('User does not have permission to modify this role');
-                        alert('Bạn không có quyền sửa đổi quyền của chức vụ này.');
+                    const currentUserRoleId = parseInt(userData.role_id);
+                    if (!checkAdminPermission(roleId, 'cập nhật phân quyền') || !checkRolePermission(roleId, 'cập nhật phân quyền')) {
                         permissionModal.close();
                         return;
                     }
 
-                    // Fetch all permissions from the server
+                    const permissionActions = {
+                        "Đặt hàng": ["Đặt hàng"],
+                        "Quản lý hóa đơn": ["Xem", "Duyệt đơn/Hoàn tất", "Hủy"],
+                        "Quản lý phiếu nhập": ["Xem"],
+                        "Quản lý đánh giá": ["Xem", "Xóa", "Sửa"],
+                        "Thống kê": ["Xem"],
+                        "Quản lý chức vụ": ["Xem", "Thêm", "Xóa", "Sửa", "Cập nhật phân quyền"]
+                    };
+                    const defaultActions = ["Xem", "Thêm", "Xóa", "Sửa"];
+                    const allActions = ["Xem", "Thêm", "Xóa", "Sửa", "Cập nhật phân quyền", "Duyệt đơn/Hoàn tất", "Hủy", "Đặt hàng"];
+
                     fetch('../../BackEnd/Model/quanlichucvu/fetch_quyen.php')
                         .then(response => {
                             if (!response.ok) {
@@ -285,7 +343,6 @@
                                 return;
                             }
 
-                            // Fetch assigned permissions for the role
                             fetch(`quanlichucvu/fetch_chucvu_phanquyen.php?role_id=${roleId}`)
                                 .then(response => {
                                     if (!response.ok) {
@@ -303,17 +360,14 @@
                                     const permissionsList = document.getElementById('permissions-list');
                                     permissionsList.innerHTML = '';
 
-                                    // Create a Set of assigned permission-action pairs (e.g., "1-Đặt hàng")
                                     const assignedSet = new Set(
                                         assignedPermissions.data.map(item => `${item.permission_id}-${item.action}`)
                                     );
 
-                                    // Create the table
                                     const table = document.createElement('table');
                                     table.style.width = '100%';
                                     table.style.borderCollapse = 'collapse';
 
-                                    // Create table header
                                     const thead = document.createElement('thead');
                                     const trHead = document.createElement('tr');
                                     const thPermission = document.createElement('th');
@@ -338,14 +392,13 @@
                                     thead.appendChild(trHead);
                                     table.appendChild(thead);
 
-                                    // Create table body
                                     const tbody = document.createElement('tbody');
 
                                     allPermissions.data.forEach(permission => {
                                         const allowedActions = permissionActions[permission.name] || defaultActions;
                                         const tr = document.createElement('tr');
                                         tr.style.borderBottom = '1px solid #ddd';
-                                        
+
                                         const tdPermission = document.createElement('td');
                                         tdPermission.textContent = permission.name;
                                         tdPermission.style.padding = '8px';
@@ -360,29 +413,25 @@
                                                 checkbox.type = 'checkbox';
                                                 checkbox.name = `permissions[${permission.id}][${action}]`;
                                                 checkbox.className = 'permission-checkbox';
-                                                
-                                                // Check if this permission-action pair is assigned to the role
+
                                                 if (assignedSet.has(`${permission.id}-${action}`)) {
                                                     checkbox.checked = true;
                                                 }
-                                                
+
                                                 td.appendChild(checkbox);
                                             }
                                             tr.appendChild(td);
                                         });
 
-                                        // Add Select All button
                                         const tdSelectAll = document.createElement('td');
                                         tdSelectAll.style.padding = '8px';
                                         tdSelectAll.style.textAlign = 'center';
-                                        
-                                        // Create a container for the buttons
+
                                         const buttonContainer = document.createElement('div');
                                         buttonContainer.style.display = 'flex';
                                         buttonContainer.style.justifyContent = 'center';
                                         buttonContainer.style.gap = '5px';
-                                        
-                                        // Select All button
+
                                         const selectAllButton = document.createElement('button');
                                         selectAllButton.type = 'button';
                                         selectAllButton.textContent = 'Select All';
@@ -393,8 +442,7 @@
                                             checkboxes.forEach(cb => cb.checked = true);
                                         });
                                         buttonContainer.appendChild(selectAllButton);
-                                        
-                                        // Uncheck All button
+
                                         const uncheckAllButton = document.createElement('button');
                                         uncheckAllButton.type = 'button';
                                         uncheckAllButton.textContent = 'Uncheck All';
@@ -405,7 +453,7 @@
                                             checkboxes.forEach(cb => cb.checked = false);
                                         });
                                         buttonContainer.appendChild(uncheckAllButton);
-                                        
+
                                         tdSelectAll.appendChild(buttonContainer);
                                         tr.appendChild(tdSelectAll);
 
@@ -434,9 +482,12 @@
         // Hàm updatePermission để lưu các quyền đã chọn
         function updatePermission(form) {
             const formData = new FormData(form);
-            const roleId = formData.get('role_id');
-            
-            // Check if current user has permission to modify this role
+            const roleId = parseInt(formData.get('role_id'));
+
+            if (!checkAdminPermission(roleId, 'cập nhật phân quyền') || !checkRolePermission(roleId, 'cập nhật phân quyền')) {
+                return;
+            }
+
             fetch('../../BackEnd/Model/quanlichucvu/get_current_user_role.php')
                 .then(response => response.json())
                 .then(userData => {
@@ -446,30 +497,24 @@
                         return;
                     }
 
-                    const currentUserRoleId = userData.role_id;
+                    const currentUserRoleId = parseInt(userData.role_id);
                     const isAdminRole = currentUserRoleId === 1;
-                    const isModifyingOwnRole = currentUserRoleId === parseInt(roleId);
-                    
-                    // Check if user has permission to modify this role
+                    const isModifyingOwnRole = currentUserRoleId === roleId;
+
                     const hasPermissionToModify = window.PermissionSystem && 
                         window.PermissionSystem.hasActionPermission ? 
                         window.PermissionSystem.hasActionPermission(10, "Cập nhật phân quyền") : false;
-                    
-                    // Only allow modification if:
-                    // 1. User is admin (role_id = 1) and modifying their own role, or
-                    // 2. User is admin (role_id = 1) and modifying other roles, or
-                    // 3. User is not admin but has permission to modify roles and is not modifying role_id = 1
+
                     const canModify = (isAdminRole && isModifyingOwnRole) || 
                                      (isAdminRole && !isModifyingOwnRole) || 
-                                     (!isAdminRole && hasPermissionToModify && parseInt(roleId) !== 1);
-                    
+                                     (!isAdminRole && hasPermissionToModify && roleId !== 1);
+
                     if (!canModify) {
                         console.error('User does not have permission to modify this role');
                         alert('Bạn không có quyền sửa đổi quyền của chức vụ này.');
                         return;
                     }
-                    
-                    // If we get here, the user has permission to modify the role
+
                     fetch('../../BackEnd/Model/quanlichucvu/xulichucvu_phanquyen.php', {
                         method: 'POST',
                         body: formData
@@ -909,11 +954,11 @@
     </script>
 
     <?php
-        include 'quanlichucvu/themchucvu.php'; // Add Modal
-        include 'quanlichucvu/suachucvu.php'; // Edit Modal
-        include 'quanlichucvu/xemchucvu.php'; // View Modal
-        include 'quanlichucvu/xoachucvu.php'; // Delete Modal
-        include 'quanlichucvu/menuphanquyen.php'; // Permission Modal
+        include 'quanlichucvu/themchucvu.php';
+        include 'quanlichucvu/suachucvu.php';
+        include 'quanlichucvu/xemchucvu.php';
+        include 'quanlichucvu/xoachucvu.php';
+        include 'quanlichucvu/menuphanquyen.php';
     ?>
 </div>
 </body>
