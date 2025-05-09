@@ -156,7 +156,7 @@ def get_most_popular_book():
                 JSON_UNQUOTE(JSON_EXTRACT(product_details, '$[*].quantity')) AS quantities,
                 JSON_UNQUOTE(JSON_EXTRACT(product_details, '$[*].categories')) AS categories
             FROM sales_report
-            WHERE status_id = 5
+            WHERE status_category COLLATE utf8mb4_0900_ai_ci = 'Completed'
         """)
         sales_data = cur.fetchall()
 
