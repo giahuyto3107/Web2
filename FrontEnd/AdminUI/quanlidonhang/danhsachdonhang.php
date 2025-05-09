@@ -164,7 +164,7 @@
         function formatPaymentMethod(paymentMethod) {
             switch (paymentMethod) {
                 case "cod": return "Tiền mặt";
-                case "ck": return "Online";
+                case "ck": return "Chuyển khoản";
                 default: return paymentMethod || "N/A";
             }
         }
