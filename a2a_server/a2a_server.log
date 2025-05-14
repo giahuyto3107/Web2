@@ -614,3 +614,213 @@ Hãy cho em bi\u1ebft yêu c\u1ea7u c\u1ee5 th\u1ec3 c\u1ee7a b\u1ea1n \u0111\u1ec
 
 Tôi có th\u1ec3 giúp gì thêm cho b\u1ea1n?  B\u1ea1n mu\u1ed1n bi\u1ebft thông tin v\u1ec1 sách bán ch\u1ea1y khác, hay mu\u1ed1n g\u1ee3i ý v\u1ec1 các danh m\u1ee5c ho\u1eb7c sách khác không \u1ea1?
 2025-05-09 11:49:03,255 - INFO - 127.0.0.1 - - [09/May/2025 11:49:03] "POST /jsonrpc HTTP/1.1" 200 -
+2025-05-09 11:51:49,253 - INFO - 127.0.0.1 - - [09/May/2025 11:51:49] "OPTIONS /jsonrpc HTTP/1.1" 200 -
+2025-05-09 11:51:49,538 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-09 11:51:49,538 - INFO - L\u1ea5y danh sách sách thành công
+2025-05-09 11:51:49,584 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-09 11:51:49,585 - INFO - L\u1ea5y danh sách danh m\u1ee5c thành công
+2025-05-09 11:51:49,624 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-09 11:51:49,624 - INFO - L\u1ea5y danh sách lo\u1ea1i danh m\u1ee5c thành công
+2025-05-09 11:51:49,664 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-09 11:51:49,665 - INFO - L\u1ea5y danh sách danh m\u1ee5c sách thành công
+2025-05-09 11:51:49,705 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-09 11:51:49,705 - INFO - T\u1ed5ng s\u1ed1 sách: 35
+2025-05-09 11:51:49,745 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-09 11:51:49,745 - INFO - T\u1ed5ng s\u1ed1 lo\u1ea1i danh m\u1ee5c: 5
+2025-05-09 11:51:49,783 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-09 11:51:49,785 - INFO - Sách ph\u1ed5 bi\u1ebfn nh\u1ea5t: S\u1ed1 \u0110\u1ecf trong danh m\u1ee5c V\u0103n h\u1ecdc Vi\u1ec7t Nam v\u1edbi 7 \u0111ã bán
+2025-05-09 11:51:50,372 - INFO - Các mô hình Gemini h\u1ed7 tr\u1ee3 generateContent: ['models/gemini-1.0-pro-vision-latest', 'models/gemini-pro-vision', 'models/gemini-1.5-pro-latest', 'models/gemini-1.5-pro-001', 'models/gemini-1.5-pro-002', 'models/gemini-1.5-pro', 'models/gemini-1.5-flash-latest', 'models/gemini-1.5-flash-001', 'models/gemini-1.5-flash-001-tuning', 'models/gemini-1.5-flash', 'models/gemini-1.5-flash-002', 'models/gemini-1.5-flash-8b', 'models/gemini-1.5-flash-8b-001', 'models/gemini-1.5-flash-8b-latest', 'models/gemini-1.5-flash-8b-exp-0827', 'models/gemini-1.5-flash-8b-exp-0924', 'models/gemini-2.5-pro-exp-03-25', 'models/gemini-2.5-pro-preview-03-25', 'models/gemini-2.5-flash-preview-04-17', 'models/gemini-2.5-flash-preview-04-17-thinking', 'models/gemini-2.5-pro-preview-05-06', 'models/gemini-2.0-flash-exp', 'models/gemini-2.0-flash', 'models/gemini-2.0-flash-001', 'models/gemini-2.0-flash-exp-image-generation', 'models/gemini-2.0-flash-lite-001', 'models/gemini-2.0-flash-lite', 'models/gemini-2.0-flash-preview-image-generation', 'models/gemini-2.0-flash-lite-preview-02-05', 'models/gemini-2.0-flash-lite-preview', 'models/gemini-2.0-pro-exp', 'models/gemini-2.0-pro-exp-02-05', 'models/gemini-exp-1206', 'models/gemini-2.0-flash-thinking-exp-01-21', 'models/gemini-2.0-flash-thinking-exp', 'models/gemini-2.0-flash-thinking-exp-1219', 'models/learnlm-1.5-pro-experimental', 'models/learnlm-2.0-flash-experimental', 'models/gemma-3-1b-it', 'models/gemma-3-4b-it', 'models/gemma-3-12b-it', 'models/gemma-3-27b-it']
+2025-05-09 11:51:51,089 - INFO - Ph\u1ea3n h\u1ed3i t\u1eeb Gemini: Chào b\u1ea1n! Mình là tr\u1ee3 lý \u1ea3o c\u1ee7a c\u1eeda hàng sách. B\u1ea1n c\u1ea7n mình giúp gì \u1ea1?
+2025-05-09 11:51:51,090 - INFO - 127.0.0.1 - - [09/May/2025 11:51:51] "POST /jsonrpc HTTP/1.1" 200 -
+2025-05-09 11:55:16,386 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5001
+ * Running on http://192.168.110.117:5001
+2025-05-09 11:55:16,386 - INFO - [33mPress CTRL+C to quit[0m
+2025-05-09 11:55:16,388 - INFO -  * Restarting with stat
+2025-05-09 11:55:17,644 - WARNING -  * Debugger is active!
+2025-05-09 11:55:17,647 - INFO -  * Debugger PIN: 689-982-771
+2025-05-09 11:55:21,355 - INFO - 127.0.0.1 - - [09/May/2025 11:55:21] "OPTIONS /jsonrpc HTTP/1.1" 200 -
+2025-05-09 11:55:21,656 - INFO - package: mysql.connector.plugins
+2025-05-09 11:55:21,656 - INFO - plugin_name: caching_sha2_password
+2025-05-09 11:55:21,657 - INFO - AUTHENTICATION_PLUGIN_CLASS: MySQLCachingSHA2PasswordAuthPlugin
+2025-05-09 11:55:21,657 - INFO - package: mysql.connector.plugins
+2025-05-09 11:55:21,658 - INFO - plugin_name: mysql_native_password
+2025-05-09 11:55:21,658 - INFO - AUTHENTICATION_PLUGIN_CLASS: MySQLNativePasswordAuthPlugin
+2025-05-09 11:55:21,659 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-09 11:55:21,660 - INFO - L\u1ea5y danh sách sách thành công
+2025-05-09 11:55:21,689 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-09 11:55:21,689 - INFO - L\u1ea5y danh sách danh m\u1ee5c thành công
+2025-05-09 11:55:21,718 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-09 11:55:21,718 - INFO - L\u1ea5y danh sách lo\u1ea1i danh m\u1ee5c thành công
+2025-05-09 11:55:21,746 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-09 11:55:21,748 - INFO - L\u1ea5y danh sách danh m\u1ee5c sách thành công
+2025-05-09 11:55:21,775 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-09 11:55:21,776 - INFO - T\u1ed5ng s\u1ed1 sách: 35
+2025-05-09 11:55:21,805 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-09 11:55:21,805 - INFO - T\u1ed5ng s\u1ed1 lo\u1ea1i danh m\u1ee5c: 5
+2025-05-09 11:55:21,832 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-09 11:55:21,835 - INFO - Sách ph\u1ed5 bi\u1ebfn nh\u1ea5t: S\u1ed1 \u0110\u1ecf trong danh m\u1ee5c V\u0103n h\u1ecdc Vi\u1ec7t Nam v\u1edbi 7 \u0111ã bán
+2025-05-09 11:55:22,398 - INFO - Các mô hình Gemini h\u1ed7 tr\u1ee3 generateContent: ['models/gemini-1.0-pro-vision-latest', 'models/gemini-pro-vision', 'models/gemini-1.5-pro-latest', 'models/gemini-1.5-pro-001', 'models/gemini-1.5-pro-002', 'models/gemini-1.5-pro', 'models/gemini-1.5-flash-latest', 'models/gemini-1.5-flash-001', 'models/gemini-1.5-flash-001-tuning', 'models/gemini-1.5-flash', 'models/gemini-1.5-flash-002', 'models/gemini-1.5-flash-8b', 'models/gemini-1.5-flash-8b-001', 'models/gemini-1.5-flash-8b-latest', 'models/gemini-1.5-flash-8b-exp-0827', 'models/gemini-1.5-flash-8b-exp-0924', 'models/gemini-2.5-pro-exp-03-25', 'models/gemini-2.5-pro-preview-03-25', 'models/gemini-2.5-flash-preview-04-17', 'models/gemini-2.5-flash-preview-04-17-thinking', 'models/gemini-2.5-pro-preview-05-06', 'models/gemini-2.0-flash-exp', 'models/gemini-2.0-flash', 'models/gemini-2.0-flash-001', 'models/gemini-2.0-flash-exp-image-generation', 'models/gemini-2.0-flash-lite-001', 'models/gemini-2.0-flash-lite', 'models/gemini-2.0-flash-preview-image-generation', 'models/gemini-2.0-flash-lite-preview-02-05', 'models/gemini-2.0-flash-lite-preview', 'models/gemini-2.0-pro-exp', 'models/gemini-2.0-pro-exp-02-05', 'models/gemini-exp-1206', 'models/gemini-2.0-flash-thinking-exp-01-21', 'models/gemini-2.0-flash-thinking-exp', 'models/gemini-2.0-flash-thinking-exp-1219', 'models/learnlm-1.5-pro-experimental', 'models/learnlm-2.0-flash-experimental', 'models/gemma-3-1b-it', 'models/gemma-3-4b-it', 'models/gemma-3-12b-it', 'models/gemma-3-27b-it']
+2025-05-09 11:55:23,667 - INFO - Ph\u1ea3n h\u1ed3i t\u1eeb Gemini: D\u1ea1, em chào anh/ch\u1ecb!  Em \u0111ang xem d\u1eef li\u1ec7u c\u1ee7a c\u1eeda hàng sách. Anh/ch\u1ecb mu\u1ed1n xem thông tin gì v\u1ec1 top 5 khách hàng mua nhi\u1ec1u nh\u1ea5t \u1ea1?  Hi\u1ec7n t\u1ea1i, em ch\u1ec9 có thông tin v\u1ec1 doanh s\u1ed1 bán sách ch\u1ee9 ch\u01b0a có d\u1eef li\u1ec7u v\u1ec1 khách hàng c\u1ee5 th\u1ec3.  Em r\u1ea5t ti\u1ebfc vì không th\u1ec3 \u0111áp \u1ee9ng yêu c\u1ea7u c\u1ee7a anh/ch\u1ecb lúc này.  Anh/ch\u1ecb có th\u1ec3 h\u1ecfi em nh\u1eefng thông tin khác v\u1ec1 sách và danh m\u1ee5c không \u1ea1?
+2025-05-09 11:55:23,667 - INFO - 127.0.0.1 - - [09/May/2025 11:55:23] "POST /jsonrpc HTTP/1.1" 200 -
+2025-05-09 11:55:36,587 - INFO - 127.0.0.1 - - [09/May/2025 11:55:36] "OPTIONS /jsonrpc HTTP/1.1" 200 -
+2025-05-09 11:55:36,934 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-09 11:55:36,935 - INFO - L\u1ea5y danh sách sách thành công
+2025-05-09 11:55:36,973 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-09 11:55:36,975 - INFO - L\u1ea5y danh sách danh m\u1ee5c thành công
+2025-05-09 11:55:37,013 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-09 11:55:37,014 - INFO - L\u1ea5y danh sách lo\u1ea1i danh m\u1ee5c thành công
+2025-05-09 11:55:37,054 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-09 11:55:37,055 - INFO - L\u1ea5y danh sách danh m\u1ee5c sách thành công
+2025-05-09 11:55:37,092 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-09 11:55:37,093 - INFO - T\u1ed5ng s\u1ed1 sách: 35
+2025-05-09 11:55:37,131 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-09 11:55:37,133 - INFO - T\u1ed5ng s\u1ed1 lo\u1ea1i danh m\u1ee5c: 5
+2025-05-09 11:55:37,171 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-09 11:55:37,174 - INFO - Sách ph\u1ed5 bi\u1ebfn nh\u1ea5t: S\u1ed1 \u0110\u1ecf trong danh m\u1ee5c V\u0103n h\u1ecdc Vi\u1ec7t Nam v\u1edbi 7 \u0111ã bán
+2025-05-09 11:55:37,811 - INFO - Các mô hình Gemini h\u1ed7 tr\u1ee3 generateContent: ['models/gemini-1.0-pro-vision-latest', 'models/gemini-pro-vision', 'models/gemini-1.5-pro-latest', 'models/gemini-1.5-pro-001', 'models/gemini-1.5-pro-002', 'models/gemini-1.5-pro', 'models/gemini-1.5-flash-latest', 'models/gemini-1.5-flash-001', 'models/gemini-1.5-flash-001-tuning', 'models/gemini-1.5-flash', 'models/gemini-1.5-flash-002', 'models/gemini-1.5-flash-8b', 'models/gemini-1.5-flash-8b-001', 'models/gemini-1.5-flash-8b-latest', 'models/gemini-1.5-flash-8b-exp-0827', 'models/gemini-1.5-flash-8b-exp-0924', 'models/gemini-2.5-pro-exp-03-25', 'models/gemini-2.5-pro-preview-03-25', 'models/gemini-2.5-flash-preview-04-17', 'models/gemini-2.5-flash-preview-04-17-thinking', 'models/gemini-2.5-pro-preview-05-06', 'models/gemini-2.0-flash-exp', 'models/gemini-2.0-flash', 'models/gemini-2.0-flash-001', 'models/gemini-2.0-flash-exp-image-generation', 'models/gemini-2.0-flash-lite-001', 'models/gemini-2.0-flash-lite', 'models/gemini-2.0-flash-preview-image-generation', 'models/gemini-2.0-flash-lite-preview-02-05', 'models/gemini-2.0-flash-lite-preview', 'models/gemini-2.0-pro-exp', 'models/gemini-2.0-pro-exp-02-05', 'models/gemini-exp-1206', 'models/gemini-2.0-flash-thinking-exp-01-21', 'models/gemini-2.0-flash-thinking-exp', 'models/gemini-2.0-flash-thinking-exp-1219', 'models/learnlm-1.5-pro-experimental', 'models/learnlm-2.0-flash-experimental', 'models/gemma-3-1b-it', 'models/gemma-3-4b-it', 'models/gemma-3-12b-it', 'models/gemma-3-27b-it']
+2025-05-09 11:55:38,516 - INFO - Ph\u1ea3n h\u1ed3i t\u1eeb Gemini: Chào b\u1ea1n! Mình s\u1eb5n sàng giúp b\u1ea1n tìm ki\u1ebfm thông tin v\u1ec1 sách. B\u1ea1n mu\u1ed1n tìm hi\u1ec3u \u0111i\u1ec1u gì nào?
+2025-05-09 11:55:38,516 - INFO - 127.0.0.1 - - [09/May/2025 11:55:38] "POST /jsonrpc HTTP/1.1" 200 -
+2025-05-09 11:55:52,585 - INFO - 127.0.0.1 - - [09/May/2025 11:55:52] "OPTIONS /jsonrpc HTTP/1.1" 200 -
+2025-05-09 11:55:52,929 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-09 11:55:52,930 - INFO - L\u1ea5y danh sách sách thành công
+2025-05-09 11:55:52,970 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-09 11:55:52,971 - INFO - L\u1ea5y danh sách danh m\u1ee5c thành công
+2025-05-09 11:55:53,012 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-09 11:55:53,013 - INFO - L\u1ea5y danh sách lo\u1ea1i danh m\u1ee5c thành công
+2025-05-09 11:55:53,050 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-09 11:55:53,052 - INFO - L\u1ea5y danh sách danh m\u1ee5c sách thành công
+2025-05-09 11:55:53,095 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-09 11:55:53,097 - INFO - T\u1ed5ng s\u1ed1 sách: 35
+2025-05-09 11:55:53,135 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-09 11:55:53,135 - INFO - T\u1ed5ng s\u1ed1 lo\u1ea1i danh m\u1ee5c: 5
+2025-05-09 11:55:53,174 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-09 11:55:53,178 - INFO - Sách ph\u1ed5 bi\u1ebfn nh\u1ea5t: S\u1ed1 \u0110\u1ecf trong danh m\u1ee5c V\u0103n h\u1ecdc Vi\u1ec7t Nam v\u1edbi 7 \u0111ã bán
+2025-05-09 11:55:54,289 - INFO - Các mô hình Gemini h\u1ed7 tr\u1ee3 generateContent: ['models/gemini-1.0-pro-vision-latest', 'models/gemini-pro-vision', 'models/gemini-1.5-pro-latest', 'models/gemini-1.5-pro-001', 'models/gemini-1.5-pro-002', 'models/gemini-1.5-pro', 'models/gemini-1.5-flash-latest', 'models/gemini-1.5-flash-001', 'models/gemini-1.5-flash-001-tuning', 'models/gemini-1.5-flash', 'models/gemini-1.5-flash-002', 'models/gemini-1.5-flash-8b', 'models/gemini-1.5-flash-8b-001', 'models/gemini-1.5-flash-8b-latest', 'models/gemini-1.5-flash-8b-exp-0827', 'models/gemini-1.5-flash-8b-exp-0924', 'models/gemini-2.5-pro-exp-03-25', 'models/gemini-2.5-pro-preview-03-25', 'models/gemini-2.5-flash-preview-04-17', 'models/gemini-2.5-flash-preview-04-17-thinking', 'models/gemini-2.5-pro-preview-05-06', 'models/gemini-2.0-flash-exp', 'models/gemini-2.0-flash', 'models/gemini-2.0-flash-001', 'models/gemini-2.0-flash-exp-image-generation', 'models/gemini-2.0-flash-lite-001', 'models/gemini-2.0-flash-lite', 'models/gemini-2.0-flash-preview-image-generation', 'models/gemini-2.0-flash-lite-preview-02-05', 'models/gemini-2.0-flash-lite-preview', 'models/gemini-2.0-pro-exp', 'models/gemini-2.0-pro-exp-02-05', 'models/gemini-exp-1206', 'models/gemini-2.0-flash-thinking-exp-01-21', 'models/gemini-2.0-flash-thinking-exp', 'models/gemini-2.0-flash-thinking-exp-1219', 'models/learnlm-1.5-pro-experimental', 'models/learnlm-2.0-flash-experimental', 'models/gemma-3-1b-it', 'models/gemma-3-4b-it', 'models/gemma-3-12b-it', 'models/gemma-3-27b-it']
+2025-05-09 11:55:54,904 - INFO - Ph\u1ea3n h\u1ed3i t\u1eeb Gemini: Chào b\u1ea1n! Mình s\u1eb5n sàng giúp b\u1ea1n tìm ki\u1ebfm thông tin v\u1ec1 sách. B\u1ea1n c\u1ea7n gì nào?
+2025-05-09 11:55:54,905 - INFO - 127.0.0.1 - - [09/May/2025 11:55:54] "POST /jsonrpc HTTP/1.1" 200 -
+2025-05-09 11:56:04,001 - INFO - 127.0.0.1 - - [09/May/2025 11:56:04] "OPTIONS /jsonrpc HTTP/1.1" 200 -
+2025-05-09 11:56:04,352 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-09 11:56:04,355 - INFO - L\u1ea5y danh sách sách thành công
+2025-05-09 11:56:04,395 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-09 11:56:04,396 - INFO - L\u1ea5y danh sách danh m\u1ee5c thành công
+2025-05-09 11:56:04,438 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-09 11:56:04,438 - INFO - L\u1ea5y danh sách lo\u1ea1i danh m\u1ee5c thành công
+2025-05-09 11:56:04,480 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-09 11:56:04,481 - INFO - L\u1ea5y danh sách danh m\u1ee5c sách thành công
+2025-05-09 11:56:04,523 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-09 11:56:04,523 - INFO - T\u1ed5ng s\u1ed1 sách: 35
+2025-05-09 11:56:04,564 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-09 11:56:04,564 - INFO - T\u1ed5ng s\u1ed1 lo\u1ea1i danh m\u1ee5c: 5
+2025-05-09 11:56:04,609 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-09 11:56:04,611 - INFO - Sách ph\u1ed5 bi\u1ebfn nh\u1ea5t: S\u1ed1 \u0110\u1ecf trong danh m\u1ee5c V\u0103n h\u1ecdc Vi\u1ec7t Nam v\u1edbi 7 \u0111ã bán
+2025-05-09 11:56:05,144 - INFO - Các mô hình Gemini h\u1ed7 tr\u1ee3 generateContent: ['models/gemini-1.0-pro-vision-latest', 'models/gemini-pro-vision', 'models/gemini-1.5-pro-latest', 'models/gemini-1.5-pro-001', 'models/gemini-1.5-pro-002', 'models/gemini-1.5-pro', 'models/gemini-1.5-flash-latest', 'models/gemini-1.5-flash-001', 'models/gemini-1.5-flash-001-tuning', 'models/gemini-1.5-flash', 'models/gemini-1.5-flash-002', 'models/gemini-1.5-flash-8b', 'models/gemini-1.5-flash-8b-001', 'models/gemini-1.5-flash-8b-latest', 'models/gemini-1.5-flash-8b-exp-0827', 'models/gemini-1.5-flash-8b-exp-0924', 'models/gemini-2.5-pro-exp-03-25', 'models/gemini-2.5-pro-preview-03-25', 'models/gemini-2.5-flash-preview-04-17', 'models/gemini-2.5-flash-preview-04-17-thinking', 'models/gemini-2.5-pro-preview-05-06', 'models/gemini-2.0-flash-exp', 'models/gemini-2.0-flash', 'models/gemini-2.0-flash-001', 'models/gemini-2.0-flash-exp-image-generation', 'models/gemini-2.0-flash-lite-001', 'models/gemini-2.0-flash-lite', 'models/gemini-2.0-flash-preview-image-generation', 'models/gemini-2.0-flash-lite-preview-02-05', 'models/gemini-2.0-flash-lite-preview', 'models/gemini-2.0-pro-exp', 'models/gemini-2.0-pro-exp-02-05', 'models/gemini-exp-1206', 'models/gemini-2.0-flash-thinking-exp-01-21', 'models/gemini-2.0-flash-thinking-exp', 'models/gemini-2.0-flash-thinking-exp-1219', 'models/learnlm-1.5-pro-experimental', 'models/learnlm-2.0-flash-experimental', 'models/gemma-3-1b-it', 'models/gemma-3-4b-it', 'models/gemma-3-12b-it', 'models/gemma-3-27b-it']
+2025-05-09 11:56:06,475 - INFO - Ph\u1ea3n h\u1ed3i t\u1eeb Gemini: D\u1ea1, em xin phép \u0111\u01b0\u1ee3c h\u1ed7 tr\u1ee3 b\u1ea1n.  B\u1ea1n mu\u1ed1n xem top 5 sách bán ch\u1ea1y nh\u1ea5t ph\u1ea3i không \u1ea1?  Tuy nhiên, d\u1eef li\u1ec7u hi\u1ec7n t\u1ea1i ch\u1ec9 cho bi\u1ebft "S\u1ed1 \u0110\u1ecf" là sách bán ch\u1ea1y nh\u1ea5t v\u1edbi 7 b\u1ea3n \u0111ã bán.  Em ch\u01b0a có \u0111\u1ee7 thông tin v\u1ec1 doanh s\u1ed1 c\u1ee7a các sách khác \u0111\u1ec3 cung c\u1ea5p cho b\u1ea1n top 5.  
+
+Em r\u1ea5t ti\u1ebfc vì ch\u01b0a th\u1ec3 \u0111áp \u1ee9ng \u0111\u1ea7y \u0111\u1ee7 yêu c\u1ea7u c\u1ee7a b\u1ea1n lúc này. \u0110\u1ec3 có th\u1ec3 cung c\u1ea5p danh sách top 5 sách bán ch\u1ea1y, h\u1ec7 th\u1ed1ng c\u1ea7n c\u1eadp nh\u1eadt thêm d\u1eef li\u1ec7u doanh s\u1ed1 bán hàng c\u1ee7a t\u1ea5t c\u1ea3 các cu\u1ed1n sách.
+2025-05-09 11:56:06,475 - INFO - 127.0.0.1 - - [09/May/2025 11:56:06] "POST /jsonrpc HTTP/1.1" 200 -
+2025-05-09 11:56:24,779 - INFO - 127.0.0.1 - - [09/May/2025 11:56:24] "OPTIONS /jsonrpc HTTP/1.1" 200 -
+2025-05-09 11:56:25,129 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-09 11:56:25,130 - INFO - L\u1ea5y danh sách sách thành công
+2025-05-09 11:56:25,167 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-09 11:56:25,167 - INFO - L\u1ea5y danh sách danh m\u1ee5c thành công
+2025-05-09 11:56:25,213 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-09 11:56:25,214 - INFO - L\u1ea5y danh sách lo\u1ea1i danh m\u1ee5c thành công
+2025-05-09 11:56:25,253 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-09 11:56:25,254 - INFO - L\u1ea5y danh sách danh m\u1ee5c sách thành công
+2025-05-09 11:56:25,286 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-09 11:56:25,286 - INFO - T\u1ed5ng s\u1ed1 sách: 35
+2025-05-09 11:56:25,335 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-09 11:56:25,335 - INFO - T\u1ed5ng s\u1ed1 lo\u1ea1i danh m\u1ee5c: 5
+2025-05-09 11:56:25,379 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-09 11:56:25,383 - INFO - Sách ph\u1ed5 bi\u1ebfn nh\u1ea5t: S\u1ed1 \u0110\u1ecf trong danh m\u1ee5c V\u0103n h\u1ecdc Vi\u1ec7t Nam v\u1edbi 7 \u0111ã bán
+2025-05-09 11:56:26,035 - INFO - Các mô hình Gemini h\u1ed7 tr\u1ee3 generateContent: ['models/gemini-1.0-pro-vision-latest', 'models/gemini-pro-vision', 'models/gemini-1.5-pro-latest', 'models/gemini-1.5-pro-001', 'models/gemini-1.5-pro-002', 'models/gemini-1.5-pro', 'models/gemini-1.5-flash-latest', 'models/gemini-1.5-flash-001', 'models/gemini-1.5-flash-001-tuning', 'models/gemini-1.5-flash', 'models/gemini-1.5-flash-002', 'models/gemini-1.5-flash-8b', 'models/gemini-1.5-flash-8b-001', 'models/gemini-1.5-flash-8b-latest', 'models/gemini-1.5-flash-8b-exp-0827', 'models/gemini-1.5-flash-8b-exp-0924', 'models/gemini-2.5-pro-exp-03-25', 'models/gemini-2.5-pro-preview-03-25', 'models/gemini-2.5-flash-preview-04-17', 'models/gemini-2.5-flash-preview-04-17-thinking', 'models/gemini-2.5-pro-preview-05-06', 'models/gemini-2.0-flash-exp', 'models/gemini-2.0-flash', 'models/gemini-2.0-flash-001', 'models/gemini-2.0-flash-exp-image-generation', 'models/gemini-2.0-flash-lite-001', 'models/gemini-2.0-flash-lite', 'models/gemini-2.0-flash-preview-image-generation', 'models/gemini-2.0-flash-lite-preview-02-05', 'models/gemini-2.0-flash-lite-preview', 'models/gemini-2.0-pro-exp', 'models/gemini-2.0-pro-exp-02-05', 'models/gemini-exp-1206', 'models/gemini-2.0-flash-thinking-exp-01-21', 'models/gemini-2.0-flash-thinking-exp', 'models/gemini-2.0-flash-thinking-exp-1219', 'models/learnlm-1.5-pro-experimental', 'models/learnlm-2.0-flash-experimental', 'models/gemma-3-1b-it', 'models/gemma-3-4b-it', 'models/gemma-3-12b-it', 'models/gemma-3-27b-it']
+2025-05-09 11:56:26,955 - INFO - Ph\u1ea3n h\u1ed3i t\u1eeb Gemini: H\u1ec7 th\u1ed1ng hi\u1ec7n có 13 danh m\u1ee5c sách.  Em có th\u1ec3 giúp gì cho anh/ch\u1ecb?
+2025-05-09 11:56:26,955 - INFO - 127.0.0.1 - - [09/May/2025 11:56:26] "POST /jsonrpc HTTP/1.1" 200 -
+2025-05-14 09:58:20,692 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5001
+ * Running on http://192.168.43.167:5001
+2025-05-14 09:58:20,693 - INFO - [33mPress CTRL+C to quit[0m
+2025-05-14 09:58:20,694 - INFO -  * Restarting with stat
+2025-05-14 09:58:21,909 - WARNING -  * Debugger is active!
+2025-05-14 09:58:21,915 - INFO -  * Debugger PIN: 689-982-771
+2025-05-14 09:58:33,004 - INFO - 127.0.0.1 - - [14/May/2025 09:58:33] "OPTIONS /jsonrpc HTTP/1.1" 200 -
+2025-05-14 09:58:33,359 - INFO - package: mysql.connector.plugins
+2025-05-14 09:58:33,359 - INFO - plugin_name: caching_sha2_password
+2025-05-14 09:58:33,361 - INFO - AUTHENTICATION_PLUGIN_CLASS: MySQLCachingSHA2PasswordAuthPlugin
+2025-05-14 09:58:33,362 - INFO - package: mysql.connector.plugins
+2025-05-14 09:58:33,362 - INFO - plugin_name: mysql_native_password
+2025-05-14 09:58:33,362 - INFO - AUTHENTICATION_PLUGIN_CLASS: MySQLNativePasswordAuthPlugin
+2025-05-14 09:58:33,366 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-14 09:58:33,371 - INFO - L\u1ea5y danh sách sách thành công
+2025-05-14 09:58:33,424 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-14 09:58:33,430 - INFO - L\u1ea5y danh sách danh m\u1ee5c thành công
+2025-05-14 09:58:33,489 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-14 09:58:33,491 - INFO - L\u1ea5y danh sách lo\u1ea1i danh m\u1ee5c thành công
+2025-05-14 09:58:33,551 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-14 09:58:33,552 - INFO - L\u1ea5y danh sách danh m\u1ee5c sách thành công
+2025-05-14 09:58:33,613 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-14 09:58:33,615 - INFO - T\u1ed5ng s\u1ed1 sách: 35
+2025-05-14 09:58:33,669 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-14 09:58:33,670 - INFO - T\u1ed5ng s\u1ed1 lo\u1ea1i danh m\u1ee5c: 5
+2025-05-14 09:58:33,725 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-14 09:58:33,758 - INFO - Sách ph\u1ed5 bi\u1ebfn nh\u1ea5t: S\u1ed1 \u0110\u1ecf trong danh m\u1ee5c V\u0103n h\u1ecdc Vi\u1ec7t Nam v\u1edbi 7 \u0111ã bán
+2025-05-14 09:58:35,960 - INFO - Các mô hình Gemini h\u1ed7 tr\u1ee3 generateContent: ['models/gemini-1.0-pro-vision-latest', 'models/gemini-pro-vision', 'models/gemini-1.5-pro-latest', 'models/gemini-1.5-pro-001', 'models/gemini-1.5-pro-002', 'models/gemini-1.5-pro', 'models/gemini-1.5-flash-latest', 'models/gemini-1.5-flash-001', 'models/gemini-1.5-flash-001-tuning', 'models/gemini-1.5-flash', 'models/gemini-1.5-flash-002', 'models/gemini-1.5-flash-8b', 'models/gemini-1.5-flash-8b-001', 'models/gemini-1.5-flash-8b-latest', 'models/gemini-1.5-flash-8b-exp-0827', 'models/gemini-1.5-flash-8b-exp-0924', 'models/gemini-2.5-pro-exp-03-25', 'models/gemini-2.5-pro-preview-03-25', 'models/gemini-2.5-flash-preview-04-17', 'models/gemini-2.5-flash-preview-04-17-thinking', 'models/gemini-2.5-pro-preview-05-06', 'models/gemini-2.0-flash-exp', 'models/gemini-2.0-flash', 'models/gemini-2.0-flash-001', 'models/gemini-2.0-flash-exp-image-generation', 'models/gemini-2.0-flash-lite-001', 'models/gemini-2.0-flash-lite', 'models/gemini-2.0-flash-preview-image-generation', 'models/gemini-2.0-flash-lite-preview-02-05', 'models/gemini-2.0-flash-lite-preview', 'models/gemini-2.0-pro-exp', 'models/gemini-2.0-pro-exp-02-05', 'models/gemini-exp-1206', 'models/gemini-2.0-flash-thinking-exp-01-21', 'models/gemini-2.0-flash-thinking-exp', 'models/gemini-2.0-flash-thinking-exp-1219', 'models/learnlm-1.5-pro-experimental', 'models/learnlm-2.0-flash-experimental', 'models/gemma-3-1b-it', 'models/gemma-3-4b-it', 'models/gemma-3-12b-it', 'models/gemma-3-27b-it']
+2025-05-14 09:58:38,136 - INFO - Ph\u1ea3n h\u1ed3i t\u1eeb Gemini: Chào b\u1ea1n! Mình có th\u1ec3 giúp gì cho b\u1ea1n?  Hãy c\u1ee9 h\u1ecfi nhé!  Mình có thông tin v\u1ec1 35 cu\u1ed1n sách trong 5 lo\u1ea1i danh m\u1ee5c khác nhau.
+2025-05-14 09:58:38,137 - INFO - 127.0.0.1 - - [14/May/2025 09:58:38] "POST /jsonrpc HTTP/1.1" 200 -
+2025-05-14 09:59:29,052 - INFO - 127.0.0.1 - - [14/May/2025 09:59:29] "OPTIONS /jsonrpc HTTP/1.1" 200 -
+2025-05-14 09:59:29,419 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-14 09:59:29,423 - INFO - L\u1ea5y danh sách sách thành công
+2025-05-14 09:59:29,479 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-14 09:59:29,481 - INFO - L\u1ea5y danh sách danh m\u1ee5c thành công
+2025-05-14 09:59:29,543 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-14 09:59:29,544 - INFO - L\u1ea5y danh sách lo\u1ea1i danh m\u1ee5c thành công
+2025-05-14 09:59:29,604 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-14 09:59:29,606 - INFO - L\u1ea5y danh sách danh m\u1ee5c sách thành công
+2025-05-14 09:59:29,661 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-14 09:59:29,661 - INFO - T\u1ed5ng s\u1ed1 sách: 34
+2025-05-14 09:59:29,728 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-14 09:59:29,729 - INFO - T\u1ed5ng s\u1ed1 lo\u1ea1i danh m\u1ee5c: 5
+2025-05-14 09:59:29,788 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-14 09:59:29,793 - INFO - Sách ph\u1ed5 bi\u1ebfn nh\u1ea5t: S\u1ed1 \u0110\u1ecf trong danh m\u1ee5c V\u0103n h\u1ecdc Vi\u1ec7t Nam v\u1edbi 7 \u0111ã bán
+2025-05-14 09:59:31,020 - INFO - Các mô hình Gemini h\u1ed7 tr\u1ee3 generateContent: ['models/gemini-1.0-pro-vision-latest', 'models/gemini-pro-vision', 'models/gemini-1.5-pro-latest', 'models/gemini-1.5-pro-001', 'models/gemini-1.5-pro-002', 'models/gemini-1.5-pro', 'models/gemini-1.5-flash-latest', 'models/gemini-1.5-flash-001', 'models/gemini-1.5-flash-001-tuning', 'models/gemini-1.5-flash', 'models/gemini-1.5-flash-002', 'models/gemini-1.5-flash-8b', 'models/gemini-1.5-flash-8b-001', 'models/gemini-1.5-flash-8b-latest', 'models/gemini-1.5-flash-8b-exp-0827', 'models/gemini-1.5-flash-8b-exp-0924', 'models/gemini-2.5-pro-exp-03-25', 'models/gemini-2.5-pro-preview-03-25', 'models/gemini-2.5-flash-preview-04-17', 'models/gemini-2.5-flash-preview-04-17-thinking', 'models/gemini-2.5-pro-preview-05-06', 'models/gemini-2.0-flash-exp', 'models/gemini-2.0-flash', 'models/gemini-2.0-flash-001', 'models/gemini-2.0-flash-exp-image-generation', 'models/gemini-2.0-flash-lite-001', 'models/gemini-2.0-flash-lite', 'models/gemini-2.0-flash-preview-image-generation', 'models/gemini-2.0-flash-lite-preview-02-05', 'models/gemini-2.0-flash-lite-preview', 'models/gemini-2.0-pro-exp', 'models/gemini-2.0-pro-exp-02-05', 'models/gemini-exp-1206', 'models/gemini-2.0-flash-thinking-exp-01-21', 'models/gemini-2.0-flash-thinking-exp', 'models/gemini-2.0-flash-thinking-exp-1219', 'models/learnlm-1.5-pro-experimental', 'models/learnlm-2.0-flash-experimental', 'models/gemma-3-1b-it', 'models/gemma-3-4b-it', 'models/gemma-3-12b-it', 'models/gemma-3-27b-it']
+2025-05-14 09:59:32,009 - INFO - Ph\u1ea3n h\u1ed3i t\u1eeb Gemini: Hi\u1ec7n t\u1ea1i h\u1ec7 th\u1ed1ng còn 34 cu\u1ed1n sách.
+2025-05-14 09:59:32,010 - INFO - 127.0.0.1 - - [14/May/2025 09:59:32] "POST /jsonrpc HTTP/1.1" 200 -
+2025-05-14 10:00:16,234 - INFO - 127.0.0.1 - - [14/May/2025 10:00:16] "OPTIONS /jsonrpc HTTP/1.1" 200 -
+2025-05-14 10:00:16,609 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-14 10:00:16,612 - INFO - L\u1ea5y danh sách sách thành công
+2025-05-14 10:00:16,685 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-14 10:00:16,686 - INFO - L\u1ea5y danh sách danh m\u1ee5c thành công
+2025-05-14 10:00:16,755 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-14 10:00:16,757 - INFO - L\u1ea5y danh sách lo\u1ea1i danh m\u1ee5c thành công
+2025-05-14 10:00:16,830 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-14 10:00:16,832 - INFO - L\u1ea5y danh sách danh m\u1ee5c sách thành công
+2025-05-14 10:00:16,902 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-14 10:00:16,905 - INFO - T\u1ed5ng s\u1ed1 sách: 34
+2025-05-14 10:00:16,983 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-14 10:00:16,985 - INFO - T\u1ed5ng s\u1ed1 lo\u1ea1i danh m\u1ee5c: 5
+2025-05-14 10:00:17,055 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-14 10:00:17,059 - INFO - Sách ph\u1ed5 bi\u1ebfn nh\u1ea5t: S\u1ed1 \u0110\u1ecf trong danh m\u1ee5c V\u0103n h\u1ecdc Vi\u1ec7t Nam v\u1edbi 7 \u0111ã bán
+2025-05-14 10:00:18,324 - INFO - Các mô hình Gemini h\u1ed7 tr\u1ee3 generateContent: ['models/gemini-1.0-pro-vision-latest', 'models/gemini-pro-vision', 'models/gemini-1.5-pro-latest', 'models/gemini-1.5-pro-001', 'models/gemini-1.5-pro-002', 'models/gemini-1.5-pro', 'models/gemini-1.5-flash-latest', 'models/gemini-1.5-flash-001', 'models/gemini-1.5-flash-001-tuning', 'models/gemini-1.5-flash', 'models/gemini-1.5-flash-002', 'models/gemini-1.5-flash-8b', 'models/gemini-1.5-flash-8b-001', 'models/gemini-1.5-flash-8b-latest', 'models/gemini-1.5-flash-8b-exp-0827', 'models/gemini-1.5-flash-8b-exp-0924', 'models/gemini-2.5-pro-exp-03-25', 'models/gemini-2.5-pro-preview-03-25', 'models/gemini-2.5-flash-preview-04-17', 'models/gemini-2.5-flash-preview-04-17-thinking', 'models/gemini-2.5-pro-preview-05-06', 'models/gemini-2.0-flash-exp', 'models/gemini-2.0-flash', 'models/gemini-2.0-flash-001', 'models/gemini-2.0-flash-exp-image-generation', 'models/gemini-2.0-flash-lite-001', 'models/gemini-2.0-flash-lite', 'models/gemini-2.0-flash-preview-image-generation', 'models/gemini-2.0-flash-lite-preview-02-05', 'models/gemini-2.0-flash-lite-preview', 'models/gemini-2.0-pro-exp', 'models/gemini-2.0-pro-exp-02-05', 'models/gemini-exp-1206', 'models/gemini-2.0-flash-thinking-exp-01-21', 'models/gemini-2.0-flash-thinking-exp', 'models/gemini-2.0-flash-thinking-exp-1219', 'models/learnlm-1.5-pro-experimental', 'models/learnlm-2.0-flash-experimental', 'models/gemma-3-1b-it', 'models/gemma-3-4b-it', 'models/gemma-3-12b-it', 'models/gemma-3-27b-it']
+2025-05-14 10:00:20,328 - INFO - Ph\u1ea3n h\u1ed3i t\u1eeb Gemini: Cu\u1ed1n sách bán ch\u1ea1y nh\u1ea5t hi\u1ec7n nay là "S\u1ed1 \u0110\u1ecf", thu\u1ed9c danh m\u1ee5c V\u0103n h\u1ecdc Vi\u1ec7t Nam, \u0111ã bán \u0111\u01b0\u1ee3c 7 b\u1ea3n.  B\u1ea1n mu\u1ed1n mình g\u1ee3i ý thêm sách khác không?  Hay b\u1ea1n mu\u1ed1n bi\u1ebft thông tin gì khác v\u1ec1 sách ho\u1eb7c danh m\u1ee5c?
+2025-05-14 10:00:20,329 - INFO - 127.0.0.1 - - [14/May/2025 10:00:20] "POST /jsonrpc HTTP/1.1" 200 -
+2025-05-14 10:03:06,691 - INFO - 127.0.0.1 - - [14/May/2025 10:03:06] "OPTIONS /jsonrpc HTTP/1.1" 200 -
+2025-05-14 10:03:06,995 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-14 10:03:06,998 - INFO - L\u1ea5y danh sách sách thành công
+2025-05-14 10:03:07,034 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-14 10:03:07,035 - INFO - L\u1ea5y danh sách danh m\u1ee5c thành công
+2025-05-14 10:03:07,069 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-14 10:03:07,070 - INFO - L\u1ea5y danh sách lo\u1ea1i danh m\u1ee5c thành công
+2025-05-14 10:03:07,105 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-14 10:03:07,107 - INFO - L\u1ea5y danh sách danh m\u1ee5c sách thành công
+2025-05-14 10:03:07,142 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-14 10:03:07,143 - INFO - T\u1ed5ng s\u1ed1 sách: 34
+2025-05-14 10:03:07,179 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-14 10:03:07,180 - INFO - T\u1ed5ng s\u1ed1 lo\u1ea1i danh m\u1ee5c: 5
+2025-05-14 10:03:07,216 - INFO - K\u1ebft n\u1ed1i c\u01a1 s\u1edf d\u1eef li\u1ec7u thành công
+2025-05-14 10:03:07,220 - INFO - Sách ph\u1ed5 bi\u1ebfn nh\u1ea5t: S\u1ed1 \u0110\u1ecf trong danh m\u1ee5c V\u0103n h\u1ecdc Vi\u1ec7t Nam v\u1edbi 7 \u0111ã bán
+2025-05-14 10:03:09,359 - INFO - Các mô hình Gemini h\u1ed7 tr\u1ee3 generateContent: ['models/gemini-1.0-pro-vision-latest', 'models/gemini-pro-vision', 'models/gemini-1.5-pro-latest', 'models/gemini-1.5-pro-001', 'models/gemini-1.5-pro-002', 'models/gemini-1.5-pro', 'models/gemini-1.5-flash-latest', 'models/gemini-1.5-flash-001', 'models/gemini-1.5-flash-001-tuning', 'models/gemini-1.5-flash', 'models/gemini-1.5-flash-002', 'models/gemini-1.5-flash-8b', 'models/gemini-1.5-flash-8b-001', 'models/gemini-1.5-flash-8b-latest', 'models/gemini-1.5-flash-8b-exp-0827', 'models/gemini-1.5-flash-8b-exp-0924', 'models/gemini-2.5-pro-exp-03-25', 'models/gemini-2.5-pro-preview-03-25', 'models/gemini-2.5-flash-preview-04-17', 'models/gemini-2.5-flash-preview-04-17-thinking', 'models/gemini-2.5-pro-preview-05-06', 'models/gemini-2.0-flash-exp', 'models/gemini-2.0-flash', 'models/gemini-2.0-flash-001', 'models/gemini-2.0-flash-exp-image-generation', 'models/gemini-2.0-flash-lite-001', 'models/gemini-2.0-flash-lite', 'models/gemini-2.0-flash-preview-image-generation', 'models/gemini-2.0-flash-lite-preview-02-05', 'models/gemini-2.0-flash-lite-preview', 'models/gemini-2.0-pro-exp', 'models/gemini-2.0-pro-exp-02-05', 'models/gemini-exp-1206', 'models/gemini-2.0-flash-thinking-exp-01-21', 'models/gemini-2.0-flash-thinking-exp', 'models/gemini-2.0-flash-thinking-exp-1219', 'models/learnlm-1.5-pro-experimental', 'models/learnlm-2.0-flash-experimental', 'models/gemma-3-1b-it', 'models/gemma-3-4b-it', 'models/gemma-3-12b-it', 'models/gemma-3-27b-it']
+2025-05-14 10:03:11,825 - INFO - Ph\u1ea3n h\u1ed3i t\u1eeb Gemini: D\u1ea1, mình s\u1eb5n sàng giúp b\u1ea1n!  B\u1ea1n c\u1ea7n mình h\u1ed7 tr\u1ee3 gì v\u1ec1 sách v\u1eady \u1ea1?
+2025-05-14 10:03:11,826 - INFO - 127.0.0.1 - - [14/May/2025 10:03:11] "POST /jsonrpc HTTP/1.1" 200 -
